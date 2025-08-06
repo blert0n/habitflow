@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@chakra-ui/cli": "^3.24.1"
+  }
+}

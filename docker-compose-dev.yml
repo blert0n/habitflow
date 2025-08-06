@@ -1,0 +1,64 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: habitflow
+      POSTGRES_PASSWORD: habitflow
+      POSTGRES_DB: habitflow
+    ports:
+      - "6543:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: habitflow@1.com
+      PGADMIN_DEFAULT_PASSWORD: habitflow
+    ports:
+      - "8081:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+  backend:
+    build:
+      context: .
+      target: builder
+    volumes:
+      - .:/app
+      - /app/tmp
+    ports:
+      - "8080:8080"
+    environment:
+      PG_HOST: postgres
+      PG_USER: habitflow
+      PG_PASSWORD: habitflow
+      PG_DBNAME: habitflow
+      PG_PORT: "5432"
+    depends_on:
+      - postgres
+
+  frontend:
+    working_dir: /app/frontend
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    volumes:
+      - ./frontend:/app/frontend
+      - node_modules:/app/frontend/node_modules
+    ports:
+      - "5173:5173"
+    command: sh -c "CHOKIDAR_USEPOLLING=true npm run dev"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+volumes:
+  pgdata:
+  pgadmin-data:
+  node_modules:

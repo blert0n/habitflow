@@ -1,0 +1,16 @@
+FROM node:18-alpine
+
+WORKDIR /app/frontend
+
+# Install dependencies (copy only package.json & package-lock.json first for caching)
+COPY frontend/package*.json ./
+
+RUN npm install
+
+# Copy frontend source code
+COPY frontend/ ./
+
+# Expose Vite dev server port
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]
