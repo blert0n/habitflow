@@ -1,5 +1,5 @@
 import { Box, Flex, Separator } from '@chakra-ui/react'
-import { format } from 'date-fns'
+import dayjs from 'dayjs'
 import { HeaderWithText } from '../ui/header-with-text'
 import { Habit } from '../habits/habit'
 
@@ -27,8 +27,9 @@ const habits = [
 ]
 
 const CalendarHabits = () => {
-  const date = new Date()
-  const today = `${format(date, 'dd MMM')}, ${format(date, 'yyyy')}`
+  const date = dayjs()
+  const today = `${date.format('DD MMM')}, ${date.format('YYYY')}`
+
   return (
     <Box
       bg="white"

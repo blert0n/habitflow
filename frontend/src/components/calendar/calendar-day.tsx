@@ -1,13 +1,13 @@
 'use client'
 
 import { Box } from '@chakra-ui/react'
-import { format, isSameDay, isSameMonth } from 'date-fns'
+import type { Dayjs } from 'dayjs'
 
 interface P {
-  day: Date
-  currentDate: Date
-  selectedDate: Date | null
-  onSelect: (day: Date) => void
+  day: Dayjs
+  currentDate: Dayjs
+  selectedDate?: Dayjs | null
+  onSelect: (day: Dayjs) => void
 }
 
 export const CalendarDay = ({
@@ -16,8 +16,10 @@ export const CalendarDay = ({
   selectedDate,
   onSelect,
 }: P) => {
-  const iscurrentDate = isSameMonth(day, currentDate)
-  const isSelected = selectedDate && isSameDay(day, selectedDate)
+  const isCurrentMonth = day.isSame(currentDate, 'month')
+  const isSelected = selectedDate
+    ? day.isSame(selectedDate, 'day')
+    : day.isSame(currentDate, 'day')
 
   return (
     <Box
@@ -26,14 +28,14 @@ export const CalendarDay = ({
       w="100%"
       aspectRatio={2}
       fontSize="xs"
-      fontWeight={iscurrentDate ? 'medium' : 'normal'}
+      fontWeight={isCurrentMonth ? 'medium' : 'normal'}
       bg={isSelected ? 'gray.900' : 'transparent'}
       colorScheme="blackAlpha"
       _hover={{ bg: isSelected ? 'gray.900' : 'gray.100' }}
-      color={isSelected ? 'white' : iscurrentDate ? 'gray.900' : 'gray.400'}
+      color={isSelected ? 'white' : isCurrentMonth ? 'gray.900' : 'gray.400'}
       rounded="full"
     >
-      {format(day, 'd')}
+      {day.format('D')}
     </Box>
   )
 }

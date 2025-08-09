@@ -15,6 +15,8 @@ import App from './pages/index.tsx'
 import Calendar from './pages/calendar/index.tsx'
 import { Provider } from './components/ui/provider.tsx'
 import { Layout } from './components/layout/layout.tsx'
+import Habits from './pages/habits/index.tsx'
+// import { Categories } from './components/habits/categories.tsx'
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -47,9 +49,24 @@ const calendarRoute = createRoute({
   path: '/calendar',
   component: Calendar,
 })
+const habitsRoute = createRoute({
+  getParentRoute: () => appLayoutRoute,
+  path: '/habits',
+  component: Habits,
+})
+// const categoryRoute = createRoute({
+//   getParentRoute: () => appLayoutRoute,
+//   path: '/categories',
+//   component: Categories,
+// })
 
 const routeTree = rootRoute.addChildren([
-  appLayoutRoute.addChildren([indexRoute, calendarRoute]),
+  appLayoutRoute.addChildren([
+    indexRoute,
+    calendarRoute,
+    habitsRoute,
+    // categoryRoute,
+  ]),
 ])
 
 const router = createRouter({

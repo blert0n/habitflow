@@ -16,24 +16,21 @@ const CalendarLegend = () => {
         <Text mb={1}>Legend</Text>
         <Separator />
       </Box>
-      <Box mb={2} display="flex" alignItems="center" gap={2}>
-        <Box w="20px" h="20px" bg="gray.900" rounded="full" />
-        Selected Day
+      <Box mb={2} display="flex" alignItems="center" gap={2} cursor="pointer">
+        <Box w="20px" h="20px" bg="red.500" rounded="full" />
+        <Text color="gray.700">Morning exercise</Text>
       </Box>
-      <Box mb={2} display="flex" alignItems="center" gap={2} rounded="full">
-        <Box
-          w="20px"
-          h="20px"
-          bg="gray.100"
-          rounded="full"
-          border="1px solid"
-          borderColor="gray.300"
-        />
-        Hover Day
+      <Box mb={2} display="flex" alignItems="center" gap={2} cursor="pointer">
+        <Box w="20px" h="20px" bg="green.500" rounded="full" />
+        <Text color="gray.700">Read 30 minutes</Text>
       </Box>
-      <Box mb={2} display="flex" alignItems="center" gap={2}>
-        <Box w="20px" h="20px" bg="gray.400" rounded="full" />
-        Other Month
+      <Box mb={2} display="flex" alignItems="center" gap={2} cursor="pointer">
+        <Box w="20px" h="20px" bg="blue.500" rounded="full" />
+        <Text color="gray.700">Meditation</Text>
+      </Box>
+      <Box mb={2} display="flex" alignItems="center" gap={2} cursor="pointer">
+        <Box w="20px" h="20px" bg="purple.500" rounded="full" />
+        <Text color="gray.700">Drink 8 glasses of water</Text>
       </Box>
     </Box>
   )

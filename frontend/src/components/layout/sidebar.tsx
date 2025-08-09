@@ -10,6 +10,7 @@ import {
   List,
   Menu,
   NotebookPen,
+  // Tags,
   Trophy,
 } from 'lucide-react'
 import { useRouterState } from '@tanstack/react-router'
@@ -26,6 +27,7 @@ const sidebarLinks = [
   { href: '/', icon: ChartSpline, label: 'Dashboard' },
   { href: '/calendar', icon: Calendar, label: 'Calendar' },
   { href: '/habits', icon: List, label: 'All habits' },
+  // { href: '/categories', icon: Tags, label: 'Categories' },
   { href: '/notes', icon: NotebookPen, label: 'Notes' },
   { href: '/analytics', icon: ChartNoAxesCombined, label: 'Analytics' },
   { href: '/badges', icon: Trophy, label: 'Badges' },
@@ -101,6 +103,7 @@ const Sidebar = () => {
                 justifyContent={
                   isMobile ? 'center' : isOpen ? 'flex-start' : 'center'
                 }
+                width="full"
               >
                 <Icon size={20} />
                 {!isMobile && isOpen && (

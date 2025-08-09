@@ -18,12 +18,13 @@ const CalendarLg = () => {
     handleYearChange,
     calendarMatrix,
     selectedDate,
-  } = useCalendar()
+    handleSelectedDateChange,
+  } = useCalendar({})
 
   const allDays = calendarMatrix.flat()
 
   return (
-    <Flex direction="column" marginY={4} height="100%">
+    <Flex direction="column" marginBottom={4} height="100%">
       <HeaderWithText title="Calendar" text="Track your habits across time!" />
       <Spacer marginBottom={4} />
       <Flex gap={4} height="100%" direction={{ base: 'column', md: 'row' }}>
@@ -58,7 +59,6 @@ const CalendarLg = () => {
             onYearChange={handleYearChange}
           />
           <Separator marginY={3} />
-          {/* Weekday Labels */}
           <Flex justify="center" gap={1} mb={2}>
             {WEEK_DAYS.map((day) => (
               <Box
@@ -67,12 +67,13 @@ const CalendarLg = () => {
                 w="100%"
                 textAlign="center"
                 fontWeight="semibold"
-                color="gray.700"
+                color="gray.500"
               >
                 {day}
               </Box>
             ))}
           </Flex>
+          <Separator marginY={3} />
           <Box
             flex={1}
             bg="white"
@@ -89,6 +90,9 @@ const CalendarLg = () => {
                 day={day}
                 currentDate={currentDate}
                 selectedDate={selectedDate}
+                onSelect={(date) => {
+                  handleSelectedDateChange(date)
+                }}
               />
             ))}
           </Box>

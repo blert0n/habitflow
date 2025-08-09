@@ -2,12 +2,13 @@
 
 import { Flex, IconButton, Text } from '@chakra-ui/react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { format } from 'date-fns'
+import dayjs from 'dayjs'
 import { MonthPopover } from './month-popover'
 import { YearPopover } from './year-popover'
+import type { Dayjs } from 'dayjs'
 
 interface CalendarHeaderProps {
-  currentDate: Date
+  currentDate: Dayjs
   onPrevMonth: () => void
   onNextMonth: () => void
   onMonthChange: (month: number) => void
@@ -21,23 +22,22 @@ const CalendarHeader = ({
   onMonthChange,
   onYearChange,
 }: CalendarHeaderProps) => {
+  const date = dayjs(currentDate)
+
   return (
     <Flex justify="space-between" align="center">
       <Flex gap={1}>
         <MonthPopover
-          selectedMonth={currentDate.getMonth()}
+          selectedMonth={currentDate.month()}
           onSelect={onMonthChange}
         >
           <Text fontSize="md" fontWeight="medium" cursor="pointer">
-            {format(currentDate, 'MMMM')}
+            {date.format('MMMM')}
           </Text>
         </MonthPopover>
-        <YearPopover
-          selectedYear={currentDate.getFullYear()}
-          onChange={onYearChange}
-        >
+        <YearPopover selectedYear={currentDate.year()} onChange={onYearChange}>
           <Text fontSize="md" fontWeight="medium" cursor="pointer">
-            {format(currentDate, 'yyyy')}
+            {date.format('YYYY')}
           </Text>
         </YearPopover>
       </Flex>
