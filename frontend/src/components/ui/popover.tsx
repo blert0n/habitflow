@@ -1,10 +1,12 @@
 import { Popover, Portal } from '@chakra-ui/react'
 import { useState } from 'react'
+import type { PopoverRootProps } from '@chakra-ui/react'
 import type { ReactNode } from 'react'
 
 interface AppPopoverProps {
   trigger: ReactNode
   children: ReactNode
+  placement?: NonNullable<PopoverRootProps['positioning']>['placement']
   open?: boolean
   onOpenChange?: (open: boolean) => void
   initialOpen?: boolean
@@ -13,6 +15,7 @@ interface AppPopoverProps {
 export const AppPopover = ({
   trigger,
   children,
+  placement,
   open: controlledOpen,
   onOpenChange,
   initialOpen = false,
@@ -36,6 +39,7 @@ export const AppPopover = ({
       onOpenChange={handleOpenChange}
       closeOnInteractOutside
       closeOnEscape
+      positioning={{ placement }}
     >
       <Popover.Trigger asChild>{trigger}</Popover.Trigger>
       <Portal>

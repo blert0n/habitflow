@@ -31,6 +31,7 @@ const CalendarSm = ({ selectedDate, onDateChange }: CalendarSmProps) => {
       borderRadius="lg"
       borderWidth="1px"
       borderColor="gray.200"
+      overflowY="hidden"
     >
       <CalendarHeader
         currentDate={currentDate}

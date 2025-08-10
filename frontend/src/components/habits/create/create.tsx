@@ -66,7 +66,7 @@ export const Create = ({ onBack }: { onBack: () => void }) => {
   )
 
   return (
-    <Flex direction="column" height="100%" p={4}>
+    <Flex direction="column" height="100%">
       <Flex mb={4} gap={2} alignItems="center">
         <IconButton
           variant="ghost"

@@ -41,7 +41,7 @@ const ListHabit = ({
           </IconButton>
           <Flex justify="space-between" height="full">
             <HeaderWithText
-              title={title}
+              title={title || 'Habit name'}
               text={text}
               titleFontSize="sm"
               textFontSize="12px"

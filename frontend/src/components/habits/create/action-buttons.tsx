@@ -11,7 +11,7 @@ export const ActionButtons = memo(
     return (
       <Flex gap={2} mt={2}>
         <Button
-          size="sm"
+          size="xs"
           px={4}
           onClick={onSubmit}
           type="submit"
@@ -19,7 +19,7 @@ export const ActionButtons = memo(
         >
           Create habit
         </Button>
-        <Button variant="outline" size="sm" px={4} onClick={onBack}>
+        <Button variant="outline" size="xs" px={4} onClick={onBack} bg="white">
           Cancel
         </Button>
       </Flex>
