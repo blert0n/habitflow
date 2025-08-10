@@ -5,6 +5,7 @@ import type { AllowedDayString } from './types'
 import { WEEK_DAYS } from '@/util/dates'
 
 interface ScheduledWeekDaysProps {
+  activeColor?: string
   selectedDays?: Array<AllowedDayString>
   isRandom?: boolean
   interactive?: boolean
@@ -19,6 +20,7 @@ const getRandomSelectedDays = (count: number): Array<AllowedDayString> => {
 }
 
 const ScheduledWeekDays = ({
+  activeColor = 'gray.900',
   selectedDays,
   isRandom = false,
   boxSize = 5,
@@ -43,7 +45,7 @@ const ScheduledWeekDays = ({
             key={day}
             alignItems="center"
             justifyContent="center"
-            bg={isSelected ? 'gray.900' : 'gray.400'}
+            bg={isSelected ? activeColor : 'gray.400'}
             w={boxSize}
             h={boxSize}
             borderRadius="md"

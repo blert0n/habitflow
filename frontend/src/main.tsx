@@ -9,6 +9,7 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import './styles.css'
+import './components/editor/editor.css'
 import { Box } from '@chakra-ui/react'
 import reportWebVitals from './reportWebVitals.ts'
 import App from './pages/index.tsx'
@@ -16,6 +17,7 @@ import Calendar from './pages/calendar/index.tsx'
 import { Provider } from './components/ui/provider.tsx'
 import { Layout } from './components/layout/layout.tsx'
 import Habits from './pages/habits/index.tsx'
+import Notes from './pages/notes/index.tsx'
 // import { Categories } from './components/habits/categories.tsx'
 
 const rootRoute = createRootRoute({
@@ -54,18 +56,18 @@ const habitsRoute = createRoute({
   path: '/habits',
   component: Habits,
 })
-// const categoryRoute = createRoute({
-//   getParentRoute: () => appLayoutRoute,
-//   path: '/categories',
-//   component: Categories,
-// })
+const notesRoute = createRoute({
+  getParentRoute: () => appLayoutRoute,
+  path: '/notes',
+  component: Notes,
+})
 
 const routeTree = rootRoute.addChildren([
   appLayoutRoute.addChildren([
     indexRoute,
     calendarRoute,
     habitsRoute,
-    // categoryRoute,
+    notesRoute,
   ]),
 ])
 

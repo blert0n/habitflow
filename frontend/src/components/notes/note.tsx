@@ -6,31 +6,40 @@ interface NoteProps {
   title: string
   note: string
   date: string
+  onClick?: () => void
 }
 
-const Note = ({ title, note, date }: NoteProps) => {
+const Note = ({ title, note, date, onClick }: NoteProps) => {
   return (
     <Flex
-      justifyContent="space-between"
-      alignItems="flex-start"
+      direction="column"
       padding={2}
-      gap={2}
+      gap={1}
       borderRadius="sm"
       borderWidth="1px"
       borderColor="gray.200"
       bg="white"
+      _hover={{ bgColor: 'bg' }}
+      cursor="pointer"
+      onClick={() => onClick?.()}
     >
-      <Flex direction="column" flex={1}>
-        <Text color="gray.700" fontSize={13} fontWeight="medium">
+      <Flex justify="space-between" align="flex-start" gap={2}>
+        <Text
+          color="gray.700"
+          fontSize={13}
+          fontWeight="medium"
+          flex="1"
+          minWidth={0}
+        >
           {title}
         </Text>
-        <Text color="gray.600" fontSize={12}>
-          {note}
+        <Text fontSize={10} color="gray.500" whiteSpace="nowrap">
+          {date}
         </Text>
       </Flex>
 
-      <Text fontSize={10} color="gray.500" whiteSpace="nowrap">
-        {date}
+      <Text color="gray.600" fontSize={12}>
+        {note}
       </Text>
     </Flex>
   )

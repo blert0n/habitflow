@@ -34,7 +34,7 @@ const Habit = ({ title, description, checked = false }: P) => {
       padding={2}
       flex={1}
       gap={2}
-      borderRadius="sm"
+      borderRadius="lg"
       borderWidth="1px"
       borderColor="gray.200"
       position="relative"
@@ -43,7 +43,7 @@ const Habit = ({ title, description, checked = false }: P) => {
       onClick={handleClick}
       opacity={loading ? 0.8 : 1}
       transition="opacity 0.2s"
-      bg={isChecked ? 'green.50' : 'white'}
+      bg={isChecked ? 'linear-gradient(to left, #bbf7d0, #f0fdfa)' : 'white'}
     >
       {!loading && (
         <MotionBox
@@ -91,7 +91,7 @@ const Habit = ({ title, description, checked = false }: P) => {
                 top="0"
                 left="0"
               >
-                <CircleCheck strokeWidth={1.5} size={20} color="green" />
+                <CircleCheck strokeWidth={1} size={20} color="green" />
               </MotionBox>
 
               <MotionBox

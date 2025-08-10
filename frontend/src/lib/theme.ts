@@ -1,4 +1,19 @@
-import { createSystem, defaultConfig, defineConfig } from '@chakra-ui/react'
+import {
+  createSystem,
+  defaultConfig,
+  defineConfig,
+  defineRecipe,
+} from '@chakra-ui/react'
+
+const buttonRecipe = defineRecipe({
+  variants: {
+    variant: {
+      primary: {
+        bg: 'brand.primary',
+      },
+    },
+  },
+})
 
 const config = defineConfig({
   theme: {
@@ -13,9 +28,20 @@ const config = defineConfig({
     },
     semanticTokens: {
       colors: {
+        brand: {
+          primary: {
+            value: { _light: '#0284c6' },
+          },
+          streak: {
+            value: { _light: '#ea580c' },
+          },
+          success: {
+            value: { _light: '#1fa751' },
+          },
+        },
         bg: {
           DEFAULT: {
-            value: { _light: '#f3f4f6', _dark: '{colors.black}' },
+            value: { _light: '#f1f7fe', _dark: '{colors.black}' },
           },
         },
         bgDark: {
@@ -24,6 +50,9 @@ const config = defineConfig({
           },
         },
       },
+    },
+    recipes: {
+      Button: buttonRecipe,
     },
   },
 })

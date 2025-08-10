@@ -26,17 +26,21 @@ const ListHabit = ({
     <Flex
       w={{ midSmDown: 'full' }}
       maxW="300px"
-      borderRadius="md"
+      borderRadius="2xl"
       borderColor="gray.300"
       borderWidth={1}
       padding={4}
       bgColor="white"
       direction="column"
       gap={2}
+      className="app-box-shadow"
     >
       <Flex justify="space-between" alignItems="center" width="full">
         <Flex gap={2}>
-          <IconButton borderRadius="lg" bg="gray.700">
+          <IconButton
+            borderRadius="lg"
+            bg={selectedCategory?.backgroundGradient}
+          >
             {selectedCategory?.icon}
           </IconButton>
           <Flex justify="space-between" height="full">
@@ -71,14 +75,25 @@ const ListHabit = ({
                 </Text>
               </Flex>
             </Progress.Label>
-            <Progress.Track>
-              <Progress.Range />
+            <Progress.Track
+              style={{
+                backgroundColor: selectedCategory?.backgroundGradient,
+                borderRadius: 12,
+              }}
+            >
+              <Progress.Range
+                style={{
+                  background: selectedCategory?.backgroundGradient,
+                  borderRadius: 12,
+                }}
+              />
             </Progress.Track>
           </Progress.Root>
         </Flex>
       </Flex>
       <Flex gap={1} wrap="wrap">
         <ScheduledWeekDays
+          activeColor={selectedCategory?.backgroundGradient}
           selectedDays={selectedDays ?? []}
           isDaily={isDaily}
         />

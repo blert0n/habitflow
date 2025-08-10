@@ -72,7 +72,7 @@ const Habits = () => {
               <FilterIcon /> Filter
             </Button>
             <Button
-              variant="solid"
+              bg="brand.primary"
               size="xs"
               onClick={() => {
                 setShowCreateView(true)
@@ -90,7 +90,12 @@ const Habits = () => {
         minChildWidth={{ base: 'full', sm: '256px' }}
       >
         {MOCK_HABITS.map((habit) => (
-          <ListHabit key={habit.id} title={habit.name} />
+          <ListHabit
+            key={habit.id}
+            title={habit.name}
+            text="description"
+            category={1}
+          />
         ))}
       </SimpleGrid>
     </Flex>

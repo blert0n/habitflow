@@ -40,7 +40,7 @@ export const CalendarDayLg = ({
       transition="background-color 0.2s ease"
       borderWidth="1px"
       borderColor="gray.200"
-      _hover={{ borderColor: 'gray.400' }}
+      _hover={{ borderColor: 'gray' }}
       direction="column"
       gap={1}
       padding={1}
@@ -50,7 +50,7 @@ export const CalendarDayLg = ({
     >
       <Text
         color={isSelected ? 'white' : isCurrentDate ? 'gray.900' : 'gray.400'}
-        bg={isSelected ? 'gray.900' : isCurrentDate ? 'white' : 'gray.100'}
+        bg={isSelected ? 'brand.primary' : isCurrentDate ? 'white' : 'gray.100'}
         width="fit-content"
         paddingX={{ base: 1, sm: 2 }}
         paddingY={{ base: 1 / 2, sm: 2 }}

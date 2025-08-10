@@ -1,17 +1,23 @@
 import { useState } from 'react'
-import { IconButton, Link, Text, useBreakpointValue } from '@chakra-ui/react'
+import {
+  Box,
+  IconButton,
+  Link,
+  Tag,
+  Text,
+  useBreakpointValue,
+} from '@chakra-ui/react'
 import { Card } from '@chakra-ui/react/card'
 import { Flex } from '@chakra-ui/react/flex'
 import {
   Calendar,
-  ChartNoAxesCombined,
+  // ChartNoAxesCombined,
   ChartSpline,
   ChevronLeft,
   List,
   Menu,
   NotebookPen,
-  // Tags,
-  Trophy,
+  // Trophy,
 } from 'lucide-react'
 import { useRouterState } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
@@ -27,10 +33,9 @@ const sidebarLinks = [
   { href: '/', icon: ChartSpline, label: 'Dashboard' },
   { href: '/calendar', icon: Calendar, label: 'Calendar' },
   { href: '/habits', icon: List, label: 'All habits' },
-  // { href: '/categories', icon: Tags, label: 'Categories' },
   { href: '/notes', icon: NotebookPen, label: 'Notes' },
-  { href: '/analytics', icon: ChartNoAxesCombined, label: 'Analytics' },
-  { href: '/badges', icon: Trophy, label: 'Badges' },
+  // { href: '/analytics', icon: ChartNoAxesCombined, label: 'Analytics' },
+  // { href: '/badges', icon: Trophy, label: 'Badges' },
 ]
 const Sidebar = () => {
   const pathname = useRouterState({
@@ -98,22 +103,80 @@ const Sidebar = () => {
                 pr={isMobile ? 2 : 4}
                 borderRadius="md"
                 backgroundColor={
-                  isActive(href, pathname) ? 'bgDark' : 'transparent'
+                  isActive(href, pathname) ? 'brand.primary' : 'transparent'
                 }
                 justifyContent={
                   isMobile ? 'center' : isOpen ? 'flex-start' : 'center'
                 }
                 width="full"
               >
-                <Icon size={20} />
+                <Icon
+                  size={20}
+                  stroke={isActive(href, pathname) ? 'white' : '#52525b'}
+                />
                 {!isMobile && isOpen && (
-                  <Text fontSize="14px" color="gray.800" whiteSpace="nowrap">
+                  <Text
+                    fontSize="14px"
+                    color={isActive(href, pathname) ? 'white' : 'gray.800'}
+                    whiteSpace="nowrap"
+                  >
                     {label}
                   </Text>
                 )}
               </Flex>
             </Link>
           ))}
+          {!isMobile && isOpen && (
+            <Flex alignSelf="start" direction="column" gap={3}>
+              <Text fontSize={14} color="gray.500" fontWeight="semibold">
+                Today
+              </Text>
+              <Flex alignSelf="start" direction="column" gap={3} paddingX={2}>
+                <Flex
+                  gap={1}
+                  justify="start"
+                  alignItems="center"
+                  cursor="pointer"
+                >
+                  <Box w="8px" h="8px" bg="brand.success" rounded="full" />
+                  <Text fontSize={14} color="gray.500">
+                    Morning exercise
+                  </Text>
+                  <Tag.Root fontSize={14} colorPalette="green">
+                    <Tag.Label>7/7</Tag.Label>
+                  </Tag.Root>
+                </Flex>
+                <Flex
+                  gap={1}
+                  justify="start"
+                  alignItems="center"
+                  cursor="pointer"
+                >
+                  <Box w="8px" h="8px" bg="blue" rounded="full" />
+                  <Text fontSize={14} color="gray.500">
+                    Read 30 mins
+                  </Text>
+                  <Tag.Root fontSize={14} colorPalette="blue">
+                    <Tag.Label>5/7</Tag.Label>
+                  </Tag.Root>
+                </Flex>
+                <Flex
+                  gap={1}
+                  justify="start"
+                  alignItems="center"
+                  cursor="pointer"
+                >
+                  <Box w="8px" h="8px" bg="red" rounded="full" />
+                  <Text fontSize={14} color="gray.500">
+                    Meditation
+                  </Text>
+                  <Tag.Root fontSize={14} colorPalette="red">
+                    <Tag.Label>3/7</Tag.Label>
+                  </Tag.Root>
+                </Flex>
+              </Flex>
+            </Flex>
+          )}
         </Flex>
       </Card.Body>
     </MotionCard>

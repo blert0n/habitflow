@@ -42,7 +42,6 @@ export const FrequencyFields = memo(
           </Text>
           <Flex gap={2}>
             <Button
-              variant={frequency === 'daily' ? 'solid' : 'outline'}
               onClick={() => onChange('daily')}
               size="xs"
               width={{ smDown: '50%', sm: '200px' }}
@@ -50,7 +49,6 @@ export const FrequencyFields = memo(
               Daily
             </Button>
             <Button
-              variant={frequency === 'weekly' ? 'solid' : 'outline'}
               onClick={() => onChange('weekly')}
               size="xs"
               width={{ smDown: '50%', sm: '200px' }}

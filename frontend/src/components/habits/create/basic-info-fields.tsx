@@ -76,12 +76,16 @@ export const BasicInfoFields = React.memo(
               >
                 <IconButton
                   borderRadius="lg"
-                  bgColor={
+                  bgGradient="linear(to-r, green.200, pink.500)"
+                  _hover={{ filter: 'brightness(0.85)' }}
+                  scale={category.id === selectedCategory.value ? 1.1 : 1}
+                  bg={category.backgroundGradient}
+                  transform={
                     category.id === selectedCategory.value
-                      ? 'gray.800'
-                      : 'gray.500'
+                      ? 'scale(1.1)'
+                      : 'scale(1)'
                   }
-                  _hover={{ bgColor: 'gray.600' }}
+                  transition="transform 0.2s ease-in-out"
                 >
                   {category.icon}
                 </IconButton>

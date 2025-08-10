@@ -22,24 +22,26 @@ const StatCards = () => {
         borderWidth="1px"
         borderColor="gray.200"
         gap={4}
+        className="app-box-shadow"
       >
         <Flex justifyContent="space-between" alignItems="center">
-          <Text color="gray.800" fontSize={14} fontWeight={400}>
+          <Text color="gray.800" fontSize={18} fontWeight={400}>
             Today's progress
           </Text>
-          <Text color="gray.700" fontSize={16}>
+          <Text color="brand.primary" fontSize={24} fontWeight="semibold">
             75%
           </Text>
         </Flex>
         <Flex direction="column">
           <Progress.Root
             variant="subtle"
-            size="xs"
+            size="lg"
             shape="rounded"
             value={75}
             max={100}
+            colorPalette="blue"
           >
-            <Progress.Track>
+            <Progress.Track borderRadius="4xl">
               <Progress.Range />
             </Progress.Track>
             <Progress.Label fontWeight="normal">
@@ -61,12 +63,13 @@ const StatCards = () => {
         borderWidth="1px"
         borderColor="gray.200"
         gap={4}
+        className="app-box-shadow"
       >
         <Flex justifyContent="space-between" alignItems="center">
-          <Text color="gray.800" fontSize={14} fontWeight={400}>
+          <Text color="gray.800" fontSize={18} fontWeight={400}>
             Streak
           </Text>
-          <Text color="gray.700" fontSize={16}>
+          <Text color="brand.streak" fontSize={24} fontWeight="semibold">
             12
           </Text>
         </Flex>
@@ -75,8 +78,17 @@ const StatCards = () => {
             Days in a row
           </Text>
           <Flex alignItems="flex-end">
-            <Flame size={16} stroke="#DD6B20" fill="#F6AD55" />
-            <Text color="gray.700" fontSize={{ base: 12, sm: 10, md: 12 }}>
+            <Flame
+              size={16}
+              stroke="#DD6B20"
+              fill="#F6AD55"
+              className="float-animation"
+            />
+            <Text
+              color="brand.streak"
+              fontWeight="semibold"
+              fontSize={{ base: 12, sm: 10, md: 12 }}
+            >
               Keep it up!
             </Text>
           </Flex>
@@ -93,12 +105,13 @@ const StatCards = () => {
         borderWidth="1px"
         borderColor="gray.200"
         gap={4}
+        className="app-box-shadow"
       >
         <Flex justifyContent="space-between" alignItems="center">
-          <Text color="gray.800" fontSize={14} fontWeight={400}>
+          <Text color="gray.800" fontSize={18} fontWeight={400}>
             This week
           </Text>
-          <Text color="gray.700" fontSize={16}>
+          <Text color="brand.success" fontSize={24} fontWeight="semibold">
             85%
           </Text>
         </Flex>
@@ -107,8 +120,12 @@ const StatCards = () => {
             Average completion rate
           </Text>
           <Flex alignItems="flex-end">
-            <ArrowUp size={16} />
-            <Text color="gray.700" fontSize={12}>
+            <ArrowUp size={16} stroke="#1fa751" className="float-animation" />
+            <Text
+              color="brand.success"
+              fontWeight="semibold"
+              fontSize={{ base: 12, sm: 10, md: 12 }}
+            >
               +5% from last week
             </Text>
           </Flex>

@@ -6,7 +6,6 @@
     "prettier.config.js",
     "vite.config.js"
   ],
-
   "compilerOptions": {
     "target": "esnext",
     "jsx": "react-jsx",

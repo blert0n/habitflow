@@ -29,9 +29,9 @@ export const CalendarDay = ({
       aspectRatio={2}
       fontSize="xs"
       fontWeight={isCurrentMonth ? 'medium' : 'normal'}
-      bg={isSelected ? 'gray.900' : 'transparent'}
+      bg={isSelected ? 'brand.primary' : 'transparent'}
       colorScheme="blackAlpha"
-      _hover={{ bg: isSelected ? 'gray.900' : 'gray.100' }}
+      _hover={{ bg: isSelected ? 'brand.primary' : 'gray.100' }}
       color={isSelected ? 'white' : isCurrentMonth ? 'gray.900' : 'gray.400'}
       rounded="full"
     >
