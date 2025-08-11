@@ -3,12 +3,12 @@ import { EllipsisVertical } from 'lucide-react'
 import { HeaderWithText } from '../ui/header-with-text'
 import { ScheduledWeekDays } from './scheduled-week-days'
 import type { AllowedDayString } from './types'
-import { useCategories } from '@/hooks/useCategories'
+import type { CategoryWithIcon } from '@/hooks/useCategories'
 
 interface P {
   title: string
   text: string
-  category: number
+  category?: CategoryWithIcon
   selectedDays?: Array<AllowedDayString>
   isDaily?: boolean
 }
@@ -20,8 +20,6 @@ const ListHabit = ({
   selectedDays,
   isDaily = false,
 }: P) => {
-  const { getCategory } = useCategories()
-  const selectedCategory = getCategory(category)
   return (
     <Flex
       w={{ midSmDown: 'full' }}
@@ -37,11 +35,8 @@ const ListHabit = ({
     >
       <Flex justify="space-between" alignItems="center" width="full">
         <Flex gap={2}>
-          <IconButton
-            borderRadius="lg"
-            bg={selectedCategory?.backgroundGradient}
-          >
-            {selectedCategory?.icon}
+          <IconButton borderRadius="lg" bg={category?.backgroundGradient}>
+            {category?.icon}
           </IconButton>
           <Flex justify="space-between" height="full">
             <HeaderWithText
@@ -77,13 +72,13 @@ const ListHabit = ({
             </Progress.Label>
             <Progress.Track
               style={{
-                backgroundColor: selectedCategory?.backgroundGradient,
+                backgroundColor: category?.backgroundGradient,
                 borderRadius: 12,
               }}
             >
               <Progress.Range
                 style={{
-                  background: selectedCategory?.backgroundGradient,
+                  background: category?.backgroundGradient,
                   borderRadius: 12,
                 }}
               />
@@ -93,7 +88,7 @@ const ListHabit = ({
       </Flex>
       <Flex gap={1} wrap="wrap">
         <ScheduledWeekDays
-          activeColor={selectedCategory?.backgroundGradient}
+          activeColor={category?.backgroundGradient}
           selectedDays={selectedDays ?? []}
           isDaily={isDaily}
         />

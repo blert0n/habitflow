@@ -84,6 +84,7 @@ export const ExcludeDates = ({
             />
           </Flex>
           <IconButton
+            bg="brand.primary"
             aria-label="Add date"
             size="sm"
             colorScheme="green"

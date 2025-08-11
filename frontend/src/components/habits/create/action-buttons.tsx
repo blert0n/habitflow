@@ -11,11 +11,11 @@ export const ActionButtons = memo(
     return (
       <Flex gap={2} mt={2}>
         <Button
+          variant="primary"
           size="xs"
           px={4}
           onClick={onSubmit}
           type="submit"
-          colorScheme="green"
         >
           Create habit
         </Button>

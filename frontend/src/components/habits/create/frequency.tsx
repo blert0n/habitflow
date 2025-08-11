@@ -6,6 +6,7 @@ import type { WeekdayIndex } from '@/util/dates'
 import { weekdayMap } from '@/util/dates'
 
 interface FrequencyFieldsProps {
+  activeColor?: string
   frequency: 'daily' | 'weekly'
   daysOfWeek: Array<WeekdayIndex>
   toggleDayOfWeek: (day: WeekdayIndex) => void
@@ -14,6 +15,7 @@ interface FrequencyFieldsProps {
 
 export const FrequencyFields = memo(
   ({
+    activeColor,
     frequency,
     daysOfWeek,
     toggleDayOfWeek,
@@ -42,6 +44,7 @@ export const FrequencyFields = memo(
           </Text>
           <Flex gap={2}>
             <Button
+              variant={frequency === 'daily' ? 'primary' : 'outline'}
               onClick={() => onChange('daily')}
               size="xs"
               width={{ smDown: '50%', sm: '200px' }}
@@ -49,6 +52,7 @@ export const FrequencyFields = memo(
               Daily
             </Button>
             <Button
+              variant={frequency === 'weekly' ? 'primary' : 'outline'}
               onClick={() => onChange('weekly')}
               size="xs"
               width={{ smDown: '50%', sm: '200px' }}
@@ -63,6 +67,7 @@ export const FrequencyFields = memo(
               Days of the week
             </Text>
             <ScheduledWeekDays
+              activeColor={activeColor}
               interactive
               boxSize={7}
               selectedDays={selectedDaysLabels}

@@ -36,7 +36,7 @@ const ICONS_MAP = {
 
 type IconName = keyof typeof ICONS_MAP
 
-interface CategoryWithIcon {
+export interface CategoryWithIcon {
   id: number
   label: string
   description: string

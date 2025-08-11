@@ -10,6 +10,10 @@ const buttonRecipe = defineRecipe({
     variant: {
       primary: {
         bg: 'brand.primary',
+        color: 'white',
+        _hover: {
+          bg: 'brand.primary_hover',
+        },
       },
     },
   },
@@ -32,6 +36,9 @@ const config = defineConfig({
           primary: {
             value: { _light: '#0284c6' },
           },
+          primary_hover: {
+            value: { _light: '#0369a1' },
+          },
           streak: {
             value: { _light: '#ea580c' },
           },
@@ -52,7 +59,7 @@ const config = defineConfig({
       },
     },
     recipes: {
-      Button: buttonRecipe,
+      button: buttonRecipe,
     },
   },
 })

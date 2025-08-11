@@ -15,6 +15,7 @@ import type { AllowedDayString, HabitForm } from '../types'
 import type { WeekdayIndex } from '@/util/dates'
 import { weekdayMap } from '@/util/dates'
 import { buildRRule } from '@/util/rrule'
+import { useCategories } from '@/hooks/useCategories'
 
 export const Create = ({ onBack }: { onBack: () => void }) => {
   const [endsOn, setEndsOn] = useState<'Never' | 'On' | 'After'>('Never')
@@ -32,11 +33,15 @@ export const Create = ({ onBack }: { onBack: () => void }) => {
     shouldUnregister: false,
   })
 
+  const { getCategory } = useCategories()
+
   const habitName = useWatch({ control, name: 'name' })
   const habitDescription = useWatch({ control, name: 'description' })
   const category = useWatch({ control, name: 'category' })
   const frequency = useWatch({ control, name: 'frequency' })
   const daysOfWeek = useWatch({ control, name: 'daysOfWeek' })
+
+  const selectedCategory = getCategory(category)
 
   const onSubmit = (data: HabitForm) => {
     const rrule = buildRRule({
@@ -85,7 +90,7 @@ export const Create = ({ onBack }: { onBack: () => void }) => {
       <ListHabit
         title={habitName}
         text={habitDescription}
-        category={category}
+        category={selectedCategory}
         selectedDays={
           daysOfWeek.map(
             (dayIndex) => weekdayMap[dayIndex].label,
@@ -101,6 +106,7 @@ export const Create = ({ onBack }: { onBack: () => void }) => {
 
       <Box bg="white" borderRadius="lg" borderWidth={1} borderColor="gray.200">
         <FrequencyFields
+          activeColor={selectedCategory?.backgroundGradient}
           frequency={frequency}
           daysOfWeek={daysOfWeek}
           toggleDayOfWeek={toggleDayOfWeek}

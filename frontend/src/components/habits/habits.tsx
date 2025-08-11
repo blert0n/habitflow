@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { HeaderWithText } from '../ui/header-with-text'
 import { ListHabit } from './list-habit'
 import { Create } from './create/create'
+import { useCategories } from '@/hooks/useCategories'
 
 const MOCK_HABITS = [
   {
@@ -43,6 +44,7 @@ const MOCK_HABITS = [
 
 const Habits = () => {
   const [showCreateView, setShowCreateView] = useState(true)
+  const { categories } = useCategories()
 
   if (showCreateView) {
     return (
@@ -94,7 +96,7 @@ const Habits = () => {
             key={habit.id}
             title={habit.name}
             text="description"
-            category={1}
+            category={categories[0]}
           />
         ))}
       </SimpleGrid>

@@ -1,4 +1,5 @@
 import { Fieldset, Flex, RadioGroup } from '@chakra-ui/react'
+import { system } from '@/lib/theme'
 
 interface RadioOption {
   value: string
@@ -37,6 +38,7 @@ export const AppRadioGroup = ({
           if (!value) return
           onChange(value)
         }}
+        colorPalette="blue"
       >
         <Flex
           gap={orientation === 'vertical' ? 2 : 4}
