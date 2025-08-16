@@ -35,7 +35,10 @@ const ListHabit = ({
     >
       <Flex justify="space-between" alignItems="center" width="full">
         <Flex gap={2}>
-          <IconButton borderRadius="lg" bg={category?.backgroundGradient}>
+          <IconButton
+            borderRadius="lg"
+            bg="linear-gradient(to left, #60A5FA, #3B82F6)"
+          >
             {category?.icon}
           </IconButton>
           <Flex justify="space-between" height="full">
@@ -72,13 +75,13 @@ const ListHabit = ({
             </Progress.Label>
             <Progress.Track
               style={{
-                backgroundColor: category?.backgroundGradient,
+                backgroundColor: 'linear-gradient(to left, #60A5FA, #3B82F6)',
                 borderRadius: 12,
               }}
             >
               <Progress.Range
                 style={{
-                  background: category?.backgroundGradient,
+                  background: 'linear-gradient(to left, #60A5FA, #3B82F6)',
                   borderRadius: 12,
                 }}
               />
@@ -88,7 +91,7 @@ const ListHabit = ({
       </Flex>
       <Flex gap={1} wrap="wrap">
         <ScheduledWeekDays
-          activeColor={category?.backgroundGradient}
+          activeColor="linear-gradient(to left, #60A5FA, #3B82F6)"
           selectedDays={selectedDays ?? []}
           isDaily={isDaily}
         />

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Box, Flex, Spinner, Text } from '@chakra-ui/react'
 import { Circle, CircleCheck } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { CheckMarkIcon } from '@/assets/icons/check-mark'
 
 const MotionBox = motion.create(Box)
 
@@ -91,7 +92,7 @@ const Habit = ({ title, description, checked = false }: P) => {
                 top="0"
                 left="0"
               >
-                <CircleCheck strokeWidth={1} size={20} color="green" />
+                <CheckMarkIcon strokeWidth={1} size="lg" color="green" />
               </MotionBox>
 
               <MotionBox

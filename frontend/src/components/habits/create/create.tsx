@@ -29,11 +29,12 @@ export const Create = ({ onBack }: { onBack: () => void }) => {
       time: dayjs().hour(7).minute(0),
       frequency: 'daily',
       daysOfWeek: [],
+      color: '#2563eb',
     },
     shouldUnregister: false,
   })
 
-  const { getCategory } = useCategories()
+  const { getCategory, backgroundGradient } = useCategories()
 
   const habitName = useWatch({ control, name: 'name' })
   const habitDescription = useWatch({ control, name: 'description' })
@@ -106,7 +107,7 @@ export const Create = ({ onBack }: { onBack: () => void }) => {
 
       <Box bg="white" borderRadius="lg" borderWidth={1} borderColor="gray.200">
         <FrequencyFields
-          activeColor={selectedCategory?.backgroundGradient}
+          activeColor={backgroundGradient}
           frequency={frequency}
           daysOfWeek={daysOfWeek}
           toggleDayOfWeek={toggleDayOfWeek}

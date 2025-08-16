@@ -43,4 +43,5 @@ export interface HabitForm {
   time: Dayjs
   frequency: 'daily' | 'weekly'
   daysOfWeek: Array<WeekdayIndex>
+  color: string
 }

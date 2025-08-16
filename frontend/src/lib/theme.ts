@@ -34,7 +34,7 @@ const config = defineConfig({
       colors: {
         brand: {
           primary: {
-            value: { _light: '#0284c6' },
+            value: { _light: '#2563eb' },
           },
           primary_hover: {
             value: { _light: '#0369a1' },

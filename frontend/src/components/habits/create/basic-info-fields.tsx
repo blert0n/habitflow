@@ -4,6 +4,7 @@ import { useController } from 'react-hook-form'
 import type { Control } from 'react-hook-form'
 import type { HabitForm } from '../types'
 import { useCategories } from '@/hooks/useCategories'
+import { AppColorPicker } from '@/components/ui/color-picker'
 
 interface BasicInfoFieldsProps {
   control: Control<HabitForm, any, HabitForm>
@@ -22,7 +23,7 @@ export const BasicInfoFields = React.memo(
       control,
     })
 
-    const { categories } = useCategories()
+    const { categories, backgroundGradient } = useCategories()
 
     return (
       <Box
@@ -79,7 +80,7 @@ export const BasicInfoFields = React.memo(
                   bgGradient="linear(to-r, green.200, pink.500)"
                   _hover={{ filter: 'brightness(0.85)' }}
                   scale={category.id === selectedCategory.value ? 1.1 : 1}
-                  bg={category.backgroundGradient}
+                  bg={backgroundGradient}
                   transform={
                     category.id === selectedCategory.value
                       ? 'scale(1.1)'
@@ -92,6 +93,12 @@ export const BasicInfoFields = React.memo(
               </Box>
             ))}
           </Flex>
+        </Flex>
+        <Flex direction="column" gap={1} mt={2}>
+          <Text color="gray.700" fontSize={14}>
+            Choose habit color
+          </Text>
+          <AppColorPicker />
         </Flex>
       </Box>
     )

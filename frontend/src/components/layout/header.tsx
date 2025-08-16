@@ -7,7 +7,11 @@ import { Image } from '@chakra-ui/react/image'
 import { Link } from '@chakra-ui/react/link'
 import { useBreakpointValue } from '@chakra-ui/react'
 
-const Header = () => {
+interface P {
+  isLoggedIn?: boolean
+}
+
+const Header = ({ isLoggedIn = true }: P) => {
   const isMobile = useBreakpointValue({ base: true, sm: false })
 
   return (
@@ -36,14 +40,16 @@ const Header = () => {
               <div>HabitFlow</div>
             </Link>
           </Flex>
-          <Flex alignItems="center" gap="8px">
-            <AvatarGroup>
-              <Avatar.Root>
-                <Avatar.Fallback />
-                <Avatar.Image />
-              </Avatar.Root>
-            </AvatarGroup>
-          </Flex>
+          {isLoggedIn && (
+            <Flex alignItems="center" gap="8px">
+              <AvatarGroup>
+                <Avatar.Root>
+                  <Avatar.Fallback />
+                  <Avatar.Image />
+                </Avatar.Root>
+              </AvatarGroup>
+            </Flex>
+          )}
         </Flex>
       </Card.Body>
     </Card.Root>

@@ -18,6 +18,10 @@ import { Provider } from './components/ui/provider.tsx'
 import { Layout } from './components/layout/layout.tsx'
 import Habits from './pages/habits/index.tsx'
 import Notes from './pages/notes/index.tsx'
+import Login from './pages/login/index.tsx'
+import SignUp from './pages/sign-up/index.tsx'
+import { NonAuthenticated } from './components/layout/non-authenticated.tsx'
+import ForgotPassword from './pages/forgot-password/index.tsx'
 // import { Categories } from './components/habits/categories.tsx'
 
 const rootRoute = createRootRoute({
@@ -38,6 +42,24 @@ const appLayoutRoute = createRoute({
         <Outlet />
       </Box>
     </Layout>
+  ),
+})
+const nonAuthenticatedRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  id: 'non-authenticated',
+  component: () => (
+    <NonAuthenticated>
+      <Box
+        padding={4}
+        className="full-width"
+        height="full"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Outlet />
+      </Box>
+    </NonAuthenticated>
   ),
 })
 
@@ -61,6 +83,21 @@ const notesRoute = createRoute({
   path: '/notes',
   component: Notes,
 })
+const loginRoute = createRoute({
+  getParentRoute: () => nonAuthenticatedRoute,
+  path: '/sign-in',
+  component: Login,
+})
+const signUpRoute = createRoute({
+  getParentRoute: () => nonAuthenticatedRoute,
+  path: '/sign-up',
+  component: SignUp,
+})
+const forgotPasswordRoute = createRoute({
+  getParentRoute: () => nonAuthenticatedRoute,
+  path: '/forgot-password',
+  component: ForgotPassword,
+})
 
 const routeTree = rootRoute.addChildren([
   appLayoutRoute.addChildren([
@@ -68,6 +105,11 @@ const routeTree = rootRoute.addChildren([
     calendarRoute,
     habitsRoute,
     notesRoute,
+  ]),
+  nonAuthenticatedRoute.addChildren([
+    loginRoute,
+    signUpRoute,
+    forgotPasswordRoute,
   ]),
 ])
 
