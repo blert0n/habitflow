@@ -3,6 +3,7 @@ package routes
 import (
 	"net/http"
 
+	"github.com/blert0n/habitflow/auth"
 	"github.com/blert0n/habitflow/database"
 	"github.com/gin-gonic/gin"
 )
@@ -18,4 +19,8 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 
 		ctx.JSON(http.StatusOK, categories)
 	})
+
+	rg.POST("/auth/sign-in", auth.SignIn)
+	rg.POST("/auth/sign-up", auth.SignUp)
+
 }

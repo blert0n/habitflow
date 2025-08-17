@@ -19,11 +19,11 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id int32) error
 	GetCategoryByID(ctx context.Context, id int32) (Category, error)
 	GetHabitByID(ctx context.Context, id int32) (Habits, error)
+	GetUserByEmail(ctx context.Context, email string) (Users, error)
 	GetUserByID(ctx context.Context, id int32) (Users, error)
 	ListCategories(ctx context.Context) ([]Category, error)
 	ListHabits(ctx context.Context) ([]Habits, error)
 	ListHabitsByUser(ctx context.Context, userid pgtype.Int4) ([]Habits, error)
-	ListUsers(ctx context.Context) ([]Users, error)
 	SeedCategories(ctx context.Context, arg SeedCategoriesParams) error
 	SeedUser(ctx context.Context, arg SeedUserParams) (Users, error)
 	UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Category, error)

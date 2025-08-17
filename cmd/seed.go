@@ -13,7 +13,7 @@ func Seed(q *db.Queries) error {
 	user, err := q.SeedUser(ctx, db.SeedUserParams{
 		Username: "demo",
 		Email:    "demo@habitflow.com",
-		Password: "demo",
+		Password: "$2a$12$a7QLYwjEjIy8R2LQkdwAau8RNWzUn.fEGJgV9Zgg9AjPWnPkKrqI2",
 	})
 
 	if err != nil {

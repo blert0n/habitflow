@@ -28,6 +28,8 @@ type Habits struct {
 type Users struct {
 	ID        int32            `json:"id"`
 	Username  string           `json:"username"`
+	FirstName pgtype.Text      `json:"first_name"`
+	LastName  pgtype.Text      `json:"last_name"`
 	Email     string           `json:"email"`
 	Password  string           `json:"password"`
 	Createdat pgtype.Timestamp `json:"createdat"`

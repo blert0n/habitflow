@@ -7,26 +7,38 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (username, email, password)
-VALUES ($1, $2, $3)
-RETURNING id, username, email, password, createdat, updatedat
+INSERT INTO users (first_name,last_name, username, email, password)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, username, first_name, last_name, email, password, createdat, updatedat
 `
 
 type CreateUserParams struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	FirstName pgtype.Text `json:"first_name"`
+	LastName  pgtype.Text `json:"last_name"`
+	Username  string      `json:"username"`
+	Email     string      `json:"email"`
+	Password  string      `json:"password"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (Users, error) {
-	row := q.db.QueryRow(ctx, createUser, arg.Username, arg.Email, arg.Password)
+	row := q.db.QueryRow(ctx, createUser,
+		arg.FirstName,
+		arg.LastName,
+		arg.Username,
+		arg.Email,
+		arg.Password,
+	)
 	var i Users
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
+		&i.FirstName,
+		&i.LastName,
 		&i.Email,
 		&i.Password,
 		&i.Createdat,
@@ -45,8 +57,29 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	return err
 }
 
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, username, first_name, last_name, email, password, createdat, updatedat FROM users
+WHERE email = $1
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (Users, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i Users
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.FirstName,
+		&i.LastName,
+		&i.Email,
+		&i.Password,
+		&i.Createdat,
+		&i.Updatedat,
+	)
+	return i, err
+}
+
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, username, email, password, createdat, updatedat FROM users
+SELECT id, username, first_name, last_name, email, password, createdat, updatedat FROM users
 WHERE id = $1
 `
 
@@ -56,6 +89,8 @@ func (q *Queries) GetUserByID(ctx context.Context, id int32) (Users, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
+		&i.FirstName,
+		&i.LastName,
 		&i.Email,
 		&i.Password,
 		&i.Createdat,
@@ -64,44 +99,12 @@ func (q *Queries) GetUserByID(ctx context.Context, id int32) (Users, error) {
 	return i, err
 }
 
-const listUsers = `-- name: ListUsers :many
-SELECT id, username, email, password, createdat, updatedat FROM users
-ORDER BY id
-`
-
-func (q *Queries) ListUsers(ctx context.Context) ([]Users, error) {
-	rows, err := q.db.Query(ctx, listUsers)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []Users{}
-	for rows.Next() {
-		var i Users
-		if err := rows.Scan(
-			&i.ID,
-			&i.Username,
-			&i.Email,
-			&i.Password,
-			&i.Createdat,
-			&i.Updatedat,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const seedUser = `-- name: SeedUser :one
 INSERT INTO users (username, email, password)
 VALUES ($1, $2, $3)
 ON CONFLICT (username) DO UPDATE
 SET username = EXCLUDED.username
-RETURNING id, username, email, password, createdat, updatedat
+RETURNING id, username, first_name, last_name, email, password, createdat, updatedat
 `
 
 type SeedUserParams struct {
@@ -116,6 +119,8 @@ func (q *Queries) SeedUser(ctx context.Context, arg SeedUserParams) (Users, erro
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
+		&i.FirstName,
+		&i.LastName,
 		&i.Email,
 		&i.Password,
 		&i.Createdat,
@@ -131,7 +136,7 @@ SET username = $2,
     password = $4,
     updatedAt = CURRENT_TIMESTAMP
 WHERE id = $1
-RETURNING id, username, email, password, createdat, updatedat
+RETURNING id, username, first_name, last_name, email, password, createdat, updatedat
 `
 
 type UpdateUserParams struct {
@@ -152,6 +157,8 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (Users, 
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
+		&i.FirstName,
+		&i.LastName,
 		&i.Email,
 		&i.Password,
 		&i.Createdat,

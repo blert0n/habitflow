@@ -20,6 +20,8 @@ CREATE TABLE IF NOT exists category (
 CREATE TABLE IF NOT exists users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(100) UNIQUE NOT NULL,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
     email VARCHAR(255) UNIQUE NOT NULL,
     password TEXT NOT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -1,15 +1,15 @@
 -- name: CreateUser :one
-INSERT INTO users (username, email, password)
-VALUES ($1, $2, $3)
+INSERT INTO users (first_name,last_name, username, email, password)
+VALUES ($1, $2, $3, $4, $5)
 RETURNING *;
 
 -- name: GetUserByID :one
 SELECT * FROM users
 WHERE id = $1;
 
--- name: ListUsers :many
+-- name: GetUserByEmail :one
 SELECT * FROM users
-ORDER BY id;
+WHERE email = $1;
 
 -- name: UpdateUser :one
 UPDATE users

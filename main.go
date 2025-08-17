@@ -23,6 +23,7 @@ func main() {
 	r := gin.Default()
 
 	api := r.Group("/api")
+
 	routes.RegisterRoutes(api)
 
 	r.Use(static.Serve("/", static.LocalFile("./frontend/dist", true)))
