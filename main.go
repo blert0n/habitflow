@@ -2,15 +2,23 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/blert0n/habitflow/database"
 	"github.com/blert0n/habitflow/routes"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	database.Connect()
+	if os.Getenv("GO_ENV") != "production" {
+		_ = godotenv.Load()
+	}
+
+	if err := database.InitDB(); err != nil {
+		log.Fatalf("Failed to connect to db: %v", err)
+	}
 
 	r := gin.Default()
 
