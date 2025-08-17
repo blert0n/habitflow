@@ -1,6 +1,14 @@
-import { Box, Flex, Input, Text, useBreakpointValue } from '@chakra-ui/react'
+import {
+  Box,
+  Flex,
+  Input,
+  InputGroup,
+  Text,
+  useBreakpointValue,
+} from '@chakra-ui/react'
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { Eye, EyeOff } from 'lucide-react'
 import type { FieldErrors, UseFormRegister } from 'react-hook-form'
 import type { RegisterData } from './types'
 
@@ -24,6 +32,7 @@ interface P {
 
 const PasswordWithValidator = ({ password, register, errors }: P) => {
   const [showPopover, setShowPopover] = useState(false)
+  const [show, setShow] = useState(false)
 
   const popoverPosition = useBreakpointValue<'right' | 'top'>({
     base: 'top',
@@ -36,33 +45,50 @@ const PasswordWithValidator = ({ password, register, errors }: P) => {
         Password
       </Text>
       <Box position="relative" width="100%">
-        <Input
-          type="password"
-          placeholder="Enter your password"
-          size="md"
-          width="100%"
-          id="password"
-          aria-invalid={errors.password ? 'true' : 'false'}
-          {...register('password', {
-            onChange: (e) => {
-              const value = e.target.value
-              setShowPopover(value.length > 0)
-            },
-            validate: rules.reduce(
-              (acc: Record<string, (pw: string) => true | string>, rule) => {
-                acc[rule.label] = (pw: string) => rule.test(pw) || rule.label
-                return acc
+        <InputGroup
+          endElement={
+            <Box
+              cursor="pointer"
+              onClick={() => {
+                setShow((prev) => !prev)
+              }}
+            >
+              {show ? (
+                <EyeOff strokeWidth={1.5} color="gray" size={20} />
+              ) : (
+                <Eye strokeWidth={1.5} color="gray" size={20} />
+              )}
+            </Box>
+          }
+        >
+          <Input
+            type={show ? 'text' : 'password'}
+            placeholder="Enter your password"
+            size="md"
+            width="100%"
+            id="password"
+            aria-invalid={errors.password ? 'true' : 'false'}
+            {...register('password', {
+              onChange: (e) => {
+                const value = e.target.value
+                setShowPopover(value.length > 0)
               },
-              {},
-            ),
-          })}
-          onFocus={() => {
-            setShowPopover(password.length > 0)
-          }}
-          onBlur={() => {
-            setShowPopover(false)
-          }}
-        />
+              validate: rules.reduce(
+                (acc: Record<string, (pw: string) => true | string>, rule) => {
+                  acc[rule.label] = (pw: string) => rule.test(pw) || rule.label
+                  return acc
+                },
+                {},
+              ),
+            })}
+            onFocus={() => {
+              setShowPopover(password.length > 0)
+            }}
+            onBlur={() => {
+              setShowPopover(false)
+            }}
+          />
+        </InputGroup>
         <AnimatePresence>
           {showPopover && (
             <MotionBox

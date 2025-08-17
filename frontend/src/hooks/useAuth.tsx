@@ -21,6 +21,7 @@ interface AuthContextType {
   signOut: () => Promise<void>
   isLoading: boolean
   isSigningUp: boolean
+  isSigningIn: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -29,6 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSigningUp, setIsSigningUp] = useState(false)
+  const [isSigningIn, setIsSigningIn] = useState(false)
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -54,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const signIn = async (email: string, password: string) => {
-    setIsLoading(true)
+    setIsSigningIn(true)
     try {
       await client('/auth/sign-in', {
         method: 'POST',
@@ -84,7 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       setUser(null)
     } finally {
-      setIsLoading(false)
+      setIsSigningIn(false)
     }
   }
 
@@ -138,7 +140,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, signIn, signUp, signOut, isLoading, isSigningUp }}
+      value={{
+        user,
+        signIn,
+        signUp,
+        signOut,
+        isLoading,
+        isSigningUp,
+        isSigningIn,
+      }}
     >
       {children}
     </AuthContext.Provider>

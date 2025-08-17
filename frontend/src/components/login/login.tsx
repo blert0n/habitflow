@@ -1,5 +1,15 @@
-import { Button, Flex, IconButton, Input, Link, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Flex,
+  IconButton,
+  Input,
+  InputGroup,
+  Link,
+  Text,
+} from '@chakra-ui/react'
 import { useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
 import { TextWithDivider } from '../ui/text-with-divider'
 import { GoogleIcon } from '@/assets/icons/google'
 import { useAuth } from '@/hooks/useAuth'
@@ -10,7 +20,8 @@ interface LoginCredentials {
 }
 
 const Login = () => {
-  const { signIn, isLoading } = useAuth()
+  const { signIn, isSigningIn } = useAuth()
+  const [showPassword, setShowPassword] = useState(false)
   const [credentials, setCredentials] = useState<LoginCredentials>({
     email: '',
     password: '',
@@ -70,14 +81,31 @@ const Login = () => {
           <Text color="gray.700" fontSize={14}>
             Password
           </Text>
-          <Input
-            type="password"
-            placeholder="Enter your password"
-            size="md"
-            onChange={(e) => {
-              handleInputChange('password', e.target.value)
-            }}
-          />
+          <InputGroup
+            endElement={
+              <Box
+                cursor="pointer"
+                onClick={() => {
+                  setShowPassword((prev) => !prev)
+                }}
+              >
+                {showPassword ? (
+                  <EyeOff strokeWidth={1.5} color="gray" size={20} />
+                ) : (
+                  <Eye strokeWidth={1.5} color="gray" size={20} />
+                )}
+              </Box>
+            }
+          >
+            <Input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Enter your password"
+              size="md"
+              onChange={(e) => {
+                handleInputChange('password', e.target.value)
+              }}
+            />
+          </InputGroup>
         </Flex>
         <Flex direction="column" gap={1 / 2}>
           <Link
@@ -94,7 +122,12 @@ const Login = () => {
           </Link>
         </Flex>
         <Button
-          loading={isLoading}
+          loading={isSigningIn}
+          disabled={
+            isSigningIn ||
+            credentials.email.trim() === '' ||
+            credentials.password.trim() === ''
+          }
           variant="primary"
           size="sm"
           mt={4}

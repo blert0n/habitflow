@@ -1,6 +1,17 @@
-import { Button, Flex, IconButton, Input, Link, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Flex,
+  IconButton,
+  Input,
+  InputGroup,
+  Link,
+  Text,
+} from '@chakra-ui/react'
 import { useForm, useWatch } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
+import { Eye, EyeOff } from 'lucide-react'
+import { useState } from 'react'
 import { TextWithDivider } from '../ui/text-with-divider'
 import { PasswordWithValidator } from './password-with-validator'
 import type { RegisterData } from './types'
@@ -8,12 +19,13 @@ import { GoogleIcon } from '@/assets/icons/google'
 import { useAuth } from '@/hooks/useAuth'
 
 const SignUp = () => {
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const { isSigningUp, signUp } = useAuth()
   const {
     control,
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<RegisterData>({
     defaultValues: {
       email: '',
@@ -124,18 +136,35 @@ const SignUp = () => {
             <Text color="gray.700" fontSize={14}>
               Confirm password
             </Text>
-            <Input
-              type="password"
-              placeholder="Confirm password"
-              size="md"
-              id="confirmPassword"
-              aria-invalid={errors.confirmPassword ? 'true' : 'false'}
-              {...register('confirmPassword', {
-                required: 'Please confirm your password',
-                validate: (value) =>
-                  value === password || 'Passwords do not match',
-              })}
-            />
+            <InputGroup
+              endElement={
+                <Box
+                  cursor="pointer"
+                  onClick={() => {
+                    setShowConfirmPassword((prev) => !prev)
+                  }}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff strokeWidth={1.5} color="gray" size={20} />
+                  ) : (
+                    <Eye strokeWidth={1.5} color="gray" size={20} />
+                  )}
+                </Box>
+              }
+            >
+              <Input
+                type={showConfirmPassword ? 'text' : 'password'}
+                placeholder="Confirm password"
+                size="md"
+                id="confirmPassword"
+                aria-invalid={errors.confirmPassword ? 'true' : 'false'}
+                {...register('confirmPassword', {
+                  required: 'Please confirm your password',
+                  validate: (value) =>
+                    value === password || 'Passwords do not match',
+                })}
+              />
+            </InputGroup>
           </Flex>
           <Flex direction="column" gap={1 / 2}>
             <Link
@@ -157,6 +186,7 @@ const SignUp = () => {
             mt={4}
             type="submit"
             loading={isSigningUp}
+            disabled={isSigningUp || !isValid}
           >
             Sign up
           </Button>
