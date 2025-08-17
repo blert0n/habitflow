@@ -2,3 +2,4 @@ README.md
 tmp
 .vscode
 node_modules
+.env
