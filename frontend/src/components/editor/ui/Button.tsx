@@ -6,14 +6,9 @@
  *
  */
 
-import type {JSX} from 'react';
-
-import './Button.css';
-
-import * as React from 'react';
-import {ReactNode} from 'react';
-
-import joinClasses from '../utils/joinClasses';
+import joinClasses from '../utils/joinClasses'
+import type { JSX, ReactNode } from 'react'
+import './Button.css'
 
 export default function Button({
   'data-test-id': dataTestId,
@@ -24,13 +19,13 @@ export default function Button({
   small,
   title,
 }: {
-  'data-test-id'?: string;
-  children: ReactNode;
-  className?: string;
-  disabled?: boolean;
-  onClick: () => void;
-  small?: boolean;
-  title?: string;
+  'data-test-id'?: string
+  children: ReactNode
+  className?: string
+  disabled?: boolean
+  onClick: () => void
+  small?: boolean
+  title?: string
 }): JSX.Element {
   return (
     <button
@@ -44,8 +39,9 @@ export default function Button({
       onClick={onClick}
       title={title}
       aria-label={title}
-      {...(dataTestId && {'data-test-id': dataTestId})}>
+      {...(dataTestId && { 'data-test-id': dataTestId })}
+    >
       {children}
     </button>
-  );
+  )
 }

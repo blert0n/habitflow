@@ -6,15 +6,13 @@
  *
  */
 
-import type {JSX} from 'react';
+import { createPortal } from 'react-dom'
+import type { JSX, ReactNode } from 'react'
 
-import './FlashMessage.css';
-
-import {ReactNode} from 'react';
-import {createPortal} from 'react-dom';
+import './FlashMessage.css'
 
 export interface FlashMessageProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export default function FlashMessage({
@@ -27,5 +25,5 @@ export default function FlashMessage({
       </p>
     </div>,
     document.body,
-  );
+  )
 }

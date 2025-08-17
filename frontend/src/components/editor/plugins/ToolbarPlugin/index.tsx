@@ -152,6 +152,7 @@ function dropDownActiveClass(active: boolean) {
 function BlockFormatDropDown({
   editor,
   blockType,
+  // @ts-ignore fix this
   rootType,
   disabled = false,
 }: {
@@ -470,6 +471,7 @@ export default function ToolbarPlugin({
   setActiveEditor: Dispatch<LexicalEditor>
   setIsLinkEditMode: Dispatch<boolean>
 }): JSX.Element {
+  // @ts-ignore fix this
   const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(
     null,
   )
@@ -497,7 +499,7 @@ export default function ToolbarPlugin({
     (element: LexicalNode) => {
       if ($isCodeNode(element)) {
         const language = element.getLanguage()
-        updateToolbarState('codeLanguage', language)
+        updateToolbarState('codeLanguage', language!)
         const theme = element.getTheme()
         updateToolbarState('codeTheme', theme || '')
         return

@@ -1,5 +1,4 @@
 import { Fieldset, Flex, RadioGroup } from '@chakra-ui/react'
-import { system } from '@/lib/theme'
 
 interface RadioOption {
   value: string

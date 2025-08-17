@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Box, Flex, Spinner, Text } from '@chakra-ui/react'
-import { Circle, CircleCheck } from 'lucide-react'
+import { Circle } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { CheckMarkIcon } from '@/assets/icons/check-mark'
 

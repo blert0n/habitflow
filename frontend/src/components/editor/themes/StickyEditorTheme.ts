@@ -6,15 +6,15 @@
  *
  */
 
-import type { EditorThemeClasses } from "lexical";
+import baseTheme from './AppEditorTheme'
 
-import "./StickyEditorTheme.css";
+import type { EditorThemeClasses } from 'lexical'
 
-import baseTheme from "./AppEditor";
+import './StickyEditorTheme.css'
 
 const theme: EditorThemeClasses = {
   ...baseTheme,
-  paragraph: "StickyEditorTheme__paragraph",
-};
+  paragraph: 'StickyEditorTheme__paragraph',
+}
 
-export default theme;
+export default theme

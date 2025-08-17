@@ -6,20 +6,17 @@
  *
  */
 
-import type {JSX} from 'react';
+import type { JSX, ReactNode } from 'react'
 
-import './Dialog.css';
-
-import * as React from 'react';
-import {ReactNode} from 'react';
+import './Dialog.css'
 
 type Props = Readonly<{
-  'data-test-id'?: string;
-  children: ReactNode;
-}>;
+  'data-test-id'?: string
+  children: ReactNode
+}>
 
-export function DialogButtonsList({children}: Props): JSX.Element {
-  return <div className="DialogButtonsList">{children}</div>;
+export function DialogButtonsList({ children }: Props): JSX.Element {
+  return <div className="DialogButtonsList">{children}</div>
 }
 
 export function DialogActions({
@@ -30,5 +27,5 @@ export function DialogActions({
     <div className="DialogActions" data-test-id={dataTestId}>
       {children}
     </div>
-  );
+  )
 }

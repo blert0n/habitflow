@@ -6,16 +6,14 @@
  *
  */
 
-import type {JSX} from 'react';
+import { LinkPlugin as LexicalLinkPlugin } from '@lexical/react/LexicalLinkPlugin'
 
-import {LinkPlugin as LexicalLinkPlugin} from '@lexical/react/LexicalLinkPlugin';
-import * as React from 'react';
-
-import {validateUrl} from '../../utils/url';
+import { validateUrl } from '../../utils/url'
+import type { JSX } from 'react'
 
 type Props = {
-  hasLinkAttributes?: boolean;
-};
+  hasLinkAttributes?: boolean
+}
 
 export default function LinkPlugin({
   hasLinkAttributes = false,
@@ -32,5 +30,5 @@ export default function LinkPlugin({
           : undefined
       }
     />
-  );
+  )
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -91,7 +92,7 @@ function TextFormatFloatingToolbar({
       }
     }
   }
-  function mouseUpListener(e: MouseEvent) {
+  function mouseUpListener(_: MouseEvent) {
     if (popupCharStylesEditorRef?.current) {
       if (popupCharStylesEditorRef.current.style.pointerEvents !== 'auto') {
         popupCharStylesEditorRef.current.style.pointerEvents = 'auto'
