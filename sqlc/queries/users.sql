@@ -4,7 +4,7 @@ VALUES ($1, $2, $3, $4, $5)
 RETURNING *;
 
 -- name: GetUserByID :one
-SELECT * FROM users
+SELECT id,username,first_name,last_name,email FROM users
 WHERE id = $1;
 
 -- name: GetUserByEmail :one

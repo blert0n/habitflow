@@ -3,9 +3,11 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/blert0n/habitflow/database"
 	"github.com/blert0n/habitflow/routes"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -21,6 +23,22 @@ func main() {
 	}
 
 	r := gin.Default()
+
+	r.Use(cors.New(cors.Config{
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "http://localhost:5173"
+		},
+		AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders: []string{
+			"Origin",
+			"Content-Type",
+			"Accept",
+			"Authorization",
+			"X-Requested-With",
+		},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	api := r.Group("/api")
 

@@ -31,11 +31,13 @@ func GenerateJWT(userID int32) (string, error) {
 }
 
 func ParseJWT(tokenStr string) (*Claims, error) {
-
 	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		return nil, fmt.Errorf("JWT_SECRET not set")
+	}
 
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return jwtSecret, nil
+		return []byte(jwtSecret), nil
 	})
 
 	if err != nil {
@@ -44,7 +46,7 @@ func ParseJWT(tokenStr string) (*Claims, error) {
 
 	claims, ok := token.Claims.(*Claims)
 	if !ok || !token.Valid {
-		return nil, err
+		return nil, fmt.Errorf("invalid token")
 	}
 
 	return claims, nil

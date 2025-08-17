@@ -11,6 +11,7 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import './styles.css'
 import './components/editor/editor.css'
 import { Box } from '@chakra-ui/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import reportWebVitals from './reportWebVitals.ts'
 import App from './pages/index.tsx'
 import Calendar from './pages/calendar/index.tsx'
@@ -22,7 +23,11 @@ import Login from './pages/login/index.tsx'
 import SignUp from './pages/sign-up/index.tsx'
 import { NonAuthenticated } from './components/layout/non-authenticated.tsx'
 import ForgotPassword from './pages/forgot-password/index.tsx'
+import { Toaster } from './components/ui/toaster.tsx'
+import { AuthProvider } from './hooks/useAuth.tsx'
 // import { Categories } from './components/habits/categories.tsx'
+
+const queryClient = new QueryClient()
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -133,9 +138,14 @@ if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <Provider defaultTheme="light">
-        <RouterProvider router={router} />
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Provider defaultTheme="light">
+            <Toaster />
+            <RouterProvider router={router} />
+          </Provider>
+        </AuthProvider>
+      </QueryClientProvider>
     </StrictMode>,
   )
 }

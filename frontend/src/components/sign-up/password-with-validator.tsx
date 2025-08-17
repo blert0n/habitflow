@@ -1,6 +1,8 @@
 import { Box, Flex, Input, Text, useBreakpointValue } from '@chakra-ui/react'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import type { FieldErrors, UseFormRegister } from 'react-hook-form'
+import type { RegisterData } from './types'
 
 const MotionBox = motion.create(Box)
 
@@ -14,13 +16,14 @@ const rules = [
   },
 ]
 
-const isPasswordValid = (password: string) =>
-  rules.every((rule) => rule.test(password))
+interface P {
+  password: string
+  register: UseFormRegister<RegisterData>
+  errors: FieldErrors<RegisterData>
+}
 
-const PasswordWithValidator = () => {
-  const [password, setPassword] = useState('')
+const PasswordWithValidator = ({ password, register, errors }: P) => {
   const [showPopover, setShowPopover] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
 
   const popoverPosition = useBreakpointValue<'right' | 'top'>({
     base: 'top',
@@ -37,21 +40,29 @@ const PasswordWithValidator = () => {
           type="password"
           placeholder="Enter your password"
           size="md"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value)
-            setShowPopover(e.target.value.length > 0)
-          }}
-          ref={inputRef}
+          width="100%"
+          id="password"
+          aria-invalid={errors.password ? 'true' : 'false'}
+          {...register('password', {
+            onChange: (e) => {
+              const value = e.target.value
+              setShowPopover(value.length > 0)
+            },
+            validate: rules.reduce(
+              (acc: Record<string, (pw: string) => true | string>, rule) => {
+                acc[rule.label] = (pw: string) => rule.test(pw) || rule.label
+                return acc
+              },
+              {},
+            ),
+          })}
           onFocus={() => {
             setShowPopover(password.length > 0)
           }}
           onBlur={() => {
             setShowPopover(false)
           }}
-          width="100%"
         />
-
         <AnimatePresence>
           {showPopover && (
             <MotionBox
@@ -88,11 +99,6 @@ const PasswordWithValidator = () => {
                   </Text>
                 )
               })}
-              {isPasswordValid(password) && (
-                <Text fontSize={12} color="green.500" mt={2}>
-                  Strong password
-                </Text>
-              )}
             </MotionBox>
           )}
         </AnimatePresence>

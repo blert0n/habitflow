@@ -52,7 +52,7 @@ func SignUp(c *gin.Context) {
 		FirstName: pgtype.Text{String: req.Name, Valid: true},
 		LastName:  pgtype.Text{String: req.Lastname, Valid: true},
 		Email:     req.Email,
-		Username:  req.Username,
+		Username:  req.Email,
 		Password:  hashedPassword,
 	})
 

@@ -1,8 +1,25 @@
 import { Button, Flex, IconButton, Input, Link, Text } from '@chakra-ui/react'
+import { useState } from 'react'
 import { TextWithDivider } from '../ui/text-with-divider'
 import { GoogleIcon } from '@/assets/icons/google'
+import { useAuth } from '@/hooks/useAuth'
+
+interface LoginCredentials {
+  email: string
+  password: string
+}
 
 const Login = () => {
+  const { signIn, isLoading } = useAuth()
+  const [credentials, setCredentials] = useState<LoginCredentials>({
+    email: '',
+    password: '',
+  })
+
+  const handleInputChange = (field: string, value: string) => {
+    setCredentials((prev) => ({ ...prev, [field]: value }))
+  }
+
   return (
     <Flex
       className="app-box-shadow"
@@ -40,13 +57,27 @@ const Login = () => {
           <Text color="gray.700" fontSize={14}>
             Email address
           </Text>
-          <Input type="email" placeholder="Enter your email" size="md" />
+          <Input
+            type="email"
+            placeholder="Enter your email"
+            size="md"
+            onChange={(e) => {
+              handleInputChange('email', e.target.value)
+            }}
+          />
         </Flex>
         <Flex direction="column" gap={1 / 2}>
           <Text color="gray.700" fontSize={14}>
             Password
           </Text>
-          <Input type="password" placeholder="Enter your password" size="md" />
+          <Input
+            type="password"
+            placeholder="Enter your password"
+            size="md"
+            onChange={(e) => {
+              handleInputChange('password', e.target.value)
+            }}
+          />
         </Flex>
         <Flex direction="column" gap={1 / 2}>
           <Link
@@ -62,7 +93,15 @@ const Login = () => {
             Forgot your password?
           </Link>
         </Flex>
-        <Button variant="primary" size="sm" mt={4}>
+        <Button
+          loading={isLoading}
+          variant="primary"
+          size="sm"
+          mt={4}
+          onClick={async () => {
+            await signIn(credentials.email, credentials.password)
+          }}
+        >
           Sign in
         </Button>
         <Flex mt={4}>

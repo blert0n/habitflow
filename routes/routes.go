@@ -22,5 +22,7 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 
 	rg.POST("/auth/sign-in", auth.SignIn)
 	rg.POST("/auth/sign-up", auth.SignUp)
+	rg.GET("/auth/sign-out", auth.SignOut)
+	rg.GET("/auth/me", auth.Me)
 
 }

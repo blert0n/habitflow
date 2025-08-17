@@ -5,7 +5,8 @@ import { Card } from '@chakra-ui/react/card'
 import { Flex } from '@chakra-ui/react/flex'
 import { Image } from '@chakra-ui/react/image'
 import { Link } from '@chakra-ui/react/link'
-import { useBreakpointValue } from '@chakra-ui/react'
+import { Menu, Portal, useBreakpointValue } from '@chakra-ui/react'
+import { useAuth } from '@/hooks/useAuth'
 
 interface P {
   isLoggedIn?: boolean
@@ -13,6 +14,7 @@ interface P {
 
 const Header = ({ isLoggedIn = true }: P) => {
   const isMobile = useBreakpointValue({ base: true, sm: false })
+  const { signOut } = useAuth()
 
   return (
     <Card.Root
@@ -42,12 +44,32 @@ const Header = ({ isLoggedIn = true }: P) => {
           </Flex>
           {isLoggedIn && (
             <Flex alignItems="center" gap="8px">
-              <AvatarGroup>
-                <Avatar.Root>
-                  <Avatar.Fallback />
-                  <Avatar.Image />
-                </Avatar.Root>
-              </AvatarGroup>
+              <Menu.Root>
+                <Menu.Trigger asChild>
+                  <AvatarGroup cursor="pointer">
+                    <Avatar.Root>
+                      <Avatar.Fallback />
+                      <Avatar.Image />
+                    </Avatar.Root>
+                  </AvatarGroup>
+                </Menu.Trigger>
+                <Portal>
+                  <Menu.Positioner>
+                    <Menu.Content>
+                      <Menu.Item
+                        value="signOut"
+                        color="fg.error"
+                        _hover={{ bg: 'bg.error', color: 'fg.error' }}
+                        onClick={() => {
+                          signOut()
+                        }}
+                      >
+                        Sign out
+                      </Menu.Item>
+                    </Menu.Content>
+                  </Menu.Positioner>
+                </Portal>
+              </Menu.Root>
             </Flex>
           )}
         </Flex>
