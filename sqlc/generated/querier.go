@@ -25,7 +25,7 @@ type Querier interface {
 	ListHabitsByUser(ctx context.Context, userid pgtype.Int4) ([]Habits, error)
 	ListUsers(ctx context.Context) ([]Users, error)
 	SeedCategories(ctx context.Context, arg SeedCategoriesParams) error
-	SeedUser(ctx context.Context, arg SeedUserParams) error
+	SeedUser(ctx context.Context, arg SeedUserParams) (Users, error)
 	UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Category, error)
 	UpdateHabit(ctx context.Context, arg UpdateHabitParams) (Habits, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (Users, error)

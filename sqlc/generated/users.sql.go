@@ -96,10 +96,12 @@ func (q *Queries) ListUsers(ctx context.Context) ([]Users, error) {
 	return items, nil
 }
 
-const seedUser = `-- name: SeedUser :exec
+const seedUser = `-- name: SeedUser :one
 INSERT INTO users (username, email, password)
 VALUES ($1, $2, $3)
-ON CONFLICT (username) DO NOTHING
+ON CONFLICT (username) DO UPDATE
+SET username = EXCLUDED.username
+RETURNING id, username, email, password, createdat, updatedat
 `
 
 type SeedUserParams struct {
@@ -108,9 +110,18 @@ type SeedUserParams struct {
 	Password string `json:"password"`
 }
 
-func (q *Queries) SeedUser(ctx context.Context, arg SeedUserParams) error {
-	_, err := q.db.Exec(ctx, seedUser, arg.Username, arg.Email, arg.Password)
-	return err
+func (q *Queries) SeedUser(ctx context.Context, arg SeedUserParams) (Users, error) {
+	row := q.db.QueryRow(ctx, seedUser, arg.Username, arg.Email, arg.Password)
+	var i Users
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Password,
+		&i.Createdat,
+		&i.Updatedat,
+	)
+	return i, err
 }
 
 const updateUser = `-- name: UpdateUser :one

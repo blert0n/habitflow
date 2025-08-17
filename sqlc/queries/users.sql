@@ -24,7 +24,10 @@ RETURNING *;
 DELETE FROM users
 WHERE id = $1;
 
--- name: SeedUser :exec
+-- name: SeedUser :one
 INSERT INTO users (username, email, password)
 VALUES ($1, $2, $3)
-ON CONFLICT (username) DO NOTHING;
+ON CONFLICT (username) DO UPDATE
+SET username = EXCLUDED.username
+RETURNING *;
+

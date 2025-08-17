@@ -10,11 +10,12 @@ import (
 func Seed(q *db.Queries) error {
 	ctx := context.Background()
 
-	user, err := q.CreateUser(ctx, db.CreateUserParams{
+	user, err := q.SeedUser(ctx, db.SeedUserParams{
 		Username: "demo",
 		Email:    "demo@habitflow.com",
 		Password: "demo",
 	})
+
 	if err != nil {
 		return err
 	}
