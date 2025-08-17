@@ -121,6 +121,7 @@ export class MentionNode extends TextNode {
 
 export function $createMentionNode(
   mentionName: string,
+  // @ts-expect-error fix later
   textContent?: string,
 ): MentionNode {
   const mentionNode = new MentionNode(mentionName, (textContent = mentionName))
