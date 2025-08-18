@@ -84,11 +84,12 @@ func (q *Queries) GetHabitByID(ctx context.Context, id int32) (Habits, error) {
 
 const listHabits = `-- name: ListHabits :many
 SELECT id, name, description, createdat, updatedat, categoryid, color, frequency, userid FROM habits
+WHERE userId = $1
 ORDER BY id
 `
 
-func (q *Queries) ListHabits(ctx context.Context) ([]Habits, error) {
-	rows, err := q.db.Query(ctx, listHabits)
+func (q *Queries) ListHabits(ctx context.Context, userid pgtype.Int4) ([]Habits, error) {
+	rows, err := q.db.Query(ctx, listHabits, userid)
 	if err != nil {
 		return nil, err
 	}
@@ -151,6 +152,37 @@ func (q *Queries) ListHabitsByUser(ctx context.Context, userid pgtype.Int4) ([]H
 		return nil, err
 	}
 	return items, nil
+}
+
+const seedHabit = `-- name: SeedHabit :exec
+INSERT INTO habits (id, name, description, categoryId, color, frequency, userId)
+SELECT $1, $2, $3, $4, $5, $6, $7
+WHERE NOT EXISTS (
+    SELECT 1 FROM habits WHERE id = $1
+)
+`
+
+type SeedHabitParams struct {
+	ID          int32       `json:"id"`
+	Name        string      `json:"name"`
+	Description pgtype.Text `json:"description"`
+	Categoryid  pgtype.Int4 `json:"categoryid"`
+	Color       pgtype.Text `json:"color"`
+	Frequency   pgtype.Text `json:"frequency"`
+	Userid      pgtype.Int4 `json:"userid"`
+}
+
+func (q *Queries) SeedHabit(ctx context.Context, arg SeedHabitParams) error {
+	_, err := q.db.Exec(ctx, seedHabit,
+		arg.ID,
+		arg.Name,
+		arg.Description,
+		arg.Categoryid,
+		arg.Color,
+		arg.Frequency,
+		arg.Userid,
+	)
+	return err
 }
 
 const updateHabit = `-- name: UpdateHabit :one

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { Box, Flex, IconButton } from '@chakra-ui/react'
 import { ArrowLeft } from 'lucide-react'
@@ -11,15 +11,19 @@ import { FrequencyFields } from './frequency'
 import { ScheduleFields } from './schedule-fields'
 import { EndsOnFields } from './ends-on-fields'
 import { ActionButtons } from './action-buttons'
-import type { AllowedDayString, HabitForm } from '../types'
+import type { AllowedDayString, HabitForm } from '@/types/habits'
 import type { WeekdayIndex } from '@/util/dates'
 import { weekdayMap } from '@/util/dates'
 import { buildRRule } from '@/util/rrule'
 import { useCategories } from '@/hooks/useCategories'
 
 export const Create = ({ onBack }: { onBack: () => void }) => {
-  const [endsOn, setEndsOn] = useState<'Never' | 'On' | 'After'>('Never')
-  const { handleSubmit, control, setValue } = useForm<HabitForm>({
+  const {
+    handleSubmit,
+    control,
+    setValue,
+    formState: { isValid, isSubmitting, isLoading },
+  } = useForm<HabitForm>({
     defaultValues: {
       name: '',
       description: '',
@@ -30,6 +34,10 @@ export const Create = ({ onBack }: { onBack: () => void }) => {
       frequency: 'daily',
       daysOfWeek: [],
       color: '#2563eb',
+      count: 0,
+      endsOn: 'Never',
+      until: null,
+      excludedDates: [],
     },
     shouldUnregister: false,
   })
@@ -41,6 +49,8 @@ export const Create = ({ onBack }: { onBack: () => void }) => {
   const category = useWatch({ control, name: 'category' })
   const frequency = useWatch({ control, name: 'frequency' })
   const daysOfWeek = useWatch({ control, name: 'daysOfWeek' })
+  const endsOn = useWatch({ control, name: 'endsOn' })
+  const excludedDates = useWatch({ control, name: 'excludedDates' })
 
   const selectedCategory = getCategory(category)
 
@@ -50,6 +60,9 @@ export const Create = ({ onBack }: { onBack: () => void }) => {
       time: data.time,
       days: data.daysOfWeek,
       frequency: data.frequency,
+      endsOn: data.endsOn,
+      count: data.count,
+      until: data.until,
     })
     console.log('Saving Habit:', { ...data, rrule })
   }
@@ -100,10 +113,7 @@ export const Create = ({ onBack }: { onBack: () => void }) => {
         isDaily={frequency === 'daily'}
       />
 
-      <BasicInfoFields
-        control={control}
-        onCategorySelect={(value) => setValue('category', value)}
-      />
+      <BasicInfoFields control={control} />
 
       <Box bg="white" borderRadius="lg" borderWidth={1} borderColor="gray.200">
         <FrequencyFields
@@ -116,12 +126,17 @@ export const Create = ({ onBack }: { onBack: () => void }) => {
 
         <ScheduleFields control={control} />
 
-        <EndsOnFields endsOn={endsOn} setEndsOn={setEndsOn} />
+        <EndsOnFields ends={endsOn} control={control} />
 
-        <ExcludeDates />
+        <ExcludeDates excludedDates={excludedDates} control={control} />
       </Box>
 
-      <ActionButtons onSubmit={handleSubmit(onSubmit)} onBack={onBack} />
+      <ActionButtons
+        onSubmit={handleSubmit(onSubmit)}
+        onBack={onBack}
+        isValid={isValid}
+        isLoading={isSubmitting || isLoading}
+      />
     </Flex>
   )
 }

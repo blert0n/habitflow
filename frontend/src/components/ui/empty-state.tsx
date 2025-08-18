@@ -1,0 +1,65 @@
+import { Box, Flex, IconButton, Text } from '@chakra-ui/react'
+import { List, Plus } from 'lucide-react'
+
+interface P {
+  title?: string
+  description?: string
+  actionLabel?: string
+  onAction?: () => void
+}
+
+const AppEmptyState = ({
+  title = 'Nothing here yet!',
+  description = 'Start by creating your first item and begin your journey.',
+  actionLabel = 'Create',
+  onAction,
+}: P) => {
+  return (
+    <Flex direction="column" gap={4} width="full">
+      <Flex justifyContent="center">
+        <Box
+          width={32}
+          height={32}
+          rounded="full"
+          bg="#e6effc"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <List size={48} color="#a1a1aa" />
+        </Box>
+      </Flex>
+
+      <Text textAlign="center" color="gray.700">
+        {title}
+      </Text>
+
+      <Flex justifyContent="center" width="full">
+        <Text
+          textAlign="center"
+          color="gray.500"
+          maxWidth="400px"
+          fontSize={14}
+        >
+          {description}
+        </Text>
+      </Flex>
+
+      {onAction && (
+        <Flex justifyContent="center" width="full">
+          <IconButton
+            p={4}
+            variant="primary"
+            borderRadius="lg"
+            onClick={onAction}
+          >
+            <Plus />
+            {actionLabel}
+          </IconButton>
+        </Flex>
+      )}
+    </Flex>
+  )
+}
+
+export { AppEmptyState }

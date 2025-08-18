@@ -1,7 +1,7 @@
 import { Flex, Text } from '@chakra-ui/react'
-import { ALL_ALLOWED_DAYS } from './types'
 import { normalizeDay } from './helpers'
-import type { AllowedDayString } from './types'
+import type { AllowedDayString } from '@/types/habits'
+import { ALL_ALLOWED_DAYS } from '@/types/habits'
 import { WEEK_DAYS } from '@/util/dates'
 
 interface ScheduledWeekDaysProps {

@@ -1,7 +1,7 @@
 import { Button, Flex, Text } from '@chakra-ui/react'
 import { memo, useMemo } from 'react'
 import { ScheduledWeekDays } from '../scheduled-week-days'
-import type { AllowedDayString } from '../types'
+import type { AllowedDayString } from '@/types/habits'
 import type { WeekdayIndex } from '@/util/dates'
 import { weekdayMap } from '@/util/dates'
 

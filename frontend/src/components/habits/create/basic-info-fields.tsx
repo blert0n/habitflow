@@ -2,25 +2,49 @@ import { Box, Flex, IconButton, Input, Text, Textarea } from '@chakra-ui/react'
 import React from 'react'
 import { useController } from 'react-hook-form'
 import type { Control } from 'react-hook-form'
-import type { HabitForm } from '../types'
+import type { HabitForm } from '@/types/habits'
 import { useCategories } from '@/hooks/useCategories'
 import { AppColorPicker } from '@/components/ui/color-picker'
+import { RenderValidationError } from '@/components/ui/validation-error'
 
 interface BasicInfoFieldsProps {
   control: Control<HabitForm, any, HabitForm>
-  onCategorySelect: (id: number) => void
 }
 
 export const BasicInfoFields = React.memo(
-  ({ control, onCategorySelect }: BasicInfoFieldsProps) => {
-    const { field: nameField } = useController({ name: 'name', control })
-    const { field: selectedCategory } = useController({
-      name: 'category',
+  ({ control }: BasicInfoFieldsProps) => {
+    const { field: nameField, fieldState: nameFieldState } = useController({
+      name: 'name',
       control,
+      rules: {
+        required: { value: true, message: 'Name is required' },
+        minLength: { value: 1, message: 'Name is required' },
+      },
     })
-    const { field: descriptionField } = useController({
-      name: 'description',
+    const { field: selectedCategory, fieldState: categoryFieldState } =
+      useController({
+        name: 'category',
+        control,
+        rules: {
+          min: { value: 1, message: 'A category must be selected' },
+        },
+      })
+    const { field: descriptionField, fieldState: descriptionFieldState } =
+      useController({
+        name: 'description',
+        control,
+        rules: {
+          required: { value: true, message: 'Description is required' },
+          minLength: { value: 1, message: 'Description is required' },
+        },
+      })
+
+    const { field: colorField } = useController({
+      name: 'color',
       control,
+      rules: {
+        required: { value: true, message: 'Color is required' },
+      },
     })
 
     const { categories, backgroundGradient } = useCategories()
@@ -41,7 +65,13 @@ export const BasicInfoFields = React.memo(
           <Text color="gray.700" fontSize={14}>
             Habit name
           </Text>
-          <Input {...nameField} placeholder="Habit Name" size="sm" />
+          <Input
+            {...nameField}
+            placeholder="Habit Name"
+            size="sm"
+            aria-invalid={nameFieldState.error ? 'true' : 'false'}
+          />
+          <RenderValidationError error={nameFieldState.error} />
         </Flex>
         <Flex direction="column" gap={1}>
           <Text color="gray.700" fontSize={14}>
@@ -52,13 +82,19 @@ export const BasicInfoFields = React.memo(
             placeholder="Description"
             size="sm"
             rows={3}
+            aria-invalid={descriptionFieldState.error ? 'true' : 'false'}
           />
+          <RenderValidationError error={descriptionFieldState.error} />
         </Flex>
         <Flex direction="column" gap={1}>
           <Text color="gray.700" fontSize={14}>
             Choose category
           </Text>
-          <Flex wrap="wrap" gap={2}>
+          <Flex
+            wrap="wrap"
+            gap={2}
+            aria-invalid={categoryFieldState.error ? 'true' : 'false'}
+          >
             {categories.map((category) => (
               <Box
                 key={category.id}
@@ -72,7 +108,7 @@ export const BasicInfoFields = React.memo(
                 justifyContent="center"
                 cursor="pointer"
                 onClick={() => {
-                  onCategorySelect(category.id)
+                  selectedCategory.onChange(category.id)
                 }}
               >
                 <IconButton
@@ -93,12 +129,18 @@ export const BasicInfoFields = React.memo(
               </Box>
             ))}
           </Flex>
+          <RenderValidationError error={categoryFieldState.error} />
         </Flex>
         <Flex direction="column" gap={1} mt={2}>
           <Text color="gray.700" fontSize={14}>
             Choose habit color
           </Text>
-          <AppColorPicker />
+          <AppColorPicker
+            value={colorField.value}
+            onChange={(color) => {
+              colorField.onChange(color.toString('hex'))
+            }}
+          />
         </Flex>
       </Box>
     )

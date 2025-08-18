@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/blert0n/habitflow/auth"
+	"github.com/blert0n/habitflow/controllers/auth"
 	"github.com/blert0n/habitflow/database"
 	"github.com/blert0n/habitflow/routes"
 	"github.com/gin-contrib/cors"

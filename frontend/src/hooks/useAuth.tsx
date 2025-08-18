@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const checkAuth = async () => {
       setIsLoading(true)
       try {
-        const response = await client('/auth/me', { credentials: 'include' })
+        const response = await client('/auth/me')
         const u = response.data
         setUser({
           id: u.userId,

@@ -22,9 +22,10 @@ type Querier interface {
 	GetUserByEmail(ctx context.Context, email string) (Users, error)
 	GetUserByID(ctx context.Context, id int32) (GetUserByIDRow, error)
 	ListCategories(ctx context.Context) ([]Category, error)
-	ListHabits(ctx context.Context) ([]Habits, error)
+	ListHabits(ctx context.Context, userid pgtype.Int4) ([]Habits, error)
 	ListHabitsByUser(ctx context.Context, userid pgtype.Int4) ([]Habits, error)
 	SeedCategories(ctx context.Context, arg SeedCategoriesParams) error
+	SeedHabit(ctx context.Context, arg SeedHabitParams) error
 	SeedUser(ctx context.Context, arg SeedUserParams) (Users, error)
 	UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Category, error)
 	UpdateHabit(ctx context.Context, arg UpdateHabitParams) (Habits, error)

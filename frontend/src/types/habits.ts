@@ -1,4 +1,5 @@
 import type { WeekdayIndex } from '@/util/dates'
+import type dayjs from 'dayjs'
 import type { Dayjs } from 'dayjs'
 
 export type AllowedDayString =
@@ -44,4 +45,22 @@ export interface HabitForm {
   frequency: 'daily' | 'weekly'
   daysOfWeek: Array<WeekdayIndex>
   color: string
+  endsOn: 'Never' | 'On' | 'After'
+  until?: dayjs.Dayjs | null
+  count?: number | null
+  excludedDates: Array<Dayjs>
+}
+
+export interface Habit {
+  id: number
+  name: string
+  description: string
+  createdat: string
+  updatedat: string
+  categoryid: number
+  color: string
+  frequency: string
+  userid: number
+  isDaily: boolean
+  selectedDays: Array<AllowedDayString> | null
 }

@@ -2,7 +2,7 @@ import { Flex, IconButton, Progress, Text } from '@chakra-ui/react'
 import { EllipsisVertical } from 'lucide-react'
 import { HeaderWithText } from '../ui/header-with-text'
 import { ScheduledWeekDays } from './scheduled-week-days'
-import type { AllowedDayString } from './types'
+import type { AllowedDayString } from '@/types/habits'
 import type { CategoryWithIcon } from '@/hooks/useCategories'
 
 interface P {
@@ -41,7 +41,7 @@ const ListHabit = ({
           >
             {category?.icon}
           </IconButton>
-          <Flex justify="space-between" height="full">
+          <Flex justify="space-between" height="full" wordBreak="break-all">
             <HeaderWithText
               title={title || 'Habit name'}
               text={text}

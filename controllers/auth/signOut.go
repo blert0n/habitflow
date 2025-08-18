@@ -8,9 +8,9 @@ import (
 )
 
 func SignOut(c *gin.Context) {
-	utils.SetCookieDefaultConfig(c, "auth_token", "", -1, "/")
-	utils.SetCookieDefaultConfig(c, "oauth_state", "", -1, "/")
 	utils.SetCookieDefaultConfig(c, "oauth_redirect", "", -1, "/")
+	utils.SetCookieDefaultConfig(c, "oauth_state", "", -1, "/")
+	utils.SetCookieDefaultConfig(c, "auth_token", "", -1, "/")
 
 	c.JSON(http.StatusOK, utils.APIResponse{
 		Success: true,

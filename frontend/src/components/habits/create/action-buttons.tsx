@@ -4,10 +4,12 @@ import { memo } from 'react'
 interface ActionButtonsProps {
   onSubmit: () => void
   onBack: () => void
+  isValid: boolean
+  isLoading: boolean
 }
 
 export const ActionButtons = memo(
-  ({ onSubmit, onBack }: ActionButtonsProps) => {
+  ({ onSubmit, onBack, isValid, isLoading }: ActionButtonsProps) => {
     return (
       <Flex gap={2} mt={2}>
         <Button
@@ -16,6 +18,7 @@ export const ActionButtons = memo(
           px={4}
           onClick={onSubmit}
           type="submit"
+          disabled={!isValid || isLoading}
         >
           Create habit
         </Button>

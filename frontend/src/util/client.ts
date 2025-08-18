@@ -18,7 +18,6 @@ export async function client(path: string, init: RequestInit = {}) {
     const data = await res.json().catch(() => ({}))
 
     if (!res.ok || data.success === false) {
-      // Use 'error' if present, fallback to statusText
       const errorMessage = data.error || data.message || res.statusText
       throw new Error(errorMessage)
     }

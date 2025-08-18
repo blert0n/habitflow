@@ -3,8 +3,10 @@ package routes
 import (
 	"net/http"
 
-	"github.com/blert0n/habitflow/auth"
+	"github.com/blert0n/habitflow/controllers/auth"
+	"github.com/blert0n/habitflow/controllers/habits"
 	"github.com/blert0n/habitflow/database"
+	"github.com/blert0n/habitflow/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,6 +22,7 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 		ctx.JSON(http.StatusOK, categories)
 	})
 
+	rg.GET("/habits", middleware.IsAuthenticated(), habits.List)
 	rg.POST("/auth/sign-in", auth.SignIn)
 	rg.POST("/auth/sign-up", auth.SignUp)
 	rg.GET("/auth/sign-out", auth.SignOut)

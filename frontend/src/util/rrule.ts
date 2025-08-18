@@ -1,7 +1,7 @@
 import { RRule, RRuleSet, rrulestr } from 'rrule'
 import dayjs from 'dayjs'
 import { weekdayMap } from './dates'
-import type { Dayjs } from 'dayjs'
+import type { Options } from 'rrule'
 import type { WeekdayIndex } from './dates'
 
 interface BuildRRuleInput {
@@ -16,7 +16,9 @@ interface BuildRRuleInput {
   days: Array<WeekdayIndex>
   startDate?: dayjs.Dayjs
   time?: dayjs.Dayjs
-  exdates?: Array<Dayjs>
+  endsOn?: 'Never' | 'On' | 'After'
+  until?: dayjs.Dayjs | null
+  count?: number | null
 }
 
 export const buildRRule = ({
@@ -24,7 +26,9 @@ export const buildRRule = ({
   days = [],
   startDate,
   time,
-  exdates = [],
+  endsOn = 'Never',
+  until,
+  count,
 }: BuildRRuleInput) => {
   const defaultDate = dayjs()
   const defaultTime = dayjs().hour(9).minute(0).second(0).millisecond(0)
@@ -39,24 +43,24 @@ export const buildRRule = ({
     .millisecond(0)
     .toDate()
 
-  let rule: RRule
+  const ruleOptions: Partial<Options> = { dtstart }
+
   if (frequency === 'daily') {
-    rule = new RRule({ freq: RRule.DAILY, dtstart })
+    ruleOptions.freq = RRule.DAILY
   } else {
-    rule = new RRule({
-      freq: RRule.WEEKLY,
-      byweekday: days.map((d) => weekdayMap[d].rule),
-      dtstart,
-    })
+    ruleOptions.freq = RRule.WEEKLY
+    ruleOptions.byweekday = days.map((d) => weekdayMap[d].rule)
   }
 
+  if (endsOn === 'On' && until) {
+    ruleOptions.until = until.endOf('day').toDate()
+  } else if (endsOn === 'After' && count) {
+    ruleOptions.count = count
+  }
+
+  const rule = new RRule(ruleOptions)
   const ruleSet = new RRuleSet()
-
   ruleSet.rrule(rule)
-
-  exdates.forEach((exdate) => {
-    ruleSet.exdate(exdate.toDate())
-  })
 
   return ruleSet.toString()
 }
@@ -86,5 +90,32 @@ export function isDailyNoExceptions(rruleString: string): boolean {
     // Invalid rrule string
     console.error('Failed to parse RRule string:', error)
     return false
+  }
+}
+
+/**
+ * Extracts the days of the week from an RRule string.
+ * @param rruleString - The full rrule string including DTSTART and RRULE lines.
+ * @returns Array of weekdays as strings, e.g. ['MO', 'WE', 'FR']. Returns empty array if none.
+ */
+export function getWeekdaysFromRRule(rruleString: string): Array<string> {
+  try {
+    const rule = rrulestr(rruleString)
+
+    let weekdays: Array<number> = []
+
+    if (rule instanceof RRuleSet) {
+      rule.rrules().forEach((r) => {
+        weekdays.push(...r.options.byweekday)
+      })
+    } else {
+      weekdays = rule.options.byweekday
+    }
+
+    return weekdays.map((wd) => wd.toString())
+  } catch (error) {
+    console.log(rruleString, 'rruleStringFailed')
+    console.error('Failed to parse RRule string:', error)
+    return []
   }
 }
