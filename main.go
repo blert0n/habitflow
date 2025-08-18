@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/blert0n/habitflow/auth"
 	"github.com/blert0n/habitflow/database"
 	"github.com/blert0n/habitflow/routes"
 	"github.com/gin-contrib/cors"
@@ -21,6 +22,8 @@ func main() {
 	if err := database.InitDB(); err != nil {
 		log.Fatalf("Failed to connect to db: %v", err)
 	}
+
+	auth.InitGoogleOAuth()
 
 	r := gin.Default()
 

@@ -2,7 +2,6 @@ package auth
 
 import (
 	"net/http"
-	"os"
 
 	"github.com/blert0n/habitflow/database"
 	"github.com/blert0n/habitflow/utils"
@@ -10,8 +9,6 @@ import (
 )
 
 func SignIn(c *gin.Context) {
-	env := os.Getenv("GO_ENV")
-
 	var req struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -52,25 +49,7 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	cookieDomain := ""
-	cookieSecure := false
-	cookieHttpOnly := false
-
-	if env == "production" {
-		cookieDomain = os.Getenv("URL")
-		cookieSecure = true
-		cookieHttpOnly = true
-	}
-
-	c.SetCookie(
-		"auth_token",
-		token,
-		3600*24,
-		"/",
-		cookieDomain,
-		cookieSecure,
-		cookieHttpOnly,
-	)
+	utils.SetCookieDefaultConfig(c, "auth_token", token, 3600*24, "/")
 
 	c.JSON(http.StatusOK, utils.APIResponse{
 		Success: true,

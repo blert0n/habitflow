@@ -194,7 +194,18 @@ const SignUp = () => {
             <TextWithDivider text="Or continue with" />
           </Flex>
           <Flex gap={4} alignItems="center" my={2}>
-            <IconButton variant="outline" p={2} flex={1}>
+            <IconButton
+              variant="outline"
+              p={2}
+              flex={1}
+              onClick={() => {
+                const backendUrl = import.meta.env.VITE_API_URL
+                const frontendUrl = encodeURIComponent(
+                  import.meta.env.VITE_FRONTEND_URL,
+                )
+                window.location.href = `${backendUrl}/auth/google/login?redirect_uri=${frontendUrl}`
+              }}
+            >
               <GoogleIcon />
               <Text color="gray.700" fontSize={12}>
                 Google
