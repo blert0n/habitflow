@@ -14,7 +14,7 @@ import (
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (first_name,last_name, username, email, password)
 VALUES ($1, $2, $3, $4, $5)
-RETURNING id, username, first_name, last_name, email, password, createdat, updatedat
+RETURNING id, username, email, password, createdat, updatedat, first_name, last_name
 `
 
 type CreateUserParams struct {
@@ -37,12 +37,12 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (Users, 
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
-		&i.FirstName,
-		&i.LastName,
 		&i.Email,
 		&i.Password,
 		&i.Createdat,
 		&i.Updatedat,
+		&i.FirstName,
+		&i.LastName,
 	)
 	return i, err
 }
@@ -58,7 +58,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, username, first_name, last_name, email, password, createdat, updatedat FROM users
+SELECT id, username, email, password, createdat, updatedat, first_name, last_name FROM users
 WHERE email = $1
 `
 
@@ -68,12 +68,12 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (Users, erro
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
-		&i.FirstName,
-		&i.LastName,
 		&i.Email,
 		&i.Password,
 		&i.Createdat,
 		&i.Updatedat,
+		&i.FirstName,
+		&i.LastName,
 	)
 	return i, err
 }
@@ -109,7 +109,7 @@ INSERT INTO users (username, email, password)
 VALUES ($1, $2, $3)
 ON CONFLICT (username) DO UPDATE
 SET username = EXCLUDED.username
-RETURNING id, username, first_name, last_name, email, password, createdat, updatedat
+RETURNING id, username, email, password, createdat, updatedat, first_name, last_name
 `
 
 type SeedUserParams struct {
@@ -124,12 +124,12 @@ func (q *Queries) SeedUser(ctx context.Context, arg SeedUserParams) (Users, erro
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
-		&i.FirstName,
-		&i.LastName,
 		&i.Email,
 		&i.Password,
 		&i.Createdat,
 		&i.Updatedat,
+		&i.FirstName,
+		&i.LastName,
 	)
 	return i, err
 }
@@ -141,7 +141,7 @@ SET username = $2,
     password = $4,
     updatedAt = CURRENT_TIMESTAMP
 WHERE id = $1
-RETURNING id, username, first_name, last_name, email, password, createdat, updatedat
+RETURNING id, username, email, password, createdat, updatedat, first_name, last_name
 `
 
 type UpdateUserParams struct {
@@ -162,12 +162,12 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (Users, 
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
-		&i.FirstName,
-		&i.LastName,
 		&i.Email,
 		&i.Password,
 		&i.Createdat,
 		&i.Updatedat,
+		&i.FirstName,
+		&i.LastName,
 	)
 	return i, err
 }

@@ -1,6 +1,16 @@
 -- name: CreateHabit :one
-INSERT INTO habits (name, description, categoryId, color, frequency, userId)
-VALUES ($1, $2, $3, $4, $5, $6)
+INSERT INTO habits (
+    name,
+    description,
+    categoryId,
+    color,
+    frequency,
+    userId,
+    createdAt,
+    updatedAt
+) VALUES (
+    $1, $2, $3, $4, $5, $6, NOW(), NOW()
+)
 RETURNING *;
 
 -- name: GetHabitByID :one
@@ -30,11 +40,19 @@ RETURNING *;
 
 -- name: DeleteHabit :exec
 DELETE FROM habits
-WHERE id = $1;
+WHERE id = $1 AND userId = $2;
 
 -- name: SeedHabit :exec
 INSERT INTO habits (id, name, description, categoryId, color, frequency, userId)
 SELECT $1, $2, $3, $4, $5, $6, $7
 WHERE NOT EXISTS (
     SELECT 1 FROM habits WHERE id = $1
+);
+
+-- name: CreateHabitExcludedDate :exec
+INSERT INTO habit_excluded_dates (
+    habit_id,
+    excluded_date
+) VALUES (
+    $1, $2
 );

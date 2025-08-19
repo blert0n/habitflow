@@ -1,6 +1,7 @@
-import { Flex, IconButton, Progress, Text } from '@chakra-ui/react'
+import { Flex, IconButton, Menu, Progress, Text } from '@chakra-ui/react'
 import { EllipsisVertical } from 'lucide-react'
 import { HeaderWithText } from '../ui/header-with-text'
+import { AppMenu } from '../ui/menu'
 import { ScheduledWeekDays } from './scheduled-week-days'
 import type { AllowedDayString } from '@/types/habits'
 import type { CategoryWithIcon } from '@/hooks/useCategories'
@@ -11,6 +12,7 @@ interface P {
   category?: CategoryWithIcon
   selectedDays?: Array<AllowedDayString>
   isDaily?: boolean
+  onDelete?: () => void
 }
 
 const ListHabit = ({
@@ -19,6 +21,7 @@ const ListHabit = ({
   category,
   selectedDays,
   isDaily = false,
+  onDelete,
 }: P) => {
   return (
     <Flex
@@ -32,6 +35,7 @@ const ListHabit = ({
       direction="column"
       gap={2}
       className="app-box-shadow"
+      justifyContent="space-between"
     >
       <Flex justify="space-between" alignItems="center" width="full">
         <Flex gap={2}>
@@ -50,9 +54,24 @@ const ListHabit = ({
             />
           </Flex>
         </Flex>
-        <IconButton variant="ghost">
-          <EllipsisVertical />
-        </IconButton>
+        <AppMenu
+          trigger={
+            <IconButton variant="ghost">
+              <EllipsisVertical />
+            </IconButton>
+          }
+        >
+          <Menu.Item
+            value="delete"
+            color="fg.error"
+            _hover={{ bg: 'bg.error', color: 'fg.error' }}
+            onClick={() => {
+              onDelete?.()
+            }}
+          >
+            Delete
+          </Menu.Item>
+        </AppMenu>
       </Flex>
       <Flex direction="column">
         <Flex direction="column">

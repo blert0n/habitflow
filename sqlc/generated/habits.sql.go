@@ -12,8 +12,18 @@ import (
 )
 
 const createHabit = `-- name: CreateHabit :one
-INSERT INTO habits (name, description, categoryId, color, frequency, userId)
-VALUES ($1, $2, $3, $4, $5, $6)
+INSERT INTO habits (
+    name,
+    description,
+    categoryId,
+    color,
+    frequency,
+    userId,
+    createdAt,
+    updatedAt
+) VALUES (
+    $1, $2, $3, $4, $5, $6, NOW(), NOW()
+)
 RETURNING id, name, description, createdat, updatedat, categoryid, color, frequency, userid
 `
 
@@ -50,13 +60,37 @@ func (q *Queries) CreateHabit(ctx context.Context, arg CreateHabitParams) (Habit
 	return i, err
 }
 
-const deleteHabit = `-- name: DeleteHabit :exec
-DELETE FROM habits
-WHERE id = $1
+const createHabitExcludedDate = `-- name: CreateHabitExcludedDate :exec
+INSERT INTO habit_excluded_dates (
+    habit_id,
+    excluded_date
+) VALUES (
+    $1, $2
+)
 `
 
-func (q *Queries) DeleteHabit(ctx context.Context, id int32) error {
-	_, err := q.db.Exec(ctx, deleteHabit, id)
+type CreateHabitExcludedDateParams struct {
+	HabitID      int32       `json:"habit_id"`
+	ExcludedDate pgtype.Date `json:"excluded_date"`
+}
+
+func (q *Queries) CreateHabitExcludedDate(ctx context.Context, arg CreateHabitExcludedDateParams) error {
+	_, err := q.db.Exec(ctx, createHabitExcludedDate, arg.HabitID, arg.ExcludedDate)
+	return err
+}
+
+const deleteHabit = `-- name: DeleteHabit :exec
+DELETE FROM habits
+WHERE id = $1 AND userId = $2
+`
+
+type DeleteHabitParams struct {
+	ID     int32       `json:"id"`
+	Userid pgtype.Int4 `json:"userid"`
+}
+
+func (q *Queries) DeleteHabit(ctx context.Context, arg DeleteHabitParams) error {
+	_, err := q.db.Exec(ctx, deleteHabit, arg.ID, arg.Userid)
 	return err
 }
 

@@ -13,9 +13,10 @@ import (
 type Querier interface {
 	CreateCategory(ctx context.Context, name string) (Category, error)
 	CreateHabit(ctx context.Context, arg CreateHabitParams) (Habits, error)
+	CreateHabitExcludedDate(ctx context.Context, arg CreateHabitExcludedDateParams) error
 	CreateUser(ctx context.Context, arg CreateUserParams) (Users, error)
 	DeleteCategory(ctx context.Context, id int32) error
-	DeleteHabit(ctx context.Context, id int32) error
+	DeleteHabit(ctx context.Context, arg DeleteHabitParams) error
 	DeleteUser(ctx context.Context, id int32) error
 	GetCategoryByID(ctx context.Context, id int32) (Category, error)
 	GetHabitByID(ctx context.Context, id int32) (Habits, error)

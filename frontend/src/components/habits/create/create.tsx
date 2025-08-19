@@ -11,13 +11,22 @@ import { FrequencyFields } from './frequency'
 import { ScheduleFields } from './schedule-fields'
 import { EndsOnFields } from './ends-on-fields'
 import { ActionButtons } from './action-buttons'
-import type { AllowedDayString, HabitForm } from '@/types/habits'
+import type {
+  AllowedDayString,
+  CreateHabitPayload,
+  HabitForm,
+} from '@/types/habits'
 import type { WeekdayIndex } from '@/util/dates'
 import { weekdayMap } from '@/util/dates'
 import { buildRRule } from '@/util/rrule'
 import { useCategories } from '@/hooks/useCategories'
 
-export const Create = ({ onBack }: { onBack: () => void }) => {
+interface P {
+  onCreate: (payload: CreateHabitPayload) => void
+  onBack: () => void
+}
+
+export const Create = ({ onCreate, onBack }: P) => {
   const {
     handleSubmit,
     control,
@@ -55,6 +64,7 @@ export const Create = ({ onBack }: { onBack: () => void }) => {
   const selectedCategory = getCategory(category)
 
   const onSubmit = (data: HabitForm) => {
+    if (!isValid) return
     const rrule = buildRRule({
       startDate: data.startDate,
       time: data.time,
@@ -64,7 +74,19 @@ export const Create = ({ onBack }: { onBack: () => void }) => {
       count: data.count,
       until: data.until,
     })
-    console.log('Saving Habit:', { ...data, rrule })
+
+    const payload = {
+      name: data.name,
+      description: data.description,
+      categoryId: data.category,
+      color: data.color,
+      frequency: rrule,
+      excludedDates: data.excludedDates.map((d) =>
+        dayjs(d).format('YYYY-MM-DD'),
+      ),
+    }
+
+    onCreate(payload)
   }
 
   const toggleDayOfWeek = useCallback(

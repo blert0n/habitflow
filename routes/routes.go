@@ -23,6 +23,8 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	})
 
 	rg.GET("/habits", middleware.IsAuthenticated(), habits.List)
+	rg.POST("/habits", middleware.IsAuthenticated(), habits.Create)
+	rg.DELETE("/habits", middleware.IsAuthenticated(), habits.Delete)
 	rg.POST("/auth/sign-in", auth.SignIn)
 	rg.POST("/auth/sign-up", auth.SignUp)
 	rg.GET("/auth/sign-out", auth.SignOut)

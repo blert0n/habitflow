@@ -2,13 +2,13 @@ import { Flex } from '@chakra-ui/react/flex'
 import { Button, HStack, SimpleGrid } from '@chakra-ui/react'
 import { FilterIcon, Plus } from 'lucide-react'
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { HeaderWithText } from '../ui/header-with-text'
 import { ListHabit } from './list-habit'
 import { Create } from './create/create'
 import { LoadingHabit } from './loading-habit'
 import { EmptyState } from './empty-state'
-import type { Habit } from '@/types/habits'
+import type { CreateHabitPayload, Habit } from '@/types/habits'
 import { useCategories } from '@/hooks/useCategories'
 import { client } from '@/util/client'
 
@@ -24,9 +24,34 @@ const Habits = () => {
     queryFn: () => client('/habits'),
   })
 
+  const queryClient = useQueryClient()
+
+  const createHabitMutation = useMutation({
+    mutationFn: (newHabit: CreateHabitPayload) =>
+      client('/habits', {
+        method: 'POST',
+        body: JSON.stringify(newHabit),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listHabits'] })
+      setShowCreateView(false)
+    },
+  })
+  const deleteHabitMutation = useMutation({
+    mutationFn: (id: number) =>
+      client('/habits', {
+        method: 'DELETE',
+        body: JSON.stringify({ id }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listHabits'] })
+    },
+  })
+
   if (showCreateView) {
     return (
       <Create
+        onCreate={(data) => createHabitMutation.mutate(data)}
         onBack={() => {
           setShowCreateView(false)
         }}
@@ -93,6 +118,9 @@ const Habits = () => {
               category={categories.find(
                 (category) => category.id === habit.categoryid,
               )}
+              onDelete={() => {
+                deleteHabitMutation.mutate(habit.id)
+              }}
             />
           ))}
       </SimpleGrid>

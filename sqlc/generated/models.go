@@ -13,6 +13,12 @@ type Category struct {
 	Name string `json:"name"`
 }
 
+type HabitExcludedDates struct {
+	ID           int32       `json:"id"`
+	HabitID      int32       `json:"habit_id"`
+	ExcludedDate pgtype.Date `json:"excluded_date"`
+}
+
 type Habits struct {
 	ID          int32            `json:"id"`
 	Name        string           `json:"name"`
@@ -28,10 +34,10 @@ type Habits struct {
 type Users struct {
 	ID        int32            `json:"id"`
 	Username  string           `json:"username"`
-	FirstName pgtype.Text      `json:"first_name"`
-	LastName  pgtype.Text      `json:"last_name"`
 	Email     string           `json:"email"`
 	Password  string           `json:"password"`
 	Createdat pgtype.Timestamp `json:"createdat"`
 	Updatedat pgtype.Timestamp `json:"updatedat"`
+	FirstName pgtype.Text      `json:"first_name"`
+	LastName  pgtype.Text      `json:"last_name"`
 }

@@ -51,6 +51,15 @@ export interface HabitForm {
   excludedDates: Array<Dayjs>
 }
 
+export interface CreateHabitPayload {
+  name: string
+  description: string
+  categoryId: number
+  color: string
+  frequency: string
+  excludedDates: Array<string>
+}
+
 export interface Habit {
   id: number
   name: string
