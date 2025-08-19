@@ -5,9 +5,10 @@ import type { Color } from '@chakra-ui/react'
 interface P {
   value?: string
   onChange?: (color: Color) => void
+  hideLabel?: boolean
 }
 
-const AppColorPicker = ({ value, onChange }: P) => {
+const AppColorPicker = ({ value, onChange, hideLabel = false }: P) => {
   const [color, setColor] = useState(parseColor(value ?? '#2563eb'))
 
   return (
@@ -23,7 +24,7 @@ const AppColorPicker = ({ value, onChange }: P) => {
       maxW="200px"
     >
       <ColorPicker.HiddenInput />
-      <ColorPicker.Label>Color</ColorPicker.Label>
+      {!hideLabel && <ColorPicker.Label>Color</ColorPicker.Label>}
       <ColorPicker.Control>
         <ColorPicker.Input />
         <ColorPicker.Trigger />

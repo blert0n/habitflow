@@ -19,6 +19,7 @@ dayjs.extend(advancedFormat)
 interface DayWithRRule {
   rule: ByWeekday
   label: string
+  index: number
 }
 
 export type WeekdayIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6
@@ -39,13 +40,13 @@ const WEEK_DAYS_LONG = [
 ]
 
 export const weekdayMap: Array<DayWithRRule> = [
-  { rule: RRule.SU, label: 'Sunday' },
-  { rule: RRule.MO, label: 'Monday' },
-  { rule: RRule.TU, label: 'Tuesday' },
-  { rule: RRule.WE, label: 'Wednesday' },
-  { rule: RRule.TH, label: 'Thursday' },
-  { rule: RRule.FR, label: 'Friday' },
-  { rule: RRule.SA, label: 'Saturday' },
+  { rule: RRule.SU, label: 'Sunday', index: 0 },
+  { rule: RRule.MO, label: 'Monday', index: 1 },
+  { rule: RRule.TU, label: 'Tuesday', index: 2 },
+  { rule: RRule.WE, label: 'Wednesday', index: 3 },
+  { rule: RRule.TH, label: 'Thursday', index: 4 },
+  { rule: RRule.FR, label: 'Friday', index: 5 },
+  { rule: RRule.SA, label: 'Saturday', index: 6 },
 ]
 
 const getCalendarMatrix = (currentMonth: Dayjs): Array<Array<Dayjs>> => {

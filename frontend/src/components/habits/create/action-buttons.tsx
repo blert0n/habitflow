@@ -6,10 +6,17 @@ interface ActionButtonsProps {
   onBack: () => void
   isValid: boolean
   isLoading: boolean
+  submitButtonLabel: string
 }
 
 export const ActionButtons = memo(
-  ({ onSubmit, onBack, isValid, isLoading }: ActionButtonsProps) => {
+  ({
+    onSubmit,
+    onBack,
+    isValid,
+    isLoading,
+    submitButtonLabel,
+  }: ActionButtonsProps) => {
     return (
       <Flex gap={2} mt={2}>
         <Button
@@ -20,7 +27,7 @@ export const ActionButtons = memo(
           type="submit"
           disabled={!isValid || isLoading}
         >
-          Create habit
+          {submitButtonLabel}
         </Button>
         <Button variant="outline" size="xs" px={4} onClick={onBack} bg="white">
           Cancel

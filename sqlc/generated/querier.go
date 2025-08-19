@@ -17,13 +17,15 @@ type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) (Users, error)
 	DeleteCategory(ctx context.Context, id int32) error
 	DeleteHabit(ctx context.Context, arg DeleteHabitParams) error
+	DeleteHabitExcludedDate(ctx context.Context, arg DeleteHabitExcludedDateParams) error
 	DeleteUser(ctx context.Context, id int32) error
 	GetCategoryByID(ctx context.Context, id int32) (Category, error)
 	GetHabitByID(ctx context.Context, id int32) (Habits, error)
 	GetUserByEmail(ctx context.Context, email string) (Users, error)
 	GetUserByID(ctx context.Context, id int32) (GetUserByIDRow, error)
 	ListCategories(ctx context.Context) ([]Category, error)
-	ListHabits(ctx context.Context, userid pgtype.Int4) ([]Habits, error)
+	ListHabitExcludedDates(ctx context.Context, habitID int32) ([]pgtype.Date, error)
+	ListHabits(ctx context.Context, userid pgtype.Int4) ([]ListHabitsRow, error)
 	ListHabitsByUser(ctx context.Context, userid pgtype.Int4) ([]Habits, error)
 	SeedCategories(ctx context.Context, arg SeedCategoriesParams) error
 	SeedHabit(ctx context.Context, arg SeedHabitParams) error

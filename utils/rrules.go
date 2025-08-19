@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/teambition/rrule-go"
@@ -18,7 +17,6 @@ var dayMap = map[string]string{
 }
 
 func ParseRRule(rruleString string) (bool, []string) {
-	fmt.Println(rruleString, "rruleString")
 	if rruleString == "" {
 		return false, []string{}
 	}

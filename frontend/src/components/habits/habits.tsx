@@ -4,56 +4,120 @@ import { FilterIcon, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { HeaderWithText } from '../ui/header-with-text'
+import { toaster } from '../ui/toaster'
 import { ListHabit } from './list-habit'
 import { Create } from './create/create'
 import { LoadingHabit } from './loading-habit'
 import { EmptyState } from './empty-state'
-import type { CreateHabitPayload, Habit } from '@/types/habits'
+import type {
+  CreateHabitPayload,
+  EditHabitPayload,
+  Habit,
+} from '@/types/habits'
 import { useCategories } from '@/hooks/useCategories'
 import { client } from '@/util/client'
 
 const Habits = () => {
   const [showCreateView, setShowCreateView] = useState(false)
   const { categories } = useCategories()
+  const [editing, setEditing] = useState<Habit | undefined>()
 
   const { data: habits, isLoading: isLoadingHabits } = useQuery<
     Array<Habit>,
     Error
   >({
     queryKey: ['listHabits'],
-    queryFn: () => client('/habits'),
+    queryFn: () => client('/habits/list'),
   })
 
   const queryClient = useQueryClient()
 
   const createHabitMutation = useMutation({
     mutationFn: (newHabit: CreateHabitPayload) =>
-      client('/habits', {
+      client('/habits/create', {
         method: 'POST',
         body: JSON.stringify(newHabit),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['listHabits'] })
       setShowCreateView(false)
+      setEditing(undefined)
+      toaster.create({
+        type: 'success',
+        title: 'Habit created successfully.',
+      })
+    },
+    onError: () => {
+      setShowCreateView(false)
+      setEditing(undefined)
+      toaster.create({
+        type: 'Failed to create the habit',
+        title: 'Habit created successfully.',
+      })
     },
   })
+
+  const editHabitMutation = useMutation({
+    mutationFn: (editedHabit: EditHabitPayload) =>
+      client('/habits/edit', {
+        method: 'POST',
+        body: JSON.stringify(editedHabit),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listHabits'] })
+      setShowCreateView(false)
+      setEditing(undefined)
+      toaster.create({
+        type: 'success',
+        title: 'Habit updated successfully.',
+      })
+    },
+    onError: () => {
+      setShowCreateView(false)
+      setEditing(undefined)
+      toaster.create({
+        type: 'error',
+        title: 'Failed to update the habit.',
+      })
+    },
+  })
+
   const deleteHabitMutation = useMutation({
     mutationFn: (id: number) =>
-      client('/habits', {
+      client('/habits/delete', {
         method: 'DELETE',
         body: JSON.stringify({ id }),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['listHabits'] })
+      toaster.create({
+        type: 'success',
+        title: 'Habit deleted successfully.',
+      })
+    },
+    onError: () => {
+      toaster.create({
+        type: 'success',
+        title: 'Failed to delete the habit',
+      })
     },
   })
 
-  if (showCreateView) {
+  if (showCreateView || editing) {
     return (
       <Create
-        onCreate={(data) => createHabitMutation.mutate(data)}
+        editing={editing}
+        onSubmit={(data) => {
+          editing?.id
+            ? editHabitMutation.mutate({
+                id: editing.id,
+                ...data,
+              })
+            : createHabitMutation.mutate(data)
+        }}
         onBack={() => {
           setShowCreateView(false)
+          setEditing(undefined)
         }}
       />
     )
@@ -118,6 +182,9 @@ const Habits = () => {
               category={categories.find(
                 (category) => category.id === habit.categoryid,
               )}
+              onEdit={() => {
+                setEditing(habit)
+              }}
               onDelete={() => {
                 deleteHabitMutation.mutate(habit.id)
               }}

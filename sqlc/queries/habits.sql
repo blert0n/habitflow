@@ -18,9 +18,22 @@ SELECT * FROM habits
 WHERE id = $1;
 
 -- name: ListHabits :many
-SELECT * FROM habits
-WHERE userId = $1
-ORDER BY id;
+SELECT h.id,
+       h.name,
+       h.description,
+       h.createdAt,
+       h.updatedAt,
+       h.categoryId,
+       h.color,
+       h.frequency,
+       h.userId,
+       COALESCE(array_agg(he.excluded_date ORDER BY he.excluded_date) FILTER (WHERE he.excluded_date IS NOT NULL), '{}') AS excluded_dates
+FROM habits h
+LEFT JOIN habit_excluded_dates he ON he.habit_id = h.id
+WHERE h.userId = $1
+GROUP BY h.id
+ORDER BY h.id;
+
 
 -- name: ListHabitsByUser :many
 SELECT * FROM habits
@@ -35,7 +48,7 @@ SET name = $2,
     color = $5,
     frequency = $6,
     updatedAt = CURRENT_TIMESTAMP
-WHERE id = $1
+WHERE id = $1 AND userId= $7
 RETURNING *;
 
 -- name: DeleteHabit :exec
@@ -56,3 +69,13 @@ INSERT INTO habit_excluded_dates (
 ) VALUES (
     $1, $2
 );
+
+-- name: ListHabitExcludedDates :many
+SELECT excluded_date FROM habit_excluded_dates
+WHERE habit_id = $1;
+
+-- name: DeleteHabitExcludedDate :exec
+DELETE FROM habit_excluded_dates
+WHERE habit_id = $1
+  AND excluded_date = $2;
+

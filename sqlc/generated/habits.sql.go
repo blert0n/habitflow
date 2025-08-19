@@ -94,6 +94,22 @@ func (q *Queries) DeleteHabit(ctx context.Context, arg DeleteHabitParams) error 
 	return err
 }
 
+const deleteHabitExcludedDate = `-- name: DeleteHabitExcludedDate :exec
+DELETE FROM habit_excluded_dates
+WHERE habit_id = $1
+  AND excluded_date = $2
+`
+
+type DeleteHabitExcludedDateParams struct {
+	HabitID      int32       `json:"habit_id"`
+	ExcludedDate pgtype.Date `json:"excluded_date"`
+}
+
+func (q *Queries) DeleteHabitExcludedDate(ctx context.Context, arg DeleteHabitExcludedDateParams) error {
+	_, err := q.db.Exec(ctx, deleteHabitExcludedDate, arg.HabitID, arg.ExcludedDate)
+	return err
+}
+
 const getHabitByID = `-- name: GetHabitByID :one
 SELECT id, name, description, createdat, updatedat, categoryid, color, frequency, userid FROM habits
 WHERE id = $1
@@ -116,21 +132,71 @@ func (q *Queries) GetHabitByID(ctx context.Context, id int32) (Habits, error) {
 	return i, err
 }
 
-const listHabits = `-- name: ListHabits :many
-SELECT id, name, description, createdat, updatedat, categoryid, color, frequency, userid FROM habits
-WHERE userId = $1
-ORDER BY id
+const listHabitExcludedDates = `-- name: ListHabitExcludedDates :many
+SELECT excluded_date FROM habit_excluded_dates
+WHERE habit_id = $1
 `
 
-func (q *Queries) ListHabits(ctx context.Context, userid pgtype.Int4) ([]Habits, error) {
+func (q *Queries) ListHabitExcludedDates(ctx context.Context, habitID int32) ([]pgtype.Date, error) {
+	rows, err := q.db.Query(ctx, listHabitExcludedDates, habitID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []pgtype.Date{}
+	for rows.Next() {
+		var excluded_date pgtype.Date
+		if err := rows.Scan(&excluded_date); err != nil {
+			return nil, err
+		}
+		items = append(items, excluded_date)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listHabits = `-- name: ListHabits :many
+SELECT h.id,
+       h.name,
+       h.description,
+       h.createdAt,
+       h.updatedAt,
+       h.categoryId,
+       h.color,
+       h.frequency,
+       h.userId,
+       COALESCE(array_agg(he.excluded_date ORDER BY he.excluded_date) FILTER (WHERE he.excluded_date IS NOT NULL), '{}') AS excluded_dates
+FROM habits h
+LEFT JOIN habit_excluded_dates he ON he.habit_id = h.id
+WHERE h.userId = $1
+GROUP BY h.id
+ORDER BY h.id
+`
+
+type ListHabitsRow struct {
+	ID            int32            `json:"id"`
+	Name          string           `json:"name"`
+	Description   pgtype.Text      `json:"description"`
+	Createdat     pgtype.Timestamp `json:"createdat"`
+	Updatedat     pgtype.Timestamp `json:"updatedat"`
+	Categoryid    pgtype.Int4      `json:"categoryid"`
+	Color         pgtype.Text      `json:"color"`
+	Frequency     pgtype.Text      `json:"frequency"`
+	Userid        pgtype.Int4      `json:"userid"`
+	ExcludedDates interface{}      `json:"excluded_dates"`
+}
+
+func (q *Queries) ListHabits(ctx context.Context, userid pgtype.Int4) ([]ListHabitsRow, error) {
 	rows, err := q.db.Query(ctx, listHabits, userid)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Habits{}
+	items := []ListHabitsRow{}
 	for rows.Next() {
-		var i Habits
+		var i ListHabitsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -141,6 +207,7 @@ func (q *Queries) ListHabits(ctx context.Context, userid pgtype.Int4) ([]Habits,
 			&i.Color,
 			&i.Frequency,
 			&i.Userid,
+			&i.ExcludedDates,
 		); err != nil {
 			return nil, err
 		}
@@ -227,7 +294,7 @@ SET name = $2,
     color = $5,
     frequency = $6,
     updatedAt = CURRENT_TIMESTAMP
-WHERE id = $1
+WHERE id = $1 AND userId= $7
 RETURNING id, name, description, createdat, updatedat, categoryid, color, frequency, userid
 `
 
@@ -238,6 +305,7 @@ type UpdateHabitParams struct {
 	Categoryid  pgtype.Int4 `json:"categoryid"`
 	Color       pgtype.Text `json:"color"`
 	Frequency   pgtype.Text `json:"frequency"`
+	Userid      pgtype.Int4 `json:"userid"`
 }
 
 func (q *Queries) UpdateHabit(ctx context.Context, arg UpdateHabitParams) (Habits, error) {
@@ -248,6 +316,7 @@ func (q *Queries) UpdateHabit(ctx context.Context, arg UpdateHabitParams) (Habit
 		arg.Categoryid,
 		arg.Color,
 		arg.Frequency,
+		arg.Userid,
 	)
 	var i Habits
 	err := row.Scan(

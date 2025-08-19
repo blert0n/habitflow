@@ -1,7 +1,7 @@
 import { RRule, RRuleSet, rrulestr } from 'rrule'
 import dayjs from 'dayjs'
 import { weekdayMap } from './dates'
-import type { Options } from 'rrule'
+import type { Options, Weekday } from 'rrule'
 import type { WeekdayIndex } from './dates'
 
 interface BuildRRuleInput {
@@ -19,6 +19,12 @@ interface BuildRRuleInput {
   endsOn?: 'Never' | 'On' | 'After'
   until?: dayjs.Dayjs | null
   count?: number | null
+}
+
+const normalizeRRuleWeekday = (rruleWeekday: number): number => {
+  // rrule: 0 = Monday … 6 = Sunday
+  // app:   0 = Sunday … 6 = Saturday
+  return (rruleWeekday + 1) % 7
 }
 
 export const buildRRule = ({
@@ -53,7 +59,8 @@ export const buildRRule = ({
   }
 
   if (endsOn === 'On' && until) {
-    ruleOptions.until = until.endOf('day').toDate()
+    const untilDayjs = dayjs(until)
+    ruleOptions.until = untilDayjs.endOf('day').toDate()
   } else if (endsOn === 'After' && count) {
     ruleOptions.count = count
   }
@@ -98,7 +105,7 @@ export function isDailyNoExceptions(rruleString: string): boolean {
  * @param rruleString - The full rrule string including DTSTART and RRULE lines.
  * @returns Array of weekdays as strings, e.g. ['MO', 'WE', 'FR']. Returns empty array if none.
  */
-export function getWeekdaysFromRRule(rruleString: string): Array<string> {
+export function getWeekdaysFromRRule(rruleString: string): Array<WeekdayIndex> {
   try {
     const rule = rrulestr(rruleString)
 
@@ -106,16 +113,94 @@ export function getWeekdaysFromRRule(rruleString: string): Array<string> {
 
     if (rule instanceof RRuleSet) {
       rule.rrules().forEach((r) => {
-        weekdays.push(...r.options.byweekday)
+        weekdays.push(
+          ...r.options.byweekday.map((wd: Weekday | number) => {
+            const day = typeof wd === 'number' ? wd : wd.weekday
+            return normalizeRRuleWeekday(day)
+          }),
+        )
       })
     } else {
-      weekdays = rule.options.byweekday
+      weekdays = rule.options.byweekday.map((wd: Weekday | number) => {
+        const day = typeof wd === 'number' ? wd : wd.weekday
+        return normalizeRRuleWeekday(day)
+      })
     }
 
-    return weekdays.map((wd) => wd.toString())
+    return weekdays as Array<WeekdayIndex>
   } catch (error) {
-    console.log(rruleString, 'rruleStringFailed')
-    console.error('Failed to parse RRule string:', error)
     return []
+  }
+}
+
+/**
+ * Extracts the start date from an RRule string as a dayjs object.
+ * @param rruleString - The full RRule string including DTSTART and RRULE lines.
+ * @returns dayjs object of the start date, or null if parsing fails.
+ */
+export const getStartDayjsFromRRule = (
+  rruleString: string,
+): dayjs.Dayjs | null => {
+  try {
+    const rule = rrulestr(rruleString)
+
+    let dtstart: Date | undefined
+
+    if (rule instanceof RRuleSet) {
+      const rrules = rule.rrules()
+      if (rrules.length > 0) {
+        dtstart = rrules[0].options.dtstart
+      }
+    } else if (rule instanceof RRule) {
+      dtstart = rule.options.dtstart
+    }
+
+    return dtstart ? dayjs(dtstart) : null
+  } catch (error) {
+    console.error('Failed to parse RRule string:', error)
+    return null
+  }
+}
+
+/**
+ * Determines the "ends on" type of an RRule string.
+ * - "Never" if no UNTIL or COUNT is specified
+ * - "On" if UNTIL is specified
+ * - "After" if COUNT is specified
+ */
+export function getEndsOnFromRRule(rruleString: string): {
+  endsOn: 'Never' | 'On' | 'After'
+  until?: Date
+  count?: number
+} {
+  try {
+    const rule = rrulestr(rruleString)
+
+    let until: Date | undefined | null
+    let count: number | undefined | null
+
+    if (rule instanceof RRuleSet) {
+      const rrules = rule.rrules()
+      if (rrules.length > 0) {
+        until = rrules[0].options.until
+        count = rrules[0].options.count
+      }
+    } else if (rule instanceof RRule) {
+      until = rule.options.until
+      count = rule.options.count
+    }
+
+    if (until) {
+      return { endsOn: 'On', until }
+    }
+
+    if (count) {
+      return { endsOn: 'After', count }
+    }
+
+    return { endsOn: 'Never' }
+  } catch (error) {
+    console.error('Failed to parse RRule string:', error)
+    return { endsOn: 'Never' }
   }
 }

@@ -22,9 +22,10 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 		ctx.JSON(http.StatusOK, categories)
 	})
 
-	rg.GET("/habits", middleware.IsAuthenticated(), habits.List)
-	rg.POST("/habits", middleware.IsAuthenticated(), habits.Create)
-	rg.DELETE("/habits", middleware.IsAuthenticated(), habits.Delete)
+	rg.GET("/habits/list", middleware.IsAuthenticated(), habits.List)
+	rg.POST("/habits/create", middleware.IsAuthenticated(), habits.Create)
+	rg.POST("/habits/edit", middleware.IsAuthenticated(), habits.Edit)
+	rg.DELETE("/habits/delete", middleware.IsAuthenticated(), habits.Delete)
 	rg.POST("/auth/sign-in", auth.SignIn)
 	rg.POST("/auth/sign-up", auth.SignUp)
 	rg.GET("/auth/sign-out", auth.SignOut)

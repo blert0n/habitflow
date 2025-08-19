@@ -1,4 +1,4 @@
-import { Portal, Select, Stack, createListCollection } from '@chakra-ui/react'
+import { Select, Stack, createListCollection } from '@chakra-ui/react'
 import { useMemo } from 'react'
 
 export interface SelectItem {
@@ -47,18 +47,18 @@ export const AppSelect = ({
             <Select.Indicator />
           </Select.IndicatorGroup>
         </Select.Control>
-        <Portal>
-          <Select.Positioner>
-            <Select.Content>
-              {collection.items.map((item) => (
-                <Select.Item item={item} key={item.value}>
-                  {item.label}
-                  <Select.ItemIndicator />
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select.Positioner>
-        </Portal>
+        {/* <Portal> */}
+        <Select.Positioner>
+          <Select.Content>
+            {collection.items.map((item) => (
+              <Select.Item item={item} key={item.value}>
+                {item.label}
+                <Select.ItemIndicator />
+              </Select.Item>
+            ))}
+          </Select.Content>
+        </Select.Positioner>
+        {/* </Portal> */}
       </Select.Root>
     </Stack>
   )

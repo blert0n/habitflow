@@ -14,19 +14,30 @@ import { ActionButtons } from './action-buttons'
 import type {
   AllowedDayString,
   CreateHabitPayload,
+  Habit,
   HabitForm,
 } from '@/types/habits'
 import type { WeekdayIndex } from '@/util/dates'
 import { weekdayMap } from '@/util/dates'
-import { buildRRule } from '@/util/rrule'
+import {
+  buildRRule,
+  getEndsOnFromRRule,
+  getStartDayjsFromRRule,
+  getWeekdaysFromRRule,
+  isDailyNoExceptions,
+} from '@/util/rrule'
 import { useCategories } from '@/hooks/useCategories'
 
+const isDaily = (frequency: string) =>
+  isDailyNoExceptions(frequency) ? 'daily' : 'weekly'
+
 interface P {
-  onCreate: (payload: CreateHabitPayload) => void
+  editing?: Habit
+  onSubmit: (payload: CreateHabitPayload) => void
   onBack: () => void
 }
 
-export const Create = ({ onCreate, onBack }: P) => {
+export const Create = ({ editing, onSubmit, onBack }: P) => {
   const {
     handleSubmit,
     control,
@@ -34,19 +45,25 @@ export const Create = ({ onCreate, onBack }: P) => {
     formState: { isValid, isSubmitting, isLoading },
   } = useForm<HabitForm>({
     defaultValues: {
-      name: '',
-      description: '',
-      category: 0,
+      name: editing ? editing.name : '',
+      description: editing ? editing.description : '',
+      category: editing ? editing.categoryid : undefined,
       icon: '',
-      startDate: dayjs(),
-      time: dayjs().hour(7).minute(0),
-      frequency: 'daily',
-      daysOfWeek: [],
-      color: '#2563eb',
-      count: 0,
-      endsOn: 'Never',
-      until: null,
-      excludedDates: [],
+      startDate: editing
+        ? (getStartDayjsFromRRule(editing.frequency) ?? dayjs())
+        : dayjs(),
+      time: editing
+        ? (getStartDayjsFromRRule(editing.frequency) ?? dayjs())
+        : dayjs().hour(7).minute(0),
+      frequency: editing ? isDaily(editing.frequency) : 'daily',
+      daysOfWeek: editing ? getWeekdaysFromRRule(editing.frequency) : [],
+      color: editing ? editing.color : '#2563eb',
+      count: editing ? getEndsOnFromRRule(editing.frequency).count : 0,
+      endsOn: editing ? getEndsOnFromRRule(editing.frequency).endsOn : 'Never',
+      until: editing ? getEndsOnFromRRule(editing.frequency).until : null,
+      excludedDates: editing
+        ? editing.excludedDates.map((date) => dayjs(date))
+        : [],
     },
     shouldUnregister: false,
   })
@@ -63,7 +80,7 @@ export const Create = ({ onCreate, onBack }: P) => {
 
   const selectedCategory = getCategory(category)
 
-  const onSubmit = (data: HabitForm) => {
+  const onFormSubmit = (data: HabitForm) => {
     if (!isValid) return
     const rrule = buildRRule({
       startDate: data.startDate,
@@ -86,7 +103,7 @@ export const Create = ({ onCreate, onBack }: P) => {
       ),
     }
 
-    onCreate(payload)
+    onSubmit(payload)
   }
 
   const toggleDayOfWeek = useCallback(
@@ -118,8 +135,12 @@ export const Create = ({ onCreate, onBack }: P) => {
           <ArrowLeft />
         </IconButton>
         <HeaderWithText
-          title="Create a new habit"
-          text="Set up a new habit to track your progress"
+          title={editing ? 'Edit habit' : 'Create a new habit'}
+          text={
+            editing
+              ? 'Modify your habit to track your progress'
+              : 'Set up a new habit to track your progress'
+          }
         />
       </Flex>
 
@@ -154,7 +175,8 @@ export const Create = ({ onCreate, onBack }: P) => {
       </Box>
 
       <ActionButtons
-        onSubmit={handleSubmit(onSubmit)}
+        submitButtonLabel={editing ? 'Edit habit' : 'Create habit'}
+        onSubmit={handleSubmit(onFormSubmit)}
         onBack={onBack}
         isValid={isValid}
         isLoading={isSubmitting || isLoading}

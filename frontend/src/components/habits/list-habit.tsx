@@ -12,6 +12,7 @@ interface P {
   category?: CategoryWithIcon
   selectedDays?: Array<AllowedDayString>
   isDaily?: boolean
+  onEdit?: () => void
   onDelete?: () => void
 }
 
@@ -21,6 +22,7 @@ const ListHabit = ({
   category,
   selectedDays,
   isDaily = false,
+  onEdit,
   onDelete,
 }: P) => {
   return (
@@ -61,6 +63,14 @@ const ListHabit = ({
             </IconButton>
           }
         >
+          <Menu.Item
+            value="edit"
+            onClick={() => {
+              onEdit?.()
+            }}
+          >
+            Edit
+          </Menu.Item>
           <Menu.Item
             value="delete"
             color="fg.error"

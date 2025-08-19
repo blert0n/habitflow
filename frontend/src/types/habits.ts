@@ -60,6 +60,10 @@ export interface CreateHabitPayload {
   excludedDates: Array<string>
 }
 
+export type EditHabitPayload = CreateHabitPayload & {
+  id: number
+}
+
 export interface Habit {
   id: number
   name: string
@@ -72,4 +76,5 @@ export interface Habit {
   userid: number
   isDaily: boolean
   selectedDays: Array<AllowedDayString> | null
+  excludedDates: Array<string>
 }

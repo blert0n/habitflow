@@ -1,4 +1,4 @@
-import { Popover, Portal } from '@chakra-ui/react'
+import { Popover } from '@chakra-ui/react'
 import { useState } from 'react'
 import type { PopoverRootProps } from '@chakra-ui/react'
 import type { ReactNode } from 'react'
@@ -42,16 +42,14 @@ export const AppPopover = ({
       positioning={{ placement }}
     >
       <Popover.Trigger asChild>{trigger}</Popover.Trigger>
-      <Portal>
-        <Popover.Positioner>
-          <Popover.Content padding={0}>
-            <Popover.Arrow />
-            <Popover.Body padding={0} border={0}>
-              {children}
-            </Popover.Body>
-          </Popover.Content>
-        </Popover.Positioner>
-      </Portal>
+      <Popover.Positioner>
+        <Popover.Content padding={0}>
+          <Popover.Arrow />
+          <Popover.Body padding={0} border={0}>
+            {children}
+          </Popover.Body>
+        </Popover.Content>
+      </Popover.Positioner>
     </Popover.Root>
   )
 }

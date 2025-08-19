@@ -140,6 +140,7 @@ export const BasicInfoFields = React.memo(
             onChange={(color) => {
               colorField.onChange(color.toString('hex'))
             }}
+            hideLabel
           />
         </Flex>
       </Box>

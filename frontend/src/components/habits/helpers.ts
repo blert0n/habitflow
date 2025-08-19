@@ -1,4 +1,4 @@
-import type { AllowedDayString } from './types'
+import type { AllowedDayString } from '@/types/habits'
 
 export const normalizeDay = (day: AllowedDayString): string => {
   const map: Record<AllowedDayString, string> = {
