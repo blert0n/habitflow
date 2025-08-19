@@ -2,30 +2,32 @@
 
 import { Box, Flex, Text } from '@chakra-ui/react'
 import dayjs from 'dayjs'
+import type { Habit } from '@/types/habits'
 import type { Dayjs } from 'dayjs'
 
 interface P {
   day: Dayjs
   currentDate: Dayjs
   selectedDate?: Dayjs | null
+  habits?: Array<Habit>
   onSelect?: (date: Dayjs) => void
 }
-
-const colors = ['red.500', 'green.500', 'blue.500', 'purple.500']
 
 export const CalendarDayLg = ({
   day,
   currentDate,
   selectedDate,
+  habits,
   onSelect,
 }: P) => {
-  const isCurrentDate = dayjs(day).isSame(currentDate, 'month')
-  const isSelected = selectedDate
-    ? dayjs(day).isSame(selectedDate, 'day')
-    : dayjs(day).isSame(currentDate, 'day')
-  const date = dayjs(day).format('D')
+  const isToday = day.isSame(dayjs(), 'day')
+  const isCurrentDate = day.isSame(currentDate, 'month')
 
-  const dots = Array.from({ length: Math.floor(Math.random() * 8) + 1 })
+  const isSelected = selectedDate
+    ? day.isSame(selectedDate, 'day') && day.isSame(selectedDate, 'month')
+    : isToday
+
+  const date = dayjs(day).format('D')
 
   return (
     <Flex
@@ -63,15 +65,13 @@ export const CalendarDayLg = ({
         gridTemplateColumns={{ base: 'repeat(4, 8px)', sm: 'repeat(4, 12px)' }}
         gap="2px"
       >
-        {dots.map((_, i) => {
-          const randomColor = colors[Math.floor(Math.random() * colors.length)]
-
+        {(habits ?? []).map((habit) => {
           return (
             <Box
-              key={i}
+              key={`${currentDate.format('YYYY-MM-DD')}-${habit.id}`}
               boxSize={{ base: '8px', sm: '12px' }}
               borderRadius="full"
-              bg={randomColor}
+              bg={habit.color}
             />
           )
         })}

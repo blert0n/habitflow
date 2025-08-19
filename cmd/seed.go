@@ -46,12 +46,12 @@ func Seed(q *db.Queries) error {
 		Frequency   string
 		Color       string
 	}{
-		{1, "Morning Exercise", 1, "Do a quick workout to wake up and get energized.", "DTSTART:20250817T050000Z\nRRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR", "#FF5733"},
-		{2, "Read 30 mins", 2, "Read a book or article for at least 30 minutes.", "DTSTART:20250817T050000Z\nRRULE:FREQ=WEEKLY;BYDAY=TU,TH,SA", "#33A1FF"},
-		{3, "Meditation", 3, "Spend some quiet time meditating or breathing deeply.", "DTSTART:20250817T050000Z\nRRULE:FREQ=WEEKLY;BYDAY=SU,MO,WE,FR", "#8E44AD"},
-		{4, "Drink Water", 4, "Make sure to drink enough water throughout the day.", "DTSTART:20250817T050000Z\nRRULE:FREQ=DAILY", "#1ABC9C"},
-		{5, "Sleep 8 hours", 4, "Pick up a book and read for half an hour.", "DTSTART:20250817T050000Z\nRRULE:FREQ=DAILY", "#F39C12"},
-		{6, "Journal Writing", 3, "Write down your thoughts, plans, or feelings daily.", "DTSTART:20250817T050000Z\nRRULE:FREQ=WEEKLY;BYDAY=SU,TU,TH,SA", "#E74C3C"},
+		{1, "Morning Exercise", 1, "Do a quick workout to wake up and get energized.", "DTSTART:20250801T050000Z\nRRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR", "#FF5733"},
+		{2, "Read 30 mins", 2, "Read a book or article for at least 30 minutes.", "DTSTART:20250801T050000Z\nRRULE:FREQ=WEEKLY;BYDAY=TU,TH,SA", "#33A1FF"},
+		{3, "Meditation", 3, "Spend some quiet time meditating or breathing deeply.", "DTSTART:20250801T050000Z\nRRULE:FREQ=WEEKLY;BYDAY=SU,MO,WE,FR", "#8E44AD"},
+		{4, "Drink Water", 4, "Make sure to drink enough water throughout the day.", "DTSTART:20250801T050000Z\nRRULE:FREQ=DAILY", "#1ABC9C"},
+		{5, "Sleep 8 hours", 4, "Pick up a book and read for half an hour.", "DTSTART:20250801T050000Z\nRRULE:FREQ=DAILY", "#F39C12"},
+		{6, "Journal Writing", 3, "Write down your thoughts, plans, or feelings daily.", "DTSTART:20250801T050000Z\nRRULE:FREQ=WEEKLY;BYDAY=SU,TU,TH,SA", "#E74C3C"},
 	}
 
 	for _, h := range mockHabits {

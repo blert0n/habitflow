@@ -1,35 +1,20 @@
 import { Flex } from '@chakra-ui/react/flex'
 import { Text } from '@chakra-ui/react/text'
-import { Separator } from '@chakra-ui/react'
+import { Box, Separator } from '@chakra-ui/react'
+import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import dayjs from 'dayjs'
 import { HeaderWithText } from '../components/ui/header-with-text'
 import { StatCards } from '../components/dashboard/stat-cards'
 import { Habit } from '../components/habits/habit'
 import { CalendarSm } from '../components/calendar/calendar-sm'
 import { Note } from '../components/notes/note'
 import { formatFriendlyDate } from '../util/dates'
-
-const habits = [
-  {
-    title: 'Morning exercise',
-    description: '30 minutes workout',
-    checked: true,
-  },
-  {
-    title: 'Read 30 minutes',
-    description: 'Personal development',
-    checked: true,
-  },
-  {
-    title: 'Meditation',
-    description: '10 minutes mindfulness',
-    checked: false,
-  },
-  {
-    title: 'Drink 8 glasses of water',
-    description: 'Stay hydrated',
-    checked: false,
-  },
-]
+import type { HabitsByDate } from '@/types/habits'
+import { client } from '@/util/client'
+import { HabitSkeletonSm } from '@/components/habits/loading-habit-sm'
+import { AppEmptyState } from '@/components/ui/empty-state'
+import { Pagination } from '@/components/ui/pagination'
 
 const notes = [
   {
@@ -55,6 +40,18 @@ const notes = [
 ]
 
 function App() {
+  const [habitsDate, setHabitsDate] = useState(dayjs())
+  const [page, setPage] = useState(1)
+
+  const { data: habits, isLoading } = useQuery<HabitsByDate, Error>({
+    queryKey: ['habits', habitsDate, page],
+    queryFn: () =>
+      client(
+        `/habits/by-date?date=${habitsDate.format('YYYY-MM-DD')}&page=${page}`,
+      ),
+    staleTime: 1000 * 60 * 5,
+  })
+
   return (
     <div className="full-width" style={{ paddingBottom: '60px' }}>
       <Flex direction="column" gap={4} flex={1} width="full">
@@ -75,20 +72,46 @@ function App() {
             borderColor="gray.200"
             height={{ base: 'auto', md: '415px' }}
             overflowY={{ base: 'visible', md: 'auto' }}
+            position="relative"
           >
             <Text color="gray.800" fontSize={16}>
-              Today's habits
+              {habitsDate.format('DD MMMM')}
             </Text>
             <Separator />
             <Flex direction="column" gap={2}>
-              {habits.map((habit) => (
-                <Habit
-                  key={habit.title}
-                  title={habit.title}
-                  description={habit.description}
-                  checked={habit.checked}
+              {isLoading && <HabitSkeletonSm count={4} />}
+              {!isLoading && (
+                <>
+                  {(habits?.data?.length ?? 0) > 0 &&
+                    habits?.data?.map((habit) => (
+                      <Habit
+                        key={habit.id}
+                        title={habit.name}
+                        description={habit.description}
+                        checked={false}
+                      />
+                    ))}
+                  <Box position="absolute" bottom="0" left="0" right="0" pb={2}>
+                    <Pagination
+                      totalCount={habits?.totalCount ?? 0}
+                      page={page}
+                      pageSize={5}
+                      hideNumbers
+                      onPageChange={(newPage) => {
+                        setPage(newPage)
+                      }}
+                    />
+                  </Box>
+                </>
+              )}
+              {!isLoading && !habits?.data?.length && (
+                <AppEmptyState
+                  circleSize={12}
+                  iconSize={24}
+                  title="Nothing planned yet 😴"
+                  description="Good day for a fresh start! Create a habit and take a step toward your goals."
                 />
-              ))}
+              )}
             </Flex>
           </Flex>
           <Flex
@@ -99,7 +122,12 @@ function App() {
             height={{ base: 'auto', md: '415px' }}
             overflowY={{ base: 'visible', md: 'auto' }}
           >
-            <CalendarSm />
+            <CalendarSm
+              selectedDate={habitsDate}
+              onDateChange={(date) => {
+                setHabitsDate(date)
+              }}
+            />
           </Flex>
         </Flex>
         <Flex

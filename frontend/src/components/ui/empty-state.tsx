@@ -2,6 +2,8 @@ import { Box, Flex, IconButton, Text } from '@chakra-ui/react'
 import { List, Plus } from 'lucide-react'
 
 interface P {
+  circleSize?: number
+  iconSize?: number
   title?: string
   description?: string
   actionLabel?: string
@@ -9,6 +11,8 @@ interface P {
 }
 
 const AppEmptyState = ({
+  circleSize = 32,
+  iconSize = 48,
   title = 'Nothing here yet!',
   description = 'Start by creating your first item and begin your journey.',
   actionLabel = 'Create',
@@ -18,15 +22,15 @@ const AppEmptyState = ({
     <Flex direction="column" gap={4} width="full">
       <Flex justifyContent="center">
         <Box
-          width={32}
-          height={32}
+          width={circleSize}
+          height={circleSize}
           rounded="full"
           bg="#e6effc"
           display="flex"
           justifyContent="center"
           alignItems="center"
         >
-          <List size={48} color="#a1a1aa" />
+          <List size={iconSize} color="#a1a1aa" />
         </Box>
       </Flex>
 

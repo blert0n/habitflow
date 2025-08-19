@@ -78,3 +78,13 @@ export interface Habit {
   selectedDays: Array<AllowedDayString> | null
   excludedDates: Array<string>
 }
+
+export interface HabitsByDate {
+  data: Array<Habit> | undefined
+  limit: number
+  page: number
+  totalCount: number
+  totalPages: number
+}
+
+export type HabitsMatrix = Record<string, Array<Habit>>

@@ -28,7 +28,7 @@ const ListHabit = ({
   return (
     <Flex
       w={{ midSmDown: 'full' }}
-      maxW="300px"
+      maxW={{ base: 'full', md: '300px' }}
       borderRadius="2xl"
       borderColor="gray.300"
       borderWidth={1}

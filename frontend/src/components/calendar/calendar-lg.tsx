@@ -1,15 +1,48 @@
 import { Flex } from '@chakra-ui/react/flex'
 import { Spacer } from '@chakra-ui/react/spacer'
 import { Box, Separator } from '@chakra-ui/react'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import dayjs from 'dayjs'
 import { CalendarDayLg } from './calendar-day-lg'
 import { CalendarLegend } from './calendar-legend'
 import { CalendarHabits } from './calendar-habits'
+import { CalendarDayLgSkeleton } from './calendar-day-lg-skeleton'
+import type { Habit, HabitsByDate, HabitsMatrix } from '@/types/habits'
 import { HeaderWithText } from '@/components/ui/header-with-text'
 import { CalendarHeader } from '@/components/calendar/calendar-header'
 import { useCalendar } from '@/hooks/useCalendar'
 import { WEEK_DAYS } from '@/util/dates'
+import { client } from '@/util/client'
+
+const getUniqueHabits = (matrix?: HabitsMatrix): Array<Habit> => {
+  if (!matrix) return []
+  const allHabits = Object.values(matrix).flat()
+  const uniqueHabits = new Map<number | string, Habit>()
+
+  for (const habit of allHabits) {
+    uniqueHabits.set(habit.id, habit)
+  }
+
+  return Array.from(uniqueHabits.values())
+}
 
 const CalendarLg = () => {
+  const [habitsDate, setHabitsDate] = useState(dayjs())
+  const [page, setPage] = useState(1)
+
+  const { data: habitsByDate, isLoading: isLoadingByDate } = useQuery<
+    HabitsByDate,
+    Error
+  >({
+    queryKey: ['habits', habitsDate, page],
+    queryFn: () =>
+      client(
+        `/habits/by-date?date=${habitsDate.format('YYYY-MM-DD')}&page=${page}`,
+      ),
+    staleTime: 1000 * 60 * 5,
+  })
+
   const {
     currentDate,
     handleMonthChange,
@@ -22,6 +55,23 @@ const CalendarLg = () => {
   } = useCalendar({})
 
   const allDays = calendarMatrix.flat()
+
+  const startMatrixDate = allDays.at(0)?.subtract(1, 'day').format('YYYY-MM-DD')
+  const endMatrixDate = allDays.at(-1)?.add(1, 'day').format('YYYY-MM-DD')
+
+  const { data: habitsMatrix, isLoading: isLoadingMatrix } = useQuery<
+    HabitsMatrix,
+    Error
+  >({
+    queryKey: ['habitsMatrix', startMatrixDate, endMatrixDate],
+    queryFn: () =>
+      client(
+        `/habits/matrix?startDate=${startMatrixDate}&endDate=${endMatrixDate}`,
+      ),
+    staleTime: 1000 * 60 * 5,
+  })
+
+  const activeHabits = getUniqueHabits(habitsMatrix)
 
   return (
     <Flex direction="column" marginBottom={4} height="100%">
@@ -37,8 +87,17 @@ const CalendarLg = () => {
           direction={{ base: 'row', md: 'column' }}
           mb={{ base: 4, md: 0 }}
         >
-          <CalendarHabits />
-          <CalendarLegend />
+          <CalendarHabits
+            date={habitsDate}
+            habits={habitsByDate?.data}
+            total={habitsByDate?.totalCount}
+            page={page}
+            onPageChange={(newPage) => {
+              setPage(newPage)
+            }}
+            isLoading={isLoadingByDate}
+          />
+          <CalendarLegend habits={activeHabits} />
         </Flex>
         <Box
           flex={{ base: 'none', midMd: 2 }}
@@ -84,17 +143,24 @@ const CalendarLg = () => {
             height="100%"
             overflow="hidden"
           >
-            {allDays.map((day) => (
-              <CalendarDayLg
-                key={day.toISOString()}
-                day={day}
-                currentDate={currentDate}
-                selectedDate={selectedDate}
-                onSelect={(date) => {
-                  handleSelectedDateChange(date)
-                }}
-              />
-            ))}
+            {isLoadingMatrix
+              ? allDays.map((day) => (
+                  <CalendarDayLgSkeleton key={day.toISOString()} />
+                ))
+              : allDays.map((day) => (
+                  <CalendarDayLg
+                    key={day.toISOString()}
+                    day={day}
+                    currentDate={currentDate}
+                    selectedDate={selectedDate}
+                    habits={habitsMatrix?.[day.format('YYYY-MM-DD')] ?? []}
+                    onSelect={(date) => {
+                      handleSelectedDateChange(date)
+                      setHabitsDate(date)
+                      setPage(1)
+                    }}
+                  />
+                ))}
           </Box>
         </Box>
       </Flex>

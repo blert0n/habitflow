@@ -1,6 +1,6 @@
 import { Flex } from '@chakra-ui/react/flex'
 import { Button, HStack, SimpleGrid } from '@chakra-ui/react'
-import { FilterIcon, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { HeaderWithText } from '../ui/header-with-text'
@@ -103,6 +103,11 @@ const Habits = () => {
     },
   })
 
+  const isLoading =
+    createHabitMutation.isPending ||
+    editHabitMutation.isPending ||
+    deleteHabitMutation.isPending
+
   if (showCreateView || editing) {
     return (
       <Create
@@ -137,9 +142,6 @@ const Habits = () => {
         />
         <Flex gap={4}>
           <HStack>
-            <Button bg="white" variant="outline" size="sm">
-              <FilterIcon /> Filter
-            </Button>
             <Button
               bg="brand.primary"
               size="xs"
@@ -152,26 +154,26 @@ const Habits = () => {
           </HStack>
         </Flex>
       </Flex>
+      {!isLoadingHabits && !habits?.length && !isLoading && (
+        <EmptyState
+          toggleCreateView={() => {
+            setShowCreateView((prev) => !prev)
+          }}
+        />
+      )}
       <SimpleGrid
-        columns={{ base: 2, sm: 3 }}
-        columnGap="2"
-        rowGap="4"
-        minChildWidth={{ base: 'full', sm: '256px' }}
+        columns={{ base: 1, sm: 2, md: 3, lg: 4 }}
+        gap={2}
+        justifyContent="start"
       >
-        {isLoadingHabits &&
+        {(isLoadingHabits || isLoading) &&
           Array.from({ length: 6 }).map((_, index) => (
             <LoadingHabit key={index} />
           ))}
 
-        {!isLoadingHabits && !habits?.length && (
-          <EmptyState
-            toggleCreateView={() => {
-              setShowCreateView((prev) => !prev)
-            }}
-          />
-        )}
         {!isLoadingHabits &&
           (habits?.length ?? 0) > 0 &&
+          !isLoading &&
           (habits ?? []).map((habit) => (
             <ListHabit
               key={habit.id}
