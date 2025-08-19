@@ -38,6 +38,15 @@ type Habits struct {
 	Userid      pgtype.Int4      `json:"userid"`
 }
 
+type Notes struct {
+	ID                int32            `json:"id"`
+	HabitCompletionID int32            `json:"habit_completion_id"`
+	Content           []byte           `json:"content"`
+	CreatedAt         pgtype.Timestamp `json:"created_at"`
+	UpdatedAt         pgtype.Timestamp `json:"updated_at"`
+	UserID            pgtype.Int4      `json:"user_id"`
+}
+
 type Users struct {
 	ID        int32            `json:"id"`
 	Username  string           `json:"username"`
