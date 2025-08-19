@@ -1,32 +1,21 @@
 package routes
 
 import (
-	"net/http"
-
 	"github.com/blert0n/habitflow/controllers/auth"
 	"github.com/blert0n/habitflow/controllers/habits"
-	"github.com/blert0n/habitflow/database"
+	"github.com/blert0n/habitflow/controllers/logs"
 	"github.com/blert0n/habitflow/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterRoutes(rg *gin.RouterGroup) {
-	rg.GET("/categories", func(ctx *gin.Context) {
-
-		categories, err := database.Queries.ListCategories(ctx)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		ctx.JSON(http.StatusOK, categories)
-	})
-
 	rg.GET("/habits/list", middleware.IsAuthenticated(), habits.List)
 	rg.GET("/habits/by-date", middleware.IsAuthenticated(), habits.ListHabitsByDate)
 	rg.GET("/habits/matrix", middleware.IsAuthenticated(), habits.ListHabitsByRange)
 	rg.POST("/habits/create", middleware.IsAuthenticated(), habits.Create)
 	rg.POST("/habits/edit", middleware.IsAuthenticated(), habits.Edit)
+	rg.POST("/logs/check", middleware.IsAuthenticated(), logs.MarkAsComplete)
+	rg.POST("/logs/uncheck", middleware.IsAuthenticated(), logs.MarkAsIncomplete)
 	rg.DELETE("/habits/delete", middleware.IsAuthenticated(), habits.Delete)
 	rg.POST("/auth/sign-in", auth.SignIn)
 	rg.POST("/auth/sign-up", auth.SignUp)

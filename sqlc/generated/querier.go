@@ -23,10 +23,13 @@ type Querier interface {
 	GetHabitByID(ctx context.Context, id int32) (Habits, error)
 	GetUserByEmail(ctx context.Context, email string) (Users, error)
 	GetUserByID(ctx context.Context, id int32) (GetUserByIDRow, error)
+	IsCompleted(ctx context.Context, arg IsCompletedParams) (bool, error)
 	ListCategories(ctx context.Context) ([]Category, error)
 	ListHabitExcludedDates(ctx context.Context, habitID int32) ([]pgtype.Date, error)
 	ListHabits(ctx context.Context, userid pgtype.Int4) ([]ListHabitsRow, error)
 	ListHabitsByUser(ctx context.Context, userid pgtype.Int4) ([]Habits, error)
+	MarkAsIncomplete(ctx context.Context, arg MarkAsIncompleteParams) error
+	MarkHabitAsCompleted(ctx context.Context, arg MarkHabitAsCompletedParams) (HabitCompletionsLog, error)
 	SeedCategories(ctx context.Context, arg SeedCategoriesParams) error
 	SeedHabit(ctx context.Context, arg SeedHabitParams) error
 	SeedUser(ctx context.Context, arg SeedUserParams) (Users, error)

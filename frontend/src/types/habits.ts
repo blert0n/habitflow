@@ -75,6 +75,7 @@ export interface Habit {
   frequency: string
   userid: number
   isDaily: boolean
+  isCompleted: boolean
   selectedDays: Array<AllowedDayString> | null
   excludedDates: Array<string>
 }

@@ -1,11 +1,13 @@
 package habits
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/blert0n/habitflow/database"
+	db "github.com/blert0n/habitflow/sqlc/generated"
 	"github.com/blert0n/habitflow/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -24,6 +26,7 @@ type HabitResponse struct {
 	IsDaily       bool     `json:"isDaily"`
 	SelectedDays  []string `json:"selectedDays"`
 	ExcludedDates []string `json:"excludedDates"`
+	IsCompleted   bool     `json:"isCompleted"`
 }
 
 func List(c *gin.Context) {
@@ -110,6 +113,15 @@ func ListHabitsByDate(c *gin.Context) {
 	todaysHabits := []HabitResponse{}
 
 	for _, h := range habits {
+
+		completedAt, _ := time.ParseInLocation("2006-01-02", dateStr, time.Local)
+
+		log, _ := database.Queries.IsCompleted(c, db.IsCompletedParams{
+			HabitID:     h.ID,
+			UserID:      uid,
+			CompletedAt: pgtype.Timestamp{Time: completedAt, Valid: true},
+		})
+
 		excluded := []string{}
 		if h.ExcludedDates != nil {
 			switch v := h.ExcludedDates.(type) {
@@ -134,6 +146,8 @@ func ListHabitsByDate(c *gin.Context) {
 
 		isDaily, selectedDays, _ := utils.ParseRRule(utils.TextToString(h.Frequency))
 
+		fmt.Println(h.Name, log, "habitLog")
+
 		todaysHabits = append(todaysHabits, HabitResponse{
 			ID:            h.ID,
 			Name:          h.Name,
@@ -147,6 +161,7 @@ func ListHabitsByDate(c *gin.Context) {
 			IsDaily:       isDaily,
 			SelectedDays:  selectedDays,
 			ExcludedDates: excluded,
+			IsCompleted:   log,
 		})
 	}
 

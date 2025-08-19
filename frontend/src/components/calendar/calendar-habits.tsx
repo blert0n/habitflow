@@ -6,6 +6,7 @@ import { HabitSkeletonSm } from '../habits/loading-habit-sm'
 import { AppEmptyState } from '../ui/empty-state'
 import type { Dayjs } from 'dayjs'
 import type { HabitsByDate } from '@/types/habits'
+import { useCompleteHabits } from '@/hooks/useCompleteHabits'
 
 interface P {
   date: Dayjs
@@ -25,6 +26,8 @@ const CalendarHabits = ({
   onPageChange,
 }: P) => {
   const today = `${date.format('DD MMM')}, ${date.format('YYYY')}`
+  const { checkingId, isChecking, onCheck, onCheckingIdChange } =
+    useCompleteHabits()
 
   return (
     <Box
@@ -53,7 +56,12 @@ const CalendarHabits = ({
                 key={habit.id}
                 title={habit.name}
                 description={habit.description}
-                checked={false}
+                checked={habit.isCompleted}
+                isChecking={isChecking && checkingId === habit.id}
+                onCheck={() => {
+                  onCheckingIdChange(habit.id, date)
+                  onCheck(habit.id, habit.isCompleted, date)
+                }}
               />
             ))}
             <Pagination

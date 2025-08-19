@@ -13,6 +13,13 @@ type Category struct {
 	Name string `json:"name"`
 }
 
+type HabitCompletionsLog struct {
+	ID          int32            `json:"id"`
+	HabitID     int32            `json:"habit_id"`
+	UserID      int32            `json:"user_id"`
+	CompletedAt pgtype.Timestamp `json:"completed_at"`
+}
+
 type HabitExcludedDates struct {
 	ID           int32       `json:"id"`
 	HabitID      int32       `json:"habit_id"`

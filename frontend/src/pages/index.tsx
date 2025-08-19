@@ -15,6 +15,7 @@ import { client } from '@/util/client'
 import { HabitSkeletonSm } from '@/components/habits/loading-habit-sm'
 import { AppEmptyState } from '@/components/ui/empty-state'
 import { Pagination } from '@/components/ui/pagination'
+import { useCompleteHabits } from '@/hooks/useCompleteHabits'
 
 const notes = [
   {
@@ -52,6 +53,9 @@ function App() {
     staleTime: 1000 * 60 * 5,
   })
 
+  const { checkingId, isChecking, onCheck, onCheckingIdChange } =
+    useCompleteHabits()
+
   return (
     <div className="full-width" style={{ paddingBottom: '60px' }}>
       <Flex direction="column" gap={4} flex={1} width="full">
@@ -88,7 +92,12 @@ function App() {
                         key={habit.id}
                         title={habit.name}
                         description={habit.description}
-                        checked={false}
+                        checked={habit.isCompleted}
+                        onCheck={() => {
+                          onCheckingIdChange(habit.id, habitsDate)
+                          onCheck(habit.id, habit.isCompleted, habitsDate)
+                        }}
+                        isChecking={isChecking && checkingId === habit.id}
                       />
                     ))}
                   <Box position="absolute" bottom="0" left="0" right="0" pb={2}>
