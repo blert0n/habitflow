@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"slices"
 	"strings"
 	"time"
@@ -138,9 +137,6 @@ func GenerateHabitOccurrencesByDate(habits []MatrixHabit, matrix []time.Time) ma
 		}
 
 		allOccurrences := r.Between(start, end, true)
-
-		fmt.Println(allOccurrences, "allOccurrences")
-		fmt.Println(habit, "habit")
 
 		for _, occ := range allOccurrences {
 			excluded := false

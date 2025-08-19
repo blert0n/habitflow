@@ -1,7 +1,6 @@
 package habits
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -145,8 +144,6 @@ func ListHabitsByDate(c *gin.Context) {
 		}
 
 		isDaily, selectedDays, _ := utils.ParseRRule(utils.TextToString(h.Frequency))
-
-		fmt.Println(h.Name, log, "habitLog")
 
 		todaysHabits = append(todaysHabits, HabitResponse{
 			ID:            h.ID,
