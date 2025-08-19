@@ -11,6 +11,7 @@ import (
 )
 
 type Querier interface {
+	CountNotes(ctx context.Context, arg CountNotesParams) (int64, error)
 	CreateCategory(ctx context.Context, name string) (Category, error)
 	CreateHabit(ctx context.Context, arg CreateHabitParams) (Habits, error)
 	CreateHabitExcludedDate(ctx context.Context, arg CreateHabitExcludedDateParams) error
@@ -28,6 +29,7 @@ type Querier interface {
 	ListHabitExcludedDates(ctx context.Context, habitID int32) ([]pgtype.Date, error)
 	ListHabits(ctx context.Context, userid pgtype.Int4) ([]ListHabitsRow, error)
 	ListHabitsByUser(ctx context.Context, userid pgtype.Int4) ([]Habits, error)
+	ListNotes(ctx context.Context, arg ListNotesParams) ([]Notes, error)
 	MarkAsIncomplete(ctx context.Context, arg MarkAsIncompleteParams) error
 	MarkHabitAsCompleted(ctx context.Context, arg MarkHabitAsCompletedParams) (HabitCompletionsLog, error)
 	SeedCategories(ctx context.Context, arg SeedCategoriesParams) error

@@ -1,13 +1,20 @@
 import { Box, Button, Flex, Text } from '@chakra-ui/react'
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import dayjs from 'dayjs'
 import { HeaderWithText } from '../ui/header-with-text'
+import { Pagination } from '../ui/pagination'
+import { AppEmptyState } from '../ui/empty-state'
 import { Note } from './note'
 import { ViewNote } from './view-note'
 import { Create } from './create'
+import { NoteSkeleton } from './note-skeleton'
+import type { PaginatedNotesResponse } from '@/types/notes'
 import { formatFriendlyDate } from '@/util/dates'
+import { client } from '@/util/client'
 
-const notes = [
+const notes_mock = [
   {
     title: 'Morning Routine Reflection',
     note: 'Felt great after the morning workout. Need to focus more on proper form during exercises.',
@@ -30,15 +37,21 @@ const notes = [
   },
 ]
 
+type Note = PaginatedNotesResponse['data'][0]
+
 const Notes = () => {
-  const [selectedNoteId, setSelectedNoteId] = useState(0)
+  const [page, setPage] = useState(1)
+  const [selectedNote, setSelectedNote] = useState<Note | undefined>()
   const [isCreate, setIsCreate] = useState(false)
 
-  const onViewNote = (id: number) => {
-    setSelectedNoteId(id)
-  }
+  const { data, isLoading } = useQuery<PaginatedNotesResponse>({
+    queryKey: ['listNotes'],
+    queryFn: () => client('/notes/list'),
+  })
 
-  const selectedNote = notes[selectedNoteId]
+  const onViewNote = (note: Note) => {
+    setSelectedNote(note)
+  }
 
   return (
     <Flex direction="column" paddingBottom="60px">
@@ -84,17 +97,39 @@ const Notes = () => {
           minWidth={0}
         >
           <Text>Notes</Text>
-          {notes.map((note, index) => (
-            <Note
-              key={note.title}
-              title={note.title}
-              note={note.note}
-              date={formatFriendlyDate(note.date)}
-              onClick={() => {
-                onViewNote(index)
-              }}
+          {isLoading && <NoteSkeleton count={5} />}
+          {!isLoading && (data?.data.length ?? 0) > 0 && (
+            <>
+              {data?.data.map((note) => (
+                <Note
+                  key={note.id}
+                  title={'title'}
+                  note={'content'}
+                  date={formatFriendlyDate(dayjs(note.created_at))}
+                  onClick={() => {
+                    onViewNote(note)
+                  }}
+                />
+              ))}
+              <Pagination
+                totalCount={data?.totalCount ?? 0}
+                page={page}
+                pageSize={5}
+                hideNumbers
+                onPageChange={(newPage) => {
+                  setPage(newPage)
+                }}
+              />
+            </>
+          )}
+          {!isLoading && !data?.data.length && (
+            <AppEmptyState
+              circleSize={12}
+              iconSize={24}
+              title="No Notes Yet 😴"
+              description="You haven’t added any notes. Start capturing your thoughts, ideas, or reminders by creating a new note."
             />
-          ))}
+          )}
         </Box>
         <Box
           flex={{ base: 'none', midMd: 3 }}
@@ -114,13 +149,7 @@ const Notes = () => {
               }}
             />
           )}
-          {!isCreate && (
-            <ViewNote
-              title={selectedNote.title}
-              note={selectedNote.note}
-              key={selectedNote.title}
-            />
-          )}
+          {!isCreate && <ViewNote title={'title'} note={'note'} key={'key'} />}
         </Box>
       </Flex>
     </Flex>

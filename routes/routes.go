@@ -4,6 +4,7 @@ import (
 	"github.com/blert0n/habitflow/controllers/auth"
 	"github.com/blert0n/habitflow/controllers/habits"
 	"github.com/blert0n/habitflow/controllers/logs"
+	"github.com/blert0n/habitflow/controllers/notes"
 	"github.com/blert0n/habitflow/middleware"
 	"github.com/gin-gonic/gin"
 )
@@ -17,6 +18,7 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	rg.POST("/logs/check", middleware.IsAuthenticated(), logs.MarkAsComplete)
 	rg.POST("/logs/uncheck", middleware.IsAuthenticated(), logs.MarkAsIncomplete)
 	rg.DELETE("/habits/delete", middleware.IsAuthenticated(), habits.Delete)
+	rg.GET("/notes/list", middleware.IsAuthenticated(), notes.List)
 	rg.POST("/auth/sign-in", auth.SignIn)
 	rg.POST("/auth/sign-up", auth.SignUp)
 	rg.GET("/auth/sign-out", auth.SignOut)
