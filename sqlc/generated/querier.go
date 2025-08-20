@@ -15,6 +15,7 @@ type Querier interface {
 	CreateCategory(ctx context.Context, name string) (Category, error)
 	CreateHabit(ctx context.Context, arg CreateHabitParams) (Habits, error)
 	CreateHabitExcludedDate(ctx context.Context, arg CreateHabitExcludedDateParams) error
+	CreateNote(ctx context.Context, arg CreateNoteParams) (Notes, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (Users, error)
 	DeleteCategory(ctx context.Context, id int32) error
 	DeleteHabit(ctx context.Context, arg DeleteHabitParams) error
@@ -24,6 +25,7 @@ type Querier interface {
 	GetHabitByID(ctx context.Context, id int32) (Habits, error)
 	GetUserByEmail(ctx context.Context, email string) (Users, error)
 	GetUserByID(ctx context.Context, id int32) (GetUserByIDRow, error)
+	HabitOptions(ctx context.Context, userid pgtype.Int4) ([]HabitOptionsRow, error)
 	IsCompleted(ctx context.Context, arg IsCompletedParams) (bool, error)
 	ListCategories(ctx context.Context) ([]Category, error)
 	ListHabitExcludedDates(ctx context.Context, habitID int32) ([]pgtype.Date, error)

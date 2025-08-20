@@ -132,6 +132,36 @@ func (q *Queries) GetHabitByID(ctx context.Context, id int32) (Habits, error) {
 	return i, err
 }
 
+const habitOptions = `-- name: HabitOptions :many
+SELECT habits.id,habits.name FROM habits
+WHERE userId = $1
+`
+
+type HabitOptionsRow struct {
+	ID   int32  `json:"id"`
+	Name string `json:"name"`
+}
+
+func (q *Queries) HabitOptions(ctx context.Context, userid pgtype.Int4) ([]HabitOptionsRow, error) {
+	rows, err := q.db.Query(ctx, habitOptions, userid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []HabitOptionsRow{}
+	for rows.Next() {
+		var i HabitOptionsRow
+		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listHabitExcludedDates = `-- name: ListHabitExcludedDates :many
 SELECT excluded_date FROM habit_excluded_dates
 WHERE habit_id = $1

@@ -59,3 +59,96 @@ code {
 .app-box-shadow {
   box-shadow: rgba(0, 0, 0, 0.25) 0px 25px 50px -12px;
 }
+.rte-root {
+  position: relative;
+}
+
+.rte-content {
+  padding: 8px;
+  height: auto;
+  outline: none;
+  transition: all 150ms ease-in-out;
+  border-radius: 8px;
+  border: 1px solid #e1e6e9;
+  min-height: 8rem;
+}
+
+.rte-content-focus {
+  border-bottom: 2px solid #334155;
+}
+
+.rte-content-border {
+  border-bottom: 0.5px solid #d1d5db;
+}
+
+.rte-placeholder {
+  position: absolute;
+  top: 2px;
+  color: #9ca3af;
+}
+
+.textBold {
+  font-weight: bold;
+}
+.textItalic {
+  font-style: italic;
+}
+.textUnderline {
+  text-decoration: underline;
+}
+.textStrikethrough {
+  text-decoration: line-through;
+}
+.textUnderlineStrikethrough {
+  text-decoration: underline line-through;
+}
+.textCode {
+  color: black;
+  padding: 2px;
+  background: #ccc;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px 0;
+  transition: all 150ms ease-in-out;
+  background: #f7f9fa;
+  border-radius: 8px;
+  border: 1px solid #e1e6e9;
+  padding-left: 8px;
+  margin-bottom: 4px;
+}
+
+.toolbar--focused {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toolbar--hidden {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  height: 0;
+}
+
+.toolbar-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background-color 150ms ease-in-out;
+}
+
+.toolbar-btn:hover {
+  background: #e2e8f0;
+}
+
+.toolbar-btn--active {
+  background: #e2e8f0;
+}

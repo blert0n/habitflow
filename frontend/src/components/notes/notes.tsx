@@ -10,44 +10,34 @@ import { Note } from './note'
 import { ViewNote } from './view-note'
 import { Create } from './create'
 import { NoteSkeleton } from './note-skeleton'
-import type { PaginatedNotesResponse } from '@/types/notes'
+import type { HabitOptions, PaginatedNotesResponse } from '@/types/notes'
 import { formatFriendlyDate } from '@/util/dates'
 import { client } from '@/util/client'
-
-const notes_mock = [
-  {
-    title: 'Morning Routine Reflection',
-    note: 'Felt great after the morning workout. Need to focus more on proper form during exercises.',
-    date: new Date('2025-08-05T08:30:00'),
-  },
-  {
-    title: 'Book Notes',
-    note: 'Atomic Habits - Chapter 3: Small changes compound over time. Focus on systems, not goals.',
-    date: new Date('2025-08-04T22:15:00'),
-  },
-  {
-    title: 'Weekly Planning',
-    note: 'Outlined goals for the upcoming week. Need to prioritize sleep and evening routines.',
-    date: new Date('2025-07-29T19:45:00'),
-  },
-  {
-    title: 'Evening Reflection',
-    note: 'Felt distracted today. Will try the Pomodoro method tomorrow.',
-    date: new Date('2025-08-01T21:05:00'),
-  },
-]
 
 type Note = PaginatedNotesResponse['data'][0]
 
 const Notes = () => {
   const [page, setPage] = useState(1)
-  const [selectedNote, setSelectedNote] = useState<Note | undefined>()
   const [isCreate, setIsCreate] = useState(false)
 
   const { data, isLoading } = useQuery<PaginatedNotesResponse>({
     queryKey: ['listNotes'],
     queryFn: () => client('/notes/list'),
   })
+
+  const { data: habitOptions } = useQuery<Array<HabitOptions>>({
+    queryKey: ['listHabitOptions'],
+    queryFn: () => client('/habits/options'),
+  })
+
+  const relatedHabitOptions = (habitOptions ?? []).map((option) => ({
+    label: option.name,
+    value: String(option.id),
+  }))
+
+  const [selectedNote, setSelectedNote] = useState<Note | undefined>(
+    data?.data.at(0),
+  )
 
   const onViewNote = (note: Note) => {
     setSelectedNote(note)
@@ -83,6 +73,7 @@ const Notes = () => {
         height="100%"
         direction={{ base: 'column', midMd: 'row' }}
         align="stretch"
+        position="relative"
       >
         <Box
           flex={1}
@@ -100,26 +91,30 @@ const Notes = () => {
           {isLoading && <NoteSkeleton count={5} />}
           {!isLoading && (data?.data.length ?? 0) > 0 && (
             <>
-              {data?.data.map((note) => (
-                <Note
-                  key={note.id}
-                  title={'title'}
-                  note={'content'}
-                  date={formatFriendlyDate(dayjs(note.created_at))}
-                  onClick={() => {
-                    onViewNote(note)
+              {data?.data.map((note) => {
+                return (
+                  <Note
+                    key={note.id}
+                    title={note.title}
+                    note={''}
+                    date={formatFriendlyDate(dayjs(note.created_at))}
+                    onClick={() => {
+                      onViewNote(note)
+                    }}
+                  />
+                )
+              })}
+              <Box position="absolute" bottom={0} pb={1}>
+                <Pagination
+                  totalCount={data?.totalCount ?? 0}
+                  page={page}
+                  pageSize={5}
+                  hideNumbers
+                  onPageChange={(newPage) => {
+                    setPage(newPage)
                   }}
                 />
-              ))}
-              <Pagination
-                totalCount={data?.totalCount ?? 0}
-                page={page}
-                pageSize={5}
-                hideNumbers
-                onPageChange={(newPage) => {
-                  setPage(newPage)
-                }}
-              />
+              </Box>
             </>
           )}
           {!isLoading && !data?.data.length && (
@@ -144,12 +139,19 @@ const Notes = () => {
         >
           {isCreate && (
             <Create
+              relatedHabits={relatedHabitOptions}
               onDiscard={() => {
                 setIsCreate(false)
               }}
             />
           )}
-          {!isCreate && <ViewNote title={'title'} note={'note'} key={'key'} />}
+          {!isCreate && (
+            <ViewNote
+              title={selectedNote?.title ?? data?.data.at(0)?.title ?? ''}
+            >
+              yo
+            </ViewNote>
+          )}
         </Box>
       </Flex>
     </Flex>

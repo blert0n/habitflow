@@ -11,6 +11,7 @@ import (
 
 func RegisterRoutes(rg *gin.RouterGroup) {
 	rg.GET("/habits/list", middleware.IsAuthenticated(), habits.List)
+	rg.GET("/habits/options", middleware.IsAuthenticated(), habits.Options)
 	rg.GET("/habits/by-date", middleware.IsAuthenticated(), habits.ListHabitsByDate)
 	rg.GET("/habits/matrix", middleware.IsAuthenticated(), habits.ListHabitsByRange)
 	rg.POST("/habits/create", middleware.IsAuthenticated(), habits.Create)
@@ -19,6 +20,7 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	rg.POST("/logs/uncheck", middleware.IsAuthenticated(), logs.MarkAsIncomplete)
 	rg.DELETE("/habits/delete", middleware.IsAuthenticated(), habits.Delete)
 	rg.GET("/notes/list", middleware.IsAuthenticated(), notes.List)
+	rg.POST("/notes/create", middleware.IsAuthenticated(), notes.Create)
 	rg.POST("/auth/sign-in", auth.SignIn)
 	rg.POST("/auth/sign-up", auth.SignUp)
 	rg.GET("/auth/sign-out", auth.SignOut)

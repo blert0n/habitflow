@@ -282,3 +282,22 @@ func ListHabitsByRange(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response)
 }
+
+func Options(c *gin.Context) {
+	userID, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Not authenticated"})
+		return
+	}
+
+	uid := userID.(int32)
+
+	habits, err := database.Queries.HabitOptions(c, pgtype.Int4{Int32: uid, Valid: true})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, habits)
+}

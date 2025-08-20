@@ -45,6 +45,7 @@ type Notes struct {
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 	UserID    pgtype.Int4      `json:"user_id"`
+	Title     string           `json:"title"`
 }
 
 type Users struct {

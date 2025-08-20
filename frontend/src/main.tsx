@@ -9,7 +9,6 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import './styles.css'
-import './components/editor/editor.css'
 import { Box } from '@chakra-ui/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import reportWebVitals from './reportWebVitals.ts'

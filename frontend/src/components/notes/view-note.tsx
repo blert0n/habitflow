@@ -3,10 +3,10 @@ import { EllipsisVertical, Tags as TagIcon } from 'lucide-react'
 
 interface P {
   title: string
-  note: string
+  children: React.ReactNode
 }
 
-const ViewNote = ({ title, note }: P) => {
+const ViewNote = ({ title, children }: P) => {
   return (
     <Flex direction="column" gap={6}>
       <Flex direction="column" gap={2}>
@@ -37,7 +37,7 @@ const ViewNote = ({ title, note }: P) => {
         </Flex>
         <Separator />
       </Flex>
-      <Flex>{note}</Flex>
+      <Flex>{children}</Flex>
     </Flex>
   )
 }

@@ -31,8 +31,41 @@ func (q *Queries) CountNotes(ctx context.Context, arg CountNotesParams) (int64, 
 	return count, err
 }
 
+const createNote = `-- name: CreateNote :one
+INSERT INTO notes (habit_id, user_id, title, content, created_at, updated_at)
+VALUES ($1, $2, $3, $4, NOW(), NOW())
+RETURNING id, habit_id, content, created_at, updated_at, user_id, title
+`
+
+type CreateNoteParams struct {
+	HabitID int32       `json:"habit_id"`
+	UserID  pgtype.Int4 `json:"user_id"`
+	Title   string      `json:"title"`
+	Content []byte      `json:"content"`
+}
+
+func (q *Queries) CreateNote(ctx context.Context, arg CreateNoteParams) (Notes, error) {
+	row := q.db.QueryRow(ctx, createNote,
+		arg.HabitID,
+		arg.UserID,
+		arg.Title,
+		arg.Content,
+	)
+	var i Notes
+	err := row.Scan(
+		&i.ID,
+		&i.HabitID,
+		&i.Content,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.UserID,
+		&i.Title,
+	)
+	return i, err
+}
+
 const listNotes = `-- name: ListNotes :many
-SELECT id, habit_id, content, created_at, updated_at, user_id
+SELECT id, habit_id, content, created_at, updated_at, user_id, title
 FROM notes
 WHERE user_id = $1
   AND ($3::bool IS FALSE OR habit_id = $2)
@@ -71,6 +104,7 @@ func (q *Queries) ListNotes(ctx context.Context, arg ListNotesParams) ([]Notes, 
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.UserID,
+			&i.Title,
 		); err != nil {
 			return nil, err
 		}

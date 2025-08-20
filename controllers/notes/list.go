@@ -1,6 +1,7 @@
 package notes
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -11,7 +12,6 @@ import (
 )
 
 func List(c *gin.Context) {
-
 	userId, exists := c.Get("userId")
 	uid, ok := userId.(int32)
 
@@ -23,6 +23,7 @@ func List(c *gin.Context) {
 	habitIdStr := c.Query("habit_id")
 	pageStr := c.Query("page")
 	limitStr := c.Query("limit")
+
 	var habitId int32
 	filterByHabit := false
 
@@ -51,7 +52,6 @@ func List(c *gin.Context) {
 		HabitID: habitId,
 		Column3: filterByHabit,
 	})
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -75,20 +75,38 @@ func List(c *gin.Context) {
 		Limit:   int32(limit),
 		Offset:  int32(offset),
 	})
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	var out []map[string]interface{}
+	for _, n := range notes {
+		var content interface{}
+		if len(n.Content) > 0 {
+			if err := json.Unmarshal(n.Content, &content); err != nil {
+				content = string(n.Content)
+			}
+		}
+
+		out = append(out, map[string]interface{}{
+			"id":        n.ID,
+			"title":     n.Title,
+			"user_id":   n.UserID,
+			"habit_id":  n.HabitID,
+			"content":   content,
+			"createdAt": n.CreatedAt,
+			"updatedAt": n.UpdatedAt,
+		})
+	}
+
 	totalPages := (int64(count) + int64(limit) - 1) / int64(limit)
 
 	c.JSON(http.StatusOK, gin.H{
-		"data":       notes,
+		"data":       out,
 		"page":       page,
 		"limit":      limit,
 		"totalCount": count,
 		"totalPages": totalPages,
 	})
-
 }

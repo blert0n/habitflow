@@ -79,3 +79,7 @@ DELETE FROM habit_excluded_dates
 WHERE habit_id = $1
   AND excluded_date = $2;
 
+-- name: HabitOptions :many
+SELECT habits.id,habits.name FROM habits
+WHERE userId = $1;
+
