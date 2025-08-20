@@ -1,18 +1,18 @@
 import { Flex, IconButton, Separator, Tag, Text } from '@chakra-ui/react'
 import { EllipsisVertical, Tags as TagIcon } from 'lucide-react'
+import type { CreateNoteForm } from '@/types/notes'
 
 interface P {
-  title: string
-  children: React.ReactNode
+  note: CreateNoteForm
 }
 
-const ViewNote = ({ title, children }: P) => {
+const ViewNote = ({ note }: P) => {
   return (
     <Flex direction="column" gap={6}>
       <Flex direction="column" gap={2}>
         <Flex justify="space-between" alignItems="center">
           <Text color="gray.700" fontSize={16} fontWeight="semibold">
-            {title}
+            {note.title}
           </Text>
           <IconButton variant="ghost" justifySelf="end" alignSelf="flex-end">
             <EllipsisVertical />
@@ -37,7 +37,12 @@ const ViewNote = ({ title, children }: P) => {
         </Flex>
         <Separator />
       </Flex>
-      <Flex>{children}</Flex>
+      <Flex>
+        <div
+          dangerouslySetInnerHTML={{ __html: note.content }}
+          className="full-width"
+        />
+      </Flex>
     </Flex>
   )
 }

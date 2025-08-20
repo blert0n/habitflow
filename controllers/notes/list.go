@@ -1,7 +1,6 @@
 package notes
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -80,30 +79,10 @@ func List(c *gin.Context) {
 		return
 	}
 
-	var out []map[string]interface{}
-	for _, n := range notes {
-		var content interface{}
-		if len(n.Content) > 0 {
-			if err := json.Unmarshal(n.Content, &content); err != nil {
-				content = string(n.Content)
-			}
-		}
-
-		out = append(out, map[string]interface{}{
-			"id":        n.ID,
-			"title":     n.Title,
-			"user_id":   n.UserID,
-			"habit_id":  n.HabitID,
-			"content":   content,
-			"createdAt": n.CreatedAt,
-			"updatedAt": n.UpdatedAt,
-		})
-	}
-
 	totalPages := (int64(count) + int64(limit) - 1) / int64(limit)
 
 	c.JSON(http.StatusOK, gin.H{
-		"data":       out,
+		"data":       notes,
 		"page":       page,
 		"limit":      limit,
 		"totalCount": count,

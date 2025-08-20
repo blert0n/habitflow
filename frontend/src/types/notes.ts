@@ -24,5 +24,5 @@ export interface HabitOptions {
 export interface CreateNoteForm {
   title: string
   habit_id: number
-  content: any
+  content: string
 }

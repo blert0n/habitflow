@@ -41,7 +41,7 @@ type Habits struct {
 type Notes struct {
 	ID        int32            `json:"id"`
 	HabitID   int32            `json:"habit_id"`
-	Content   []byte           `json:"content"`
+	Content   string           `json:"content"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 	UserID    pgtype.Int4      `json:"user_id"`

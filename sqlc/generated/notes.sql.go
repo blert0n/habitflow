@@ -41,7 +41,7 @@ type CreateNoteParams struct {
 	HabitID int32       `json:"habit_id"`
 	UserID  pgtype.Int4 `json:"user_id"`
 	Title   string      `json:"title"`
-	Content []byte      `json:"content"`
+	Content string      `json:"content"`
 }
 
 func (q *Queries) CreateNote(ctx context.Context, arg CreateNoteParams) (Notes, error) {

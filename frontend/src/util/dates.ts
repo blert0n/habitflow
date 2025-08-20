@@ -5,6 +5,7 @@ import isBetween from 'dayjs/plugin/isBetween'
 import weekday from 'dayjs/plugin/weekday'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
+import utc from 'dayjs/plugin/utc'
 import { RRule } from 'rrule'
 import type { ByWeekday } from 'rrule'
 import type { Dayjs } from 'dayjs'
@@ -15,6 +16,7 @@ dayjs.extend(isBetween)
 dayjs.extend(weekday)
 dayjs.extend(localizedFormat)
 dayjs.extend(advancedFormat)
+dayjs.extend(utc)
 
 interface DayWithRRule {
   rule: ByWeekday
@@ -70,7 +72,7 @@ const getCalendarMatrix = (currentMonth: Dayjs): Array<Array<Dayjs>> => {
 }
 
 const formatFriendlyDate = (date: Dayjs | Date): string => {
-  const d = dayjs(date)
+  const d = dayjs(date, 'YYYY-MM-DD HH:mm:ss.SSSSSS', true)
   if (d.isToday()) {
     return `Today, ${d.format('h:mm a')}`
   }

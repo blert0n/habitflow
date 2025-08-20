@@ -1,24 +1,37 @@
 import { Box, Button, Flex, Text } from '@chakra-ui/react'
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { HeaderWithText } from '../ui/header-with-text'
 import { Pagination } from '../ui/pagination'
 import { AppEmptyState } from '../ui/empty-state'
+import { toaster } from '../ui/toaster'
 import { Note } from './note'
-import { ViewNote } from './view-note'
-import { Create } from './create'
+import { NoteEditor } from './create'
 import { NoteSkeleton } from './note-skeleton'
-import type { HabitOptions, PaginatedNotesResponse } from '@/types/notes'
+import type {
+  CreateNoteForm,
+  HabitOptions,
+  PaginatedNotesResponse,
+} from '@/types/notes'
 import { formatFriendlyDate } from '@/util/dates'
 import { client } from '@/util/client'
+
+const previewNoteContent = (html: string, maxLength = 30) => {
+  const tempDiv = document.createElement('div')
+  tempDiv.innerHTML = html
+  const text = tempDiv.textContent || tempDiv.innerText || ''
+  return text.slice(0, maxLength)
+}
 
 type Note = PaginatedNotesResponse['data'][0]
 
 const Notes = () => {
   const [page, setPage] = useState(1)
-  const [isCreate, setIsCreate] = useState(false)
+  const [mode, setMode] = useState<'create' | 'edit' | 'view'>('view')
+
+  const queryClient = useQueryClient()
 
   const { data, isLoading } = useQuery<PaginatedNotesResponse>({
     queryKey: ['listNotes'],
@@ -28,6 +41,30 @@ const Notes = () => {
   const { data: habitOptions } = useQuery<Array<HabitOptions>>({
     queryKey: ['listHabitOptions'],
     queryFn: () => client('/habits/options'),
+  })
+
+  const createNoteMutation = useMutation({
+    mutationKey: ['createNote'],
+    mutationFn: (note: CreateNoteForm) =>
+      client('/notes/create', {
+        method: 'POST',
+        body: JSON.stringify(note),
+      }),
+    onSuccess: () => {
+      setSelectedNote(undefined)
+      setMode('view')
+      queryClient.invalidateQueries({ queryKey: ['listNotes'] })
+      toaster.create({
+        type: 'success',
+        title: 'A note note was created.',
+      })
+    },
+    onError: () => {
+      toaster.create({
+        type: 'error',
+        title: 'Note was not saved.',
+      })
+    },
   })
 
   const relatedHabitOptions = (habitOptions ?? []).map((option) => ({
@@ -40,6 +77,7 @@ const Notes = () => {
   )
 
   const onViewNote = (note: Note) => {
+    setMode('view')
     setSelectedNote(note)
   }
 
@@ -56,17 +94,16 @@ const Notes = () => {
           title="Notes"
           text="Track your thoughts and reflections"
         />
-        {!isCreate && (
-          <Button
-            bg="brand.primary"
-            size="xs"
-            onClick={() => {
-              setIsCreate((prev) => !prev)
-            }}
-          >
-            <Plus /> Note
-          </Button>
-        )}
+        <Button
+          bg="brand.primary"
+          size="xs"
+          onClick={() => {
+            setSelectedNote(undefined)
+            setMode('create')
+          }}
+        >
+          <Plus /> Create
+        </Button>
       </Flex>
       <Flex
         gap={4}
@@ -86,17 +123,19 @@ const Notes = () => {
           flexDirection="column"
           gapY={2}
           minWidth={0}
+          pb="60px"
         >
           <Text>Notes</Text>
           {isLoading && <NoteSkeleton count={5} />}
           {!isLoading && (data?.data.length ?? 0) > 0 && (
             <>
               {data?.data.map((note) => {
+                const previewNote = previewNoteContent(note.content)
                 return (
                   <Note
                     key={note.id}
                     title={note.title}
-                    note={''}
+                    note={previewNote}
                     date={formatFriendlyDate(dayjs(note.created_at))}
                     onClick={() => {
                       onViewNote(note)
@@ -137,21 +176,19 @@ const Notes = () => {
           flexDirection="column"
           minWidth={0}
         >
-          {isCreate && (
-            <Create
-              relatedHabits={relatedHabitOptions}
-              onDiscard={() => {
-                setIsCreate(false)
-              }}
-            />
-          )}
-          {!isCreate && (
-            <ViewNote
-              title={selectedNote?.title ?? data?.data.at(0)?.title ?? ''}
-            >
-              yo
-            </ViewNote>
-          )}
+          <NoteEditor
+            note={
+              mode === 'view'
+                ? (selectedNote ?? data?.data.at(0))
+                : selectedNote
+            }
+            relatedHabits={relatedHabitOptions}
+            onSave={(note) => createNoteMutation.mutate(note)}
+            onDiscard={() => setMode('view')}
+            mode={mode}
+            isLoading={isLoading}
+            isCreateLoading={createNoteMutation.isPending}
+          />
         </Box>
       </Flex>
     </Flex>

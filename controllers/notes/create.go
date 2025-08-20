@@ -1,7 +1,6 @@
 package notes
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/blert0n/habitflow/database"
@@ -20,9 +19,9 @@ func Create(c *gin.Context) {
 	}
 
 	var body struct {
-		HabitID int32       `json:"habit_id"`
-		Title   string      `json:"title,omitempty"`
-		Content interface{} `json:"content,omitempty"`
+		HabitID int32  `json:"habit_id"`
+		Title   string `json:"title,omitempty"`
+		Content string `json:"content,omitempty"`
 	}
 
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -30,26 +29,15 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	contentJSON, err := json.Marshal(body.Content)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid content"})
-		return
-	}
-
 	note, err := database.Queries.CreateNote(c, db.CreateNoteParams{
 		HabitID: body.HabitID,
 		UserID:  pgtype.Int4{Int32: uid, Valid: true},
 		Title:   body.Title,
-		Content: contentJSON,
+		Content: body.Content,
 	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
-	}
-
-	var decodedContent interface{}
-	if err := json.Unmarshal(note.Content, &decodedContent); err != nil {
-		decodedContent = nil
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -58,7 +46,7 @@ func Create(c *gin.Context) {
 			"habitId": note.HabitID,
 			"userId":  note.UserID.Int32,
 			"title":   note.Title,
-			"content": decodedContent,
+			"content": note.Content,
 		},
 	})
 }
