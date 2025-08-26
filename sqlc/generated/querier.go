@@ -20,7 +20,9 @@ type Querier interface {
 	DeleteCategory(ctx context.Context, id int32) error
 	DeleteHabit(ctx context.Context, arg DeleteHabitParams) error
 	DeleteHabitExcludedDate(ctx context.Context, arg DeleteHabitExcludedDateParams) error
+	DeleteNote(ctx context.Context, arg DeleteNoteParams) error
 	DeleteUser(ctx context.Context, id int32) error
+	EditNote(ctx context.Context, arg EditNoteParams) (Notes, error)
 	GetCategoryByID(ctx context.Context, id int32) (Category, error)
 	GetHabitByID(ctx context.Context, id int32) (Habits, error)
 	GetUserByEmail(ctx context.Context, email string) (Users, error)

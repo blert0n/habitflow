@@ -1,22 +1,20 @@
-import { Button, Flex, IconButton, Input, Text } from '@chakra-ui/react'
-import { Trash } from 'lucide-react'
+import { Button, Flex, Input, Text } from '@chakra-ui/react'
 import { Controller, useForm } from 'react-hook-form'
 import { HeaderWithText } from '../ui/header-with-text'
 import { AppSelect } from '../ui/select'
 import { RenderValidationError } from '../ui/validation-error'
 import { RichTextEditor } from '../rich-text-editor'
 import { AppSpinner } from '../layout/app-spinner'
-import { ViewNote } from './view-note'
-import type { CreateNoteForm } from '@/types/notes'
+import type { CreateNoteForm, PaginatedNotesResponse } from '@/types/notes'
 
 interface NoteEditorProps {
-  note?: CreateNoteForm
+  note?: PaginatedNotesResponse['data'][0]
   relatedHabits: Array<{ label: string; value: string }>
+  mode?: 'create' | 'edit' | 'view'
   isLoading?: boolean
   isCreateLoading?: boolean
   onDiscard?: () => void
   onSave: (data: CreateNoteForm) => void
-  mode?: 'create' | 'edit' | 'view'
 }
 
 const NoteEditor = ({
@@ -28,11 +26,8 @@ const NoteEditor = ({
   onDiscard,
   onSave,
 }: NoteEditorProps) => {
-  const isView = mode === 'view'
-
   const {
     control,
-    register,
     handleSubmit,
     formState: { errors, isValid, isSubmitting },
   } = useForm<CreateNoteForm>({
@@ -40,6 +35,7 @@ const NoteEditor = ({
     reValidateMode: 'onChange',
     shouldUnregister: true,
     defaultValues: {
+      id: note?.id ?? 0,
       title: note?.title ?? '',
       habit_id: note?.habit_id ?? 0,
       content: note?.content ?? '',
@@ -47,12 +43,10 @@ const NoteEditor = ({
   })
 
   const onSubmit = (data: CreateNoteForm) => {
-    onSave(data)
+    onSave({ id: note?.id ?? 0, ...data })
   }
 
   if (isLoading) return <AppSpinner />
-
-  if (isView && note) return <ViewNote note={note} />
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -66,29 +60,25 @@ const NoteEditor = ({
                 : 'Edit your note'
             }
           />
-          {onDiscard && (
-            <IconButton
-              cursor="pointer"
-              _hover={{ scale: 1.1 }}
-              variant="outline"
-              size="sm"
-              onClick={onDiscard}
-              aria-label="Discard"
-            >
-              <Trash strokeWidth={1} size={16} />
-            </IconButton>
-          )}
         </Flex>
 
         <Flex direction="column" gap={1}>
           <Text color="gray.700" fontSize={14}>
             Title
           </Text>
-          <Input
-            placeholder="Enter a note title"
-            size="sm"
-            aria-invalid={errors.title ? 'true' : 'false'}
-            {...register('title', { required: true, minLength: 1 })}
+          <Controller
+            name="title"
+            control={control}
+            rules={{ required: 'Please select a related habit', min: 1 }}
+            render={({ field }) => (
+              <Input
+                placeholder="Enter a note title"
+                size="sm"
+                aria-invalid={errors.title ? 'true' : 'false'}
+                value={field.value}
+                onChange={field.onChange}
+              />
+            )}
           />
           {errors.title && <RenderValidationError error={errors.title} />}
         </Flex>
@@ -145,19 +135,35 @@ const NoteEditor = ({
             )}
           />
         </Flex>
+        <Flex justify="end" gap={2}>
+          <Button
+            size="xs"
+            px={4}
+            width="150px"
+            alignSelf="end"
+            disabled={!isValid || isSubmitting || isCreateLoading}
+            loading={isCreateLoading}
+            variant="outline"
+            onClick={() => {
+              onDiscard?.()
+            }}
+          >
+            Discard
+          </Button>
 
-        <Button
-          size="xs"
-          px={4}
-          type="submit"
-          width="150px"
-          alignSelf="end"
-          bg="brand.primary"
-          disabled={!isValid || isSubmitting || isCreateLoading}
-          loading={isCreateLoading}
-        >
-          {mode === 'create' ? 'Publish note' : 'Save changes'}
-        </Button>
+          <Button
+            size="xs"
+            px={4}
+            type="submit"
+            width="150px"
+            alignSelf="end"
+            bg="brand.primary"
+            disabled={!isValid || isSubmitting || isCreateLoading}
+            loading={isCreateLoading}
+          >
+            {mode === 'create' ? 'Publish note' : 'Save changes'}
+          </Button>
+        </Flex>
       </Flex>
     </form>
   )

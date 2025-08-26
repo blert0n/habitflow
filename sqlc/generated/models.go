@@ -39,13 +39,13 @@ type Habits struct {
 }
 
 type Notes struct {
-	ID        int32            `json:"id"`
-	HabitID   int32            `json:"habit_id"`
-	Content   string           `json:"content"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
-	UserID    pgtype.Int4      `json:"user_id"`
-	Title     string           `json:"title"`
+	ID        int32              `json:"id"`
+	HabitID   int32              `json:"habit_id"`
+	Content   string             `json:"content"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+	UserID    pgtype.Int4        `json:"user_id"`
+	Title     string             `json:"title"`
 }
 
 type Users struct {

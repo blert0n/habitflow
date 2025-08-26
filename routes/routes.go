@@ -21,6 +21,8 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	rg.DELETE("/habits/delete", middleware.IsAuthenticated(), habits.Delete)
 	rg.GET("/notes/list", middleware.IsAuthenticated(), notes.List)
 	rg.POST("/notes/create", middleware.IsAuthenticated(), notes.Create)
+	rg.POST("/notes/edit", middleware.IsAuthenticated(), notes.Edit)
+	rg.POST("/notes/delete", middleware.IsAuthenticated(), notes.Delete)
 	rg.POST("/auth/sign-in", auth.SignIn)
 	rg.POST("/auth/sign-up", auth.SignUp)
 	rg.GET("/auth/sign-out", auth.SignOut)

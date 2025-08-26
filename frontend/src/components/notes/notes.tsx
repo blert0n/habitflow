@@ -10,6 +10,7 @@ import { toaster } from '../ui/toaster'
 import { Note } from './note'
 import { NoteEditor } from './create'
 import { NoteSkeleton } from './note-skeleton'
+import { ViewNote } from './view-note'
 import type {
   CreateNoteForm,
   HabitOptions,
@@ -67,10 +68,53 @@ const Notes = () => {
     },
   })
 
-  const relatedHabitOptions = (habitOptions ?? []).map((option) => ({
-    label: option.name,
-    value: String(option.id),
-  }))
+  const editNoteMutation = useMutation({
+    mutationKey: ['editNote'],
+    mutationFn: (note: CreateNoteForm) =>
+      client('/notes/edit', {
+        method: 'POST',
+        body: JSON.stringify(note),
+      }),
+    onSuccess: () => {
+      setSelectedNote(undefined)
+      setMode('view')
+      queryClient.invalidateQueries({ queryKey: ['listNotes'] })
+      toaster.create({
+        type: 'success',
+        title: 'Changes were saved',
+      })
+    },
+    onError: () => {
+      toaster.create({
+        type: 'error',
+        title: 'Note was not saved.',
+      })
+    },
+  })
+
+  const deleteNoteMutation = useMutation({
+    mutationKey: ['deleteNote'],
+    mutationFn: (id: number) =>
+      client('/notes/delete', {
+        method: 'POST',
+        body: JSON.stringify({ id }),
+      }),
+    onSuccess: () => {
+      setSelectedNote(undefined)
+      setMode('view')
+      queryClient.invalidateQueries({ queryKey: ['listNotes'] })
+      toaster.create({
+        type: 'success',
+        title: 'Note was deleted',
+      })
+    },
+    onError: () => {
+      toaster.create({
+        type: 'error',
+        title: 'Note could not be deleted.',
+      })
+    },
+  })
 
   const [selectedNote, setSelectedNote] = useState<Note | undefined>(
     data?.data.at(0),
@@ -79,6 +123,19 @@ const Notes = () => {
   const onViewNote = (note: Note) => {
     setMode('view')
     setSelectedNote(note)
+  }
+
+  const relatedHabitOptions = (habitOptions ?? []).map((option) => ({
+    label: option.name,
+    value: String(option.id),
+  }))
+
+  const isView = mode === 'view'
+  const viewNote = selectedNote ?? data?.data.at(0)
+
+  const handleDelete = () => {
+    if (!viewNote?.id) return
+    deleteNoteMutation.mutate(viewNote.id)
   }
 
   return (
@@ -176,19 +233,48 @@ const Notes = () => {
           flexDirection="column"
           minWidth={0}
         >
-          <NoteEditor
-            note={
-              mode === 'view'
-                ? (selectedNote ?? data?.data.at(0))
-                : selectedNote
-            }
-            relatedHabits={relatedHabitOptions}
-            onSave={(note) => createNoteMutation.mutate(note)}
-            onDiscard={() => setMode('view')}
-            mode={mode}
-            isLoading={isLoading}
-            isCreateLoading={createNoteMutation.isPending}
-          />
+          {!isView && (
+            <NoteEditor
+              note={mode !== 'create' ? viewNote : undefined}
+              relatedHabits={relatedHabitOptions}
+              onSave={(note) => {
+                note.id
+                  ? editNoteMutation.mutate(note)
+                  : createNoteMutation.mutate(note)
+              }}
+              onDiscard={() => {
+                setMode('view')
+                setSelectedNote(undefined)
+              }}
+              mode={mode}
+              isLoading={isLoading}
+              isCreateLoading={createNoteMutation.isPending}
+            />
+          )}
+          {isView && viewNote && (
+            <ViewNote
+              note={viewNote}
+              onEdit={() => setMode('edit')}
+              onDelete={() => {
+                handleDelete()
+              }}
+            />
+          )}
+          {isView && !viewNote && (
+            <Flex
+              alignItems="center"
+              justifyContent="center"
+              direction="column"
+              height="full"
+            >
+              <AppEmptyState
+                title="Select a note"
+                description="Choose a note to see its full content on this side."
+                circleSize={12}
+                iconSize={24}
+              />
+            </Flex>
+          )}
         </Box>
       </Flex>
     </Flex>

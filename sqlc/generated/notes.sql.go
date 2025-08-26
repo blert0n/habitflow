@@ -64,6 +64,60 @@ func (q *Queries) CreateNote(ctx context.Context, arg CreateNoteParams) (Notes, 
 	return i, err
 }
 
+const deleteNote = `-- name: DeleteNote :exec
+DELETE FROM notes where id = $1 AND user_id = $2
+`
+
+type DeleteNoteParams struct {
+	ID     int32       `json:"id"`
+	UserID pgtype.Int4 `json:"user_id"`
+}
+
+func (q *Queries) DeleteNote(ctx context.Context, arg DeleteNoteParams) error {
+	_, err := q.db.Exec(ctx, deleteNote, arg.ID, arg.UserID)
+	return err
+}
+
+const editNote = `-- name: EditNote :one
+UPDATE notes
+SET title = $1,
+    content = $2,
+    habit_id = $3,
+    updated_at = CURRENT_TIMESTAMP
+WHERE id = $4
+  AND user_id = $5
+RETURNING id, habit_id, content, created_at, updated_at, user_id, title
+`
+
+type EditNoteParams struct {
+	Title   string      `json:"title"`
+	Content string      `json:"content"`
+	HabitID int32       `json:"habit_id"`
+	ID      int32       `json:"id"`
+	UserID  pgtype.Int4 `json:"user_id"`
+}
+
+func (q *Queries) EditNote(ctx context.Context, arg EditNoteParams) (Notes, error) {
+	row := q.db.QueryRow(ctx, editNote,
+		arg.Title,
+		arg.Content,
+		arg.HabitID,
+		arg.ID,
+		arg.UserID,
+	)
+	var i Notes
+	err := row.Scan(
+		&i.ID,
+		&i.HabitID,
+		&i.Content,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.UserID,
+		&i.Title,
+	)
+	return i, err
+}
+
 const listNotes = `-- name: ListNotes :many
 SELECT id, habit_id, content, created_at, updated_at, user_id, title
 FROM notes

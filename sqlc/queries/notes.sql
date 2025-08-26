@@ -18,3 +18,17 @@ INSERT INTO notes (habit_id, user_id, title, content, created_at, updated_at)
 VALUES ($1, $2, $3, $4, NOW(), NOW())
 RETURNING *;
 
+-- name: EditNote :one
+UPDATE notes
+SET title = $1,
+    content = $2,
+    habit_id = $3,
+    updated_at = CURRENT_TIMESTAMP
+WHERE id = $4
+  AND user_id = $5
+RETURNING *;
+
+-- name: DeleteNote :exec
+DELETE FROM notes where id = $1 AND user_id = $2;
+
+
