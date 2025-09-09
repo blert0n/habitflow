@@ -1,5 +1,12 @@
-import { Box, Button, Flex, Text } from '@chakra-ui/react'
-import { Plus } from 'lucide-react'
+import {
+  Box,
+  Button,
+  Flex,
+  IconButton,
+  Text,
+  useBreakpointValue,
+} from '@chakra-ui/react'
+import { ChevronDown, ChevronUp, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
@@ -18,25 +25,20 @@ import type {
 } from '@/types/notes'
 import { formatFriendlyDate } from '@/util/dates'
 import { client } from '@/util/client'
-
-const previewNoteContent = (html: string, maxLength = 30) => {
-  const tempDiv = document.createElement('div')
-  tempDiv.innerHTML = html
-  const text = tempDiv.textContent || tempDiv.innerText || ''
-  return text.slice(0, maxLength)
-}
+import { previewNoteContent } from '@/util/notes'
 
 type Note = PaginatedNotesResponse['data'][0]
 
 const Notes = () => {
   const [page, setPage] = useState(1)
   const [mode, setMode] = useState<'create' | 'edit' | 'view'>('view')
-
+  const [hideNotes, setHideNotes] = useState(false)
+  const isMobile = useBreakpointValue({ base: true, midMd: false })
   const queryClient = useQueryClient()
 
   const { data, isLoading } = useQuery<PaginatedNotesResponse>({
-    queryKey: ['listNotes'],
-    queryFn: () => client('/notes/list'),
+    queryKey: ['listNotes', page],
+    queryFn: () => client(`/notes/list?page=${page}`),
   })
 
   const { data: habitOptions } = useQuery<Array<HabitOptions>>({
@@ -180,36 +182,56 @@ const Notes = () => {
           flexDirection="column"
           gapY={2}
           minWidth={0}
-          pb="60px"
+          minHeight={{ base: 'auto', midMd: '400px' }}
+          pb={!hideNotes ? '60px' : 0}
+          position="relative"
         >
-          <Text>Notes</Text>
+          <Flex justifyContent="space-between" alignItems="center">
+            <Text>Notes</Text>
+            {isMobile && (
+              <IconButton
+                size="xs"
+                variant="ghost"
+                onClick={() => setHideNotes((prev) => !prev)}
+              >
+                {hideNotes ? (
+                  <ChevronDown strokeWidth={1.5} />
+                ) : (
+                  <ChevronUp strokeWidth={1.5} />
+                )}
+              </IconButton>
+            )}
+          </Flex>
           {isLoading && <NoteSkeleton count={5} />}
           {!isLoading && (data?.data.length ?? 0) > 0 && (
             <>
-              {data?.data.map((note) => {
-                const previewNote = previewNoteContent(note.content)
-                return (
-                  <Note
-                    key={note.id}
-                    title={note.title}
-                    note={previewNote}
-                    date={formatFriendlyDate(dayjs(note.created_at))}
-                    onClick={() => {
-                      onViewNote(note)
+              {!hideNotes &&
+                data?.data.map((note) => {
+                  const previewNote = previewNoteContent(note.content)
+                  return (
+                    <Note
+                      key={note.id}
+                      title={note.title}
+                      note={previewNote}
+                      date={formatFriendlyDate(dayjs(note.created_at))}
+                      onClick={() => {
+                        onViewNote(note)
+                      }}
+                    />
+                  )
+                })}
+              <Box position="absolute" bottom={0} pb={1}>
+                {!hideNotes && (
+                  <Pagination
+                    totalCount={data?.totalCount ?? 0}
+                    page={page}
+                    pageSize={5}
+                    hideNumbers
+                    onPageChange={(newPage) => {
+                      setPage(newPage)
                     }}
                   />
-                )
-              })}
-              <Box position="absolute" bottom={0} pb={1}>
-                <Pagination
-                  totalCount={data?.totalCount ?? 0}
-                  page={page}
-                  pageSize={5}
-                  hideNumbers
-                  onPageChange={(newPage) => {
-                    setPage(newPage)
-                  }}
-                />
+                )}
               </Box>
             </>
           )}
