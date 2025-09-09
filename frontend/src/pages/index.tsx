@@ -94,6 +94,10 @@ function App() {
                         description={habit.description}
                         checked={habit.isCompleted}
                         onCheck={() => {
+                          console.log(
+                            habitsDate.format('HH:mm:ss'),
+                            'format time',
+                          )
                           onCheckingIdChange(habit.id, habitsDate)
                           onCheck(habit.id, habit.isCompleted, habitsDate)
                         }}

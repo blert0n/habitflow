@@ -43,10 +43,9 @@ export const useCompleteHabits = (): HookOutput => {
   })
   const onCheck = (id: number, check: boolean, date: dayjs.Dayjs) => {
     if (date.isAfter(dayjs())) return
-
     const payload = {
       id,
-      date: dayjs().format('YYYY-MM-DD'),
+      date: dayjs(date).format('YYYY-MM-DD'),
       time: dayjs().format('HH:mm:ss'),
     }
 
