@@ -2,12 +2,10 @@ package logs
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/blert0n/habitflow/database"
 	db "github.com/blert0n/habitflow/sqlc/generated"
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 func MarkAsComplete(c *gin.Context) {
@@ -19,7 +17,9 @@ func MarkAsComplete(c *gin.Context) {
 	}
 
 	var body struct {
-		Id int32 `json:"id"`
+		Id   int32  `json:"id"`
+		Date string `json:"date"`
+		Time string `json:"time"`
 	}
 
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -32,6 +32,8 @@ func MarkAsComplete(c *gin.Context) {
 	log, err := database.Queries.MarkHabitAsCompleted(c, db.MarkHabitAsCompletedParams{
 		HabitID: body.Id,
 		UserID:  uid,
+		Date:    body.Date,
+		Time:    body.Time,
 	})
 
 	if err != nil {
@@ -56,7 +58,8 @@ func MarkAsIncomplete(c *gin.Context) {
 	}
 
 	var body struct {
-		Id int32 `json:"id,omitempty"`
+		Id   int32  `json:"id"`
+		Date string `json:"date"`
 	}
 
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -65,18 +68,11 @@ func MarkAsIncomplete(c *gin.Context) {
 	}
 
 	uid := userId.(int32)
-	todayStr := time.Now().Format("2006-01-02")
-	completedAt, err := time.Parse("2006-01-02", todayStr)
 
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date format"})
-		return
-	}
-
-	err = database.Queries.MarkAsIncomplete(c, db.MarkAsIncompleteParams{
-		HabitID:     body.Id,
-		UserID:      uid,
-		CompletedAt: pgtype.Timestamp{Time: completedAt, Valid: true},
+	err := database.Queries.MarkAsIncomplete(c, db.MarkAsIncompleteParams{
+		HabitID: body.Id,
+		UserID:  uid,
+		Date:    body.Date,
 	})
 
 	if err != nil {

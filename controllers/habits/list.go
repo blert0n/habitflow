@@ -113,12 +113,10 @@ func ListHabitsByDate(c *gin.Context) {
 
 	for _, h := range habits {
 
-		completedAt, _ := time.ParseInLocation("2006-01-02", dateStr, time.Local)
-
 		log, _ := database.Queries.IsCompleted(c, db.IsCompletedParams{
-			HabitID:     h.ID,
-			UserID:      uid,
-			CompletedAt: pgtype.Timestamp{Time: completedAt, Valid: true},
+			HabitID: h.ID,
+			UserID:  uid,
+			Date:    dateStr,
 		})
 
 		excluded := []string{}

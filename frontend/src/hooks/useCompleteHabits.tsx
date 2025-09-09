@@ -15,23 +15,10 @@ export const useCompleteHabits = (): HookOutput => {
   const [checkingId, setCheckingId] = useState(0)
 
   const markAsComplete = useMutation({
-    mutationFn: (habitId: number) =>
+    mutationFn: (vars: { id: number; date: string }) =>
       client('/logs/check', {
         method: 'POST',
-        body: JSON.stringify({ id: habitId }),
-      }),
-    onSettled: () => {
-      setCheckingId(0)
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['habits'] })
-    },
-  })
-  const markAsIncomplete = useMutation({
-    mutationFn: (habitId: number) =>
-      client('/logs/uncheck', {
-        method: 'POST',
-        body: JSON.stringify({ id: habitId }),
+        body: JSON.stringify(vars),
       }),
     onSettled: () => {
       setCheckingId(0)
@@ -41,10 +28,29 @@ export const useCompleteHabits = (): HookOutput => {
     },
   })
 
+  const markAsIncomplete = useMutation({
+    mutationFn: (vars: { id: number; date: string }) =>
+      client('/logs/uncheck', {
+        method: 'POST',
+        body: JSON.stringify(vars),
+      }),
+    onSettled: () => {
+      setCheckingId(0)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['habits'] })
+    },
+  })
   const onCheck = (id: number, check: boolean, date: dayjs.Dayjs) => {
     if (date.isAfter(dayjs())) return
 
-    !check ? markAsComplete.mutate(id) : markAsIncomplete.mutate(id)
+    const payload = {
+      id,
+      date: dayjs().format('YYYY-MM-DD'),
+      time: dayjs().format('HH:mm:ss'),
+    }
+
+    !check ? markAsComplete.mutate(payload) : markAsIncomplete.mutate(payload)
   }
 
   const onCheckingIdChange = (id: number, date: dayjs.Dayjs) => {

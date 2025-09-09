@@ -1,9 +1,11 @@
 -- name: MarkHabitAsCompleted :one
 INSERT INTO habit_completions_log (
     habit_id,
-    user_id
+    user_id,
+    date,
+    time
 ) VALUES (
-    $1, $2
+    $1, $2, $3, $4
 )
 RETURNING *;
 
@@ -11,7 +13,7 @@ RETURNING *;
 DELETE FROM habit_completions_log
 WHERE habit_id = $1
   AND user_id = $2
-  AND DATE(completed_at) = $3;
+  AND date = $3;
 
 -- name: IsCompleted :one
 SELECT EXISTS (
@@ -19,7 +21,7 @@ SELECT EXISTS (
     FROM habit_completions_log
     WHERE habit_id = $1
       AND user_id = $2
-      AND DATE(completed_at) = $3
+      AND date = $3
 ) AS is_completed;
 
 

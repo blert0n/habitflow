@@ -7,8 +7,6 @@ package db
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const isCompleted = `-- name: IsCompleted :one
@@ -17,18 +15,18 @@ SELECT EXISTS (
     FROM habit_completions_log
     WHERE habit_id = $1
       AND user_id = $2
-      AND DATE(completed_at) = $3
+      AND date = $3
 ) AS is_completed
 `
 
 type IsCompletedParams struct {
-	HabitID     int32            `json:"habit_id"`
-	UserID      int32            `json:"user_id"`
-	CompletedAt pgtype.Timestamp `json:"completed_at"`
+	HabitID int32  `json:"habit_id"`
+	UserID  int32  `json:"user_id"`
+	Date    string `json:"date"`
 }
 
 func (q *Queries) IsCompleted(ctx context.Context, arg IsCompletedParams) (bool, error) {
-	row := q.db.QueryRow(ctx, isCompleted, arg.HabitID, arg.UserID, arg.CompletedAt)
+	row := q.db.QueryRow(ctx, isCompleted, arg.HabitID, arg.UserID, arg.Date)
 	var is_completed bool
 	err := row.Scan(&is_completed)
 	return is_completed, err
@@ -38,43 +36,53 @@ const markAsIncomplete = `-- name: MarkAsIncomplete :exec
 DELETE FROM habit_completions_log
 WHERE habit_id = $1
   AND user_id = $2
-  AND DATE(completed_at) = $3
+  AND date = $3
 `
 
 type MarkAsIncompleteParams struct {
-	HabitID     int32            `json:"habit_id"`
-	UserID      int32            `json:"user_id"`
-	CompletedAt pgtype.Timestamp `json:"completed_at"`
+	HabitID int32  `json:"habit_id"`
+	UserID  int32  `json:"user_id"`
+	Date    string `json:"date"`
 }
 
 func (q *Queries) MarkAsIncomplete(ctx context.Context, arg MarkAsIncompleteParams) error {
-	_, err := q.db.Exec(ctx, markAsIncomplete, arg.HabitID, arg.UserID, arg.CompletedAt)
+	_, err := q.db.Exec(ctx, markAsIncomplete, arg.HabitID, arg.UserID, arg.Date)
 	return err
 }
 
 const markHabitAsCompleted = `-- name: MarkHabitAsCompleted :one
 INSERT INTO habit_completions_log (
     habit_id,
-    user_id
+    user_id,
+    date,
+    time
 ) VALUES (
-    $1, $2
+    $1, $2, $3, $4
 )
-RETURNING id, habit_id, user_id, completed_at
+RETURNING id, habit_id, user_id, date, time
 `
 
 type MarkHabitAsCompletedParams struct {
-	HabitID int32 `json:"habit_id"`
-	UserID  int32 `json:"user_id"`
+	HabitID int32  `json:"habit_id"`
+	UserID  int32  `json:"user_id"`
+	Date    string `json:"date"`
+	Time    string `json:"time"`
 }
 
 func (q *Queries) MarkHabitAsCompleted(ctx context.Context, arg MarkHabitAsCompletedParams) (HabitCompletionsLog, error) {
-	row := q.db.QueryRow(ctx, markHabitAsCompleted, arg.HabitID, arg.UserID)
+	row := q.db.QueryRow(ctx, markHabitAsCompleted,
+		arg.HabitID,
+		arg.UserID,
+		arg.Date,
+		arg.Time,
+	)
 	var i HabitCompletionsLog
 	err := row.Scan(
 		&i.ID,
 		&i.HabitID,
 		&i.UserID,
-		&i.CompletedAt,
+		&i.Date,
+		&i.Time,
 	)
 	return i, err
 }
