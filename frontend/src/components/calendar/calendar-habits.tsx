@@ -53,6 +53,7 @@ const CalendarHabits = ({
           <>
             {habits?.map((habit) => (
               <Habit
+                id={habit.id}
                 key={habit.id}
                 title={habit.name}
                 description={habit.description}

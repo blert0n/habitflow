@@ -1,13 +1,20 @@
 'use client'
 
-import { Box, Flex, Spinner, Text } from '@chakra-ui/react'
-import { Circle } from 'lucide-react'
+import { Box, Flex, IconButton, Spinner, Text } from '@chakra-ui/react'
+import { Circle, NotebookPen } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { AppModal } from '../ui/app-modal'
+import { NoteEditor } from '../notes/create'
+import { toaster } from '../ui/toaster'
+import type { CreateNoteForm } from '@/types/notes'
 import { CheckMarkIcon } from '@/assets/icons/check-mark'
+import { useCreateNote } from '@/hooks/useCreateNote'
 
 const MotionBox = motion.create(Box)
 
 interface P {
+  id: number
   title: string
   description: string
   checked?: boolean
@@ -16,15 +23,36 @@ interface P {
 }
 
 const Habit = ({
+  id,
   title,
   description,
   checked = false,
   isChecking,
   onCheck,
 }: P) => {
+  const [isCreateNoteOpen, setIsCreateNoteOpen] = useState(false)
+
   const handleClick = () => {
     if (isChecking) return
     onCheck()
+  }
+
+  const { createNote, isCreating } = useCreateNote()
+
+  const handleCreateNote = async (note: CreateNoteForm) => {
+    try {
+      await createNote(note)
+      toaster.create({
+        type: 'success',
+        title: 'A note note was created.',
+      })
+      setIsCreateNoteOpen(false)
+    } catch (e) {
+      toaster.create({
+        type: 'error',
+        title: 'Note was not saved.',
+      })
+    }
   }
 
   return (
@@ -65,7 +93,7 @@ const Habit = ({
         />
       )}
 
-      <Flex gap={2} alignItems="center" zIndex={1}>
+      <Flex gap={2} alignItems="center" zIndex={1} w="full" position="relative">
         <Box w="20px" h="20px" position="relative">
           {isChecking ? (
             <Spinner
@@ -121,6 +149,49 @@ const Habit = ({
           </Text>
         </Flex>
       </Flex>
+      {checked && (
+        <IconButton
+          position="absolute"
+          top={0}
+          right={0}
+          size="xs"
+          variant="ghost"
+          _hover={{ backgroundColor: 'inherit', scale: '1.1' }}
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+          }}
+          zIndex={2}
+        >
+          <AppModal
+            open={isCreateNoteOpen}
+            onOpenChange={(visible) => setIsCreateNoteOpen(visible)}
+            trigger={<NotebookPen strokeWidth={1.5} />}
+            hideFooter
+          >
+            <NoteEditor
+              note={{
+                habit_id: id,
+              }}
+              relatedHabits={[
+                {
+                  label: title,
+                  value: String(id),
+                },
+              ]}
+              onSave={(note) => {
+                handleCreateNote(note)
+              }}
+              onDiscard={() => {
+                setIsCreateNoteOpen(false)
+              }}
+              mode="create"
+              isCreateLoading={isCreating}
+              lockHabit
+            />
+          </AppModal>
+        </IconButton>
+      )}
     </Flex>
   )
 }

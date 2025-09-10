@@ -26,6 +26,7 @@ import type {
 import { formatFriendlyDate } from '@/util/dates'
 import { client } from '@/util/client'
 import { previewNoteContent } from '@/util/notes'
+import { useCreateNote } from '@/hooks/useCreateNote'
 
 type Note = PaginatedNotesResponse['data'][0]
 
@@ -46,14 +47,11 @@ const Notes = () => {
     queryFn: () => client('/habits/options'),
   })
 
-  const createNoteMutation = useMutation({
-    mutationKey: ['createNote'],
-    mutationFn: (note: CreateNoteForm) =>
-      client('/notes/create', {
-        method: 'POST',
-        body: JSON.stringify(note),
-      }),
-    onSuccess: () => {
+  const { createNote, editNote, isCreating } = useCreateNote()
+
+  const handleCreateNote = async (note: CreateNoteForm) => {
+    try {
+      await createNote(note)
       setSelectedNote(undefined)
       setMode('view')
       queryClient.invalidateQueries({ queryKey: ['listNotes'] })
@@ -61,23 +59,16 @@ const Notes = () => {
         type: 'success',
         title: 'A note note was created.',
       })
-    },
-    onError: () => {
+    } catch (e) {
       toaster.create({
         type: 'error',
         title: 'Note was not saved.',
       })
-    },
-  })
-
-  const editNoteMutation = useMutation({
-    mutationKey: ['editNote'],
-    mutationFn: (note: CreateNoteForm) =>
-      client('/notes/edit', {
-        method: 'POST',
-        body: JSON.stringify(note),
-      }),
-    onSuccess: () => {
+    }
+  }
+  const handleEditNote = async (note: CreateNoteForm) => {
+    try {
+      await editNote(note)
       setSelectedNote(undefined)
       setMode('view')
       queryClient.invalidateQueries({ queryKey: ['listNotes'] })
@@ -85,14 +76,13 @@ const Notes = () => {
         type: 'success',
         title: 'Changes were saved',
       })
-    },
-    onError: () => {
+    } catch (e) {
       toaster.create({
         type: 'error',
         title: 'Note was not saved.',
       })
-    },
-  })
+    }
+  }
 
   const deleteNoteMutation = useMutation({
     mutationKey: ['deleteNote'],
@@ -260,9 +250,7 @@ const Notes = () => {
               note={mode !== 'create' ? viewNote : undefined}
               relatedHabits={relatedHabitOptions}
               onSave={(note) => {
-                note.id
-                  ? editNoteMutation.mutate(note)
-                  : createNoteMutation.mutate(note)
+                note.id ? handleEditNote(note) : handleCreateNote(note)
               }}
               onDiscard={() => {
                 setMode('view')
@@ -270,7 +258,7 @@ const Notes = () => {
               }}
               mode={mode}
               isLoading={isLoading}
-              isCreateLoading={createNoteMutation.isPending}
+              isCreateLoading={isCreating}
             />
           )}
           {isView && viewNote && (

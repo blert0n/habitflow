@@ -14,6 +14,7 @@ interface AppSelectProps {
   value: string
   onChange: (value: string) => void
   width?: string | number
+  disabled?: boolean
 }
 
 export const AppSelect = ({
@@ -24,6 +25,7 @@ export const AppSelect = ({
   value,
   onChange,
   width = '320px',
+  disabled = false,
 }: AppSelectProps) => {
   const collection = useMemo(() => createListCollection({ items }), [items])
 
@@ -36,6 +38,7 @@ export const AppSelect = ({
         onValueChange={(e) => {
           onChange(e.value[0] || '')
         }}
+        disabled={disabled}
       >
         <Select.HiddenSelect />
         {label && <Select.Label>{label}</Select.Label>}

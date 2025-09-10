@@ -76,6 +76,7 @@ function App() {
                   {(habits?.data?.length ?? 0) > 0 &&
                     habits?.data?.map((habit) => (
                       <Habit
+                        id={habit.id}
                         key={habit.id}
                         title={habit.name}
                         description={habit.description}

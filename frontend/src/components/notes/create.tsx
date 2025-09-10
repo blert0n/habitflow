@@ -8,10 +8,11 @@ import { AppSpinner } from '../layout/app-spinner'
 import type { CreateNoteForm, PaginatedNotesResponse } from '@/types/notes'
 
 interface NoteEditorProps {
-  note?: PaginatedNotesResponse['data'][0]
+  note?: Partial<PaginatedNotesResponse['data'][0]>
   relatedHabits: Array<{ label: string; value: string }>
   mode?: 'create' | 'edit' | 'view'
   isLoading?: boolean
+  lockHabit?: boolean
   isCreateLoading?: boolean
   onDiscard?: () => void
   onSave: (data: CreateNoteForm) => void
@@ -22,6 +23,7 @@ const NoteEditor = ({
   relatedHabits,
   mode = 'create',
   isLoading,
+  lockHabit = false,
   isCreateLoading,
   onDiscard,
   onSave,
@@ -29,6 +31,7 @@ const NoteEditor = ({
   const {
     control,
     handleSubmit,
+    getValues,
     formState: { errors, isValid, isSubmitting },
   } = useForm<CreateNoteForm>({
     mode: 'onChange',
@@ -69,7 +72,7 @@ const NoteEditor = ({
           <Controller
             name="title"
             control={control}
-            rules={{ required: 'Please select a related habit', min: 1 }}
+            rules={{ required: 'Please write a title', min: 1 }}
             render={({ field }) => (
               <Input
                 placeholder="Enter a note title"
@@ -99,6 +102,7 @@ const NoteEditor = ({
                   value={String(field.value)}
                   onChange={(value) => field.onChange(Number.parseInt(value))}
                   width="full"
+                  disabled={lockHabit}
                 />
               )}
             />
@@ -160,6 +164,10 @@ const NoteEditor = ({
             bg="brand.primary"
             disabled={!isValid || isSubmitting || isCreateLoading}
             loading={isCreateLoading}
+            onClick={() => {
+              const values = getValues()
+              onSave(values)
+            }}
           >
             {mode === 'create' ? 'Publish note' : 'Save changes'}
           </Button>
