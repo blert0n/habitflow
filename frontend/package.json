@@ -6,7 +6,7 @@
     "dev": "vite",
     "dev2": "vite --host",
     "start": "vite --port 5173",
-    "build": "npm run chakra:typegen && vite build && tsc",
+    "build": "npx chakra typegen src/lib/theme.ts && vite build && tsc",
     "serve": "vite preview",
     "test": "vitest run",
     "lint": "eslint",
@@ -51,6 +51,7 @@
     "tailwindcss": "^4.0.6"
   },
   "devDependencies": {
+    "@chakra-ui/cli": "^3.26.0",
     "@tanstack/eslint-config": "^0.1.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.2.0",
