@@ -44,14 +44,14 @@ func InitDB() error {
 	DB = pool
 	Queries = db.New(DB)
 
-	if os.Getenv("GO_ENV") != "production" {
-		if err := cmd.RunMigrations(dsn, "./migrations"); err != nil {
-			log.Fatalf("Failed to run migrations: %v", err)
-		}
-		if err := cmd.Seed(Queries); err != nil {
-			log.Fatalf("failed to run seed: %v", err)
-		}
+	// if os.Getenv("GO_ENV") != "production" {
+	if err := cmd.RunMigrations(dsn, "./migrations"); err != nil {
+		log.Fatalf("Failed to run migrations: %v", err)
 	}
+	if err := cmd.Seed(Queries); err != nil {
+		log.Fatalf("failed to run seed: %v", err)
+	}
+	// }
 
 	return nil
 }
