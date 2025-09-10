@@ -7,7 +7,6 @@ COPY frontend/package*.json ./
 RUN npm install
 
 COPY frontend/ ./
-RUN npx chakra typegen ./src/lib/theme.ts
 RUN npm run build
 
 # ====== Production build =====
