@@ -1,4 +1,5 @@
-const BASE_URL = import.meta.env.VITE_API_URL
+const BASE_URL =
+  (window as any).__APP_ENV__?.API_URL ?? import.meta.env.VITE_API_URL
 
 export async function client(path: string, init: RequestInit = {}) {
   const url = `${BASE_URL}${path}`

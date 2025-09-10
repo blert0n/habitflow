@@ -37,7 +37,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true)
       try {
         const response = await client('/auth/me')
-        const u = response.data
+        const u = response?.data
+        if (!u?.id) return
         setUser({
           id: u.userId,
           email: u.email,

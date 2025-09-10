@@ -33,6 +33,9 @@ COPY --from=builder /app/main .
 COPY --from=builder /app/frontend/dist ./frontend/dist
 COPY --from=builder /app/migrations ./migrations
 
+COPY env.sh ./env.sh
+RUN chmod +x ./env.sh
+
 EXPOSE 8080
 
-CMD ["./main"]
+CMD ["sh", "-c", "APP_PREFIX=HABITFLOW_ ASSET_DIR=./frontend/dist ./env.sh && ./main"]
