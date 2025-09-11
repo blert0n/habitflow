@@ -57,7 +57,7 @@ func ParseRRule(rruleString string) (isDaily bool, days []string, startDate *tim
 	return isDaily, days, startDate
 }
 
-func GetOccurrencesWithExclusions(rruleStr string, excluded []string) []time.Time {
+func GetOccurrencesWithExclusions(rruleStr string, excluded []string, targetDate time.Time) []time.Time {
 	if rruleStr == "" {
 		return nil
 	}
@@ -71,26 +71,28 @@ func GetOccurrencesWithExclusions(rruleStr string, excluded []string) []time.Tim
 		return nil
 	}
 
-	start := r.OrigOptions.Dtstart
-	var end time.Time
-	hasEnd := false
-
-	if r.OrigOptions.Until.After(time.Time{}) {
-		end = r.OrigOptions.Until
-		hasEnd = true
-	}
-
 	if r.OrigOptions.Count > 0 {
-		allOccurrences := r.All()
-		return filterExcluded(allOccurrences, excluded)
+		return filterExcluded(r.All(), excluded)
 	}
 
-	if !hasEnd {
-		end = start.AddDate(0, 1, 0)
+	start := r.OrigOptions.Dtstart
+	until := r.OrigOptions.Until
+
+	windowStart := targetDate.AddDate(0, -1, 0)
+	windowEnd := targetDate.AddDate(0, 1, 0)
+
+	if start.Before(windowStart) {
+		start = windowStart
+	}
+	if !until.IsZero() && until.Before(windowEnd) {
+		windowEnd = until
 	}
 
-	allOccurrences := r.Between(start, end, true)
-	return filterExcluded(allOccurrences, excluded)
+	if start.After(windowEnd) {
+		return nil
+	}
+
+	return filterExcluded(r.Between(start, windowEnd, true), excluded)
 }
 
 func filterExcluded(all []time.Time, excluded []string) []time.Time {
@@ -109,9 +111,7 @@ func ContainsDateString(dates []string, target time.Time) bool {
 }
 func ContainsDate(dates []time.Time, target time.Time) bool {
 	targetStr := target.Format("2006-01-02")
-	fmt.Println(targetStr, "targetStr")
 	for _, d := range dates {
-		fmt.Println(d.Format("2006-01-02"), "d.format(bla)")
 		if d.Format("2006-01-02") == targetStr {
 			return true
 		}
@@ -120,6 +120,8 @@ func ContainsDate(dates []time.Time, target time.Time) bool {
 }
 
 func GenerateHabitOccurrencesByDate(habits []MatrixHabit, matrix []time.Time) map[string][]MatrixHabit {
+	fmt.Println(habits, "GenerateHabitOccurrencesByDate habits")
+	fmt.Println(matrix, "GenerateHabitOccurrencesByDate matrix")
 	result := make(map[string][]MatrixHabit)
 
 	start := matrix[0]
@@ -140,6 +142,7 @@ func GenerateHabitOccurrencesByDate(habits []MatrixHabit, matrix []time.Time) ma
 		}
 
 		allOccurrences := r.Between(start, end, true)
+		fmt.Println(allOccurrences, "GenerateHabitOccurrencesByDate allOccurrences")
 
 		for _, occ := range allOccurrences {
 			excluded := false

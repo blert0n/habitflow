@@ -136,7 +136,7 @@ func ListHabitsByDate(c *gin.Context) {
 			}
 		}
 
-		occurrences := utils.GetOccurrencesWithExclusions(utils.TextToString(h.Frequency), excluded)
+		occurrences := utils.GetOccurrencesWithExclusions(utils.TextToString(h.Frequency), excluded, targetDate)
 
 		fmt.Println(occurrences, "occurences by date")
 
