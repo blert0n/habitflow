@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 	"time"
@@ -108,7 +109,9 @@ func ContainsDateString(dates []string, target time.Time) bool {
 }
 func ContainsDate(dates []time.Time, target time.Time) bool {
 	targetStr := target.Format("2006-01-02")
+	fmt.Println(targetStr, "targetStr")
 	for _, d := range dates {
+		fmt.Println(d.Format("2006-01-02"), "d.format(bla)")
 		if d.Format("2006-01-02") == targetStr {
 			return true
 		}
