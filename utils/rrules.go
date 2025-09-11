@@ -77,8 +77,8 @@ func GetOccurrencesWithExclusions(rruleStr string, excluded []string, targetDate
 	start := r.OrigOptions.Dtstart
 	until := r.OrigOptions.Until
 
-	windowStart := targetDate.AddDate(0, -1, 0)
-	windowEnd := targetDate.AddDate(0, 1, 0)
+	windowStart := targetDate.AddDate(0, 0, -1)
+	windowEnd := targetDate.AddDate(0, 0, 1)
 
 	if start.Before(windowStart) {
 		start = windowStart
