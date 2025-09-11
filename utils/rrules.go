@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"slices"
 	"strings"
 	"time"
@@ -120,8 +119,6 @@ func ContainsDate(dates []time.Time, target time.Time) bool {
 }
 
 func GenerateHabitOccurrencesByDate(habits []MatrixHabit, matrix []time.Time) map[string][]MatrixHabit {
-	fmt.Println(habits, "GenerateHabitOccurrencesByDate habits")
-	fmt.Println(matrix, "GenerateHabitOccurrencesByDate matrix")
 	result := make(map[string][]MatrixHabit)
 
 	start := matrix[0]
@@ -142,7 +139,6 @@ func GenerateHabitOccurrencesByDate(habits []MatrixHabit, matrix []time.Time) ma
 		}
 
 		allOccurrences := r.Between(start, end, true)
-		fmt.Println(allOccurrences, "GenerateHabitOccurrencesByDate allOccurrences")
 
 		for _, occ := range allOccurrences {
 			excluded := false

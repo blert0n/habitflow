@@ -1,7 +1,6 @@
 package habits
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -138,8 +137,6 @@ func ListHabitsByDate(c *gin.Context) {
 
 		occurrences := utils.GetOccurrencesWithExclusions(utils.TextToString(h.Frequency), excluded, targetDate)
 
-		fmt.Println(occurrences, "occurences by date")
-
 		if !utils.ContainsDate(occurrences, targetDate) {
 			continue
 		}
@@ -272,8 +269,6 @@ func ListHabitsByRange(c *gin.Context) {
 
 	response := make(map[string][]HabitResponse)
 	for date, hs := range occurrences {
-		fmt.Println(occurrences, "occurrences by date")
-		fmt.Println(hs, "matrixhabit by date")
 		for _, h := range hs {
 			response[date] = append(response[date], HabitResponse{
 				ID:    h.ID,
