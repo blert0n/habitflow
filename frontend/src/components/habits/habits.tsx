@@ -52,7 +52,7 @@ const Habits = () => {
       setEditing(undefined)
       toaster.create({
         type: 'Failed to create the habit',
-        title: 'Habit created successfully.',
+        title: 'Habit was not saved',
       })
     },
   })
@@ -124,6 +124,7 @@ const Habits = () => {
           setShowCreateView(false)
           setEditing(undefined)
         }}
+        loading={createHabitMutation.isPending || editHabitMutation.isPending}
       />
     )
   }

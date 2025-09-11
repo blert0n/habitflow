@@ -26,6 +26,7 @@ export const ActionButtons = memo(
           onClick={onSubmit}
           type="submit"
           disabled={!isValid || isLoading}
+          loading={isLoading}
         >
           {submitButtonLabel}
         </Button>

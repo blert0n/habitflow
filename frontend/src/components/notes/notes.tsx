@@ -47,34 +47,17 @@ const Notes = () => {
     queryFn: () => client('/habits/options'),
   })
 
-  const { createNote, editNote, isCreating } = useCreateNote()
+  const { createNote, editNote, isCreating, isEditing } = useCreateNote()
 
-  const handleCreateNote = async (note: CreateNoteForm) => {
+  const handleUpsertNote = async (note: CreateNoteForm) => {
     try {
-      await createNote(note)
+      note.id ? await editNote(note) : await createNote(note)
       setSelectedNote(undefined)
       setMode('view')
       queryClient.invalidateQueries({ queryKey: ['listNotes'] })
       toaster.create({
         type: 'success',
-        title: 'A note note was created.',
-      })
-    } catch (e) {
-      toaster.create({
-        type: 'error',
-        title: 'Note was not saved.',
-      })
-    }
-  }
-  const handleEditNote = async (note: CreateNoteForm) => {
-    try {
-      await editNote(note)
-      setSelectedNote(undefined)
-      setMode('view')
-      queryClient.invalidateQueries({ queryKey: ['listNotes'] })
-      toaster.create({
-        type: 'success',
-        title: 'Changes were saved',
+        title: `A note note was ${note.id ? 'edited' : 'created'}.`,
       })
     } catch (e) {
       toaster.create({
@@ -250,7 +233,7 @@ const Notes = () => {
               note={mode !== 'create' ? viewNote : undefined}
               relatedHabits={relatedHabitOptions}
               onSave={(note) => {
-                note.id ? handleEditNote(note) : handleCreateNote(note)
+                handleUpsertNote(note)
               }}
               onDiscard={() => {
                 setMode('view')
@@ -258,7 +241,7 @@ const Notes = () => {
               }}
               mode={mode}
               isLoading={isLoading}
-              isCreateLoading={isCreating}
+              isCreateLoading={isCreating || isEditing}
             />
           )}
           {isView && viewNote && (

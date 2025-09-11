@@ -30,7 +30,6 @@ const NoteEditor = ({
 }: NoteEditorProps) => {
   const {
     control,
-    handleSubmit,
     getValues,
     formState: { errors, isValid, isSubmitting },
   } = useForm<CreateNoteForm>({
@@ -45,135 +44,127 @@ const NoteEditor = ({
     },
   })
 
-  const onSubmit = (data: CreateNoteForm) => {
-    onSave({ id: note?.id ?? 0, ...data })
-  }
-
   if (isLoading) return <AppSpinner />
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Flex direction="column" gap={4}>
-        <Flex mt={2} justify="space-between" alignItems="start">
-          <HeaderWithText
-            title={mode === 'create' ? 'New Note' : 'Edit Note'}
-            text={
-              mode === 'create'
-                ? 'Create a new note for your habits'
-                : 'Edit your note'
-            }
-          />
-        </Flex>
+    <Flex direction="column" gap={4}>
+      <Flex mt={2} justify="space-between" alignItems="start">
+        <HeaderWithText
+          title={mode === 'create' ? 'New Note' : 'Edit Note'}
+          text={
+            mode === 'create'
+              ? 'Create a new note for your habits'
+              : 'Edit your note'
+          }
+        />
+      </Flex>
 
-        <Flex direction="column" gap={1}>
-          <Text color="gray.700" fontSize={14}>
-            Title
-          </Text>
-          <Controller
-            name="title"
-            control={control}
-            rules={{ required: 'Please write a title', min: 1 }}
-            render={({ field }) => (
-              <Input
-                placeholder="Enter a note title"
-                size="sm"
-                aria-invalid={errors.title ? 'true' : 'false'}
-                value={field.value}
-                onChange={field.onChange}
-              />
-            )}
-          />
-          {errors.title && <RenderValidationError error={errors.title} />}
-        </Flex>
-
-        <Flex gap={2}>
-          <Flex direction="column" gap={1} flex={1}>
-            <Text color="gray.700" fontSize={14}>
-              Related habit
-            </Text>
-            <Controller
-              name="habit_id"
-              control={control}
-              rules={{ required: 'Please select a related habit', min: 1 }}
-              render={({ field }) => (
-                <AppSelect
-                  size="sm"
-                  items={relatedHabits}
-                  value={String(field.value)}
-                  onChange={(value) => field.onChange(Number.parseInt(value))}
-                  width="full"
-                  disabled={lockHabit}
-                />
-              )}
+      <Flex direction="column" gap={1}>
+        <Text color="gray.700" fontSize={14}>
+          Title
+        </Text>
+        <Controller
+          name="title"
+          control={control}
+          rules={{ required: 'Please write a title', min: 1 }}
+          render={({ field }) => (
+            <Input
+              placeholder="Enter a note title"
+              size="sm"
+              aria-invalid={errors.title ? 'true' : 'false'}
+              value={field.value}
+              onChange={field.onChange}
             />
-            {errors.habit_id && (
-              <RenderValidationError error={errors.habit_id} />
-            )}
-          </Flex>
-        </Flex>
+          )}
+        />
+        {errors.title && <RenderValidationError error={errors.title} />}
+      </Flex>
 
+      <Flex gap={2}>
         <Flex direction="column" gap={1} flex={1}>
           <Text color="gray.700" fontSize={14}>
-            Content
+            Related habit
           </Text>
           <Controller
-            name="content"
+            name="habit_id"
             control={control}
-            rules={{
-              required: 'Content cannot be empty',
-              validate: (value) => {
-                const plainText = value
-                  .replace(/<[^>]*>/g, '')
-                  .replace(/&nbsp;/g, '')
-                  .trim()
-
-                return plainText.length > 0 || 'Content cannot be empty'
-              },
-            }}
+            rules={{ required: 'Please select a related habit', min: 1 }}
             render={({ field }) => (
-              <RichTextEditor
-                name="noteContent"
-                value={field.value}
-                onChange={field.onChange}
+              <AppSelect
+                size="sm"
+                items={relatedHabits}
+                value={String(field.value)}
+                onChange={(value) => field.onChange(Number.parseInt(value))}
+                width="full"
+                disabled={lockHabit}
               />
             )}
           />
-        </Flex>
-        <Flex justify="end" gap={2}>
-          <Button
-            size="xs"
-            px={4}
-            width="150px"
-            alignSelf="end"
-            disabled={!isValid || isSubmitting || isCreateLoading}
-            loading={isCreateLoading}
-            variant="outline"
-            onClick={() => {
-              onDiscard?.()
-            }}
-          >
-            Discard
-          </Button>
-
-          <Button
-            size="xs"
-            px={4}
-            type="submit"
-            width="150px"
-            alignSelf="end"
-            bg="brand.primary"
-            disabled={!isValid || isSubmitting || isCreateLoading}
-            loading={isCreateLoading}
-            onClick={() => {
-              const values = getValues()
-              onSave(values)
-            }}
-          >
-            {mode === 'create' ? 'Publish note' : 'Save changes'}
-          </Button>
+          {errors.habit_id && <RenderValidationError error={errors.habit_id} />}
         </Flex>
       </Flex>
-    </form>
+
+      <Flex direction="column" gap={1} flex={1}>
+        <Text color="gray.700" fontSize={14}>
+          Content
+        </Text>
+        <Controller
+          name="content"
+          control={control}
+          rules={{
+            required: 'Content cannot be empty',
+            validate: (value) => {
+              const plainText = value
+                .replace(/<[^>]*>/g, '')
+                .replace(/&nbsp;/g, '')
+                .trim()
+
+              return plainText.length > 0 || 'Content cannot be empty'
+            },
+          }}
+          render={({ field }) => (
+            <RichTextEditor
+              name="noteContent"
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
+      </Flex>
+      <Flex justify="end" gap={2}>
+        <Button
+          size="xs"
+          px={4}
+          width="150px"
+          alignSelf="end"
+          disabled={!isValid || isSubmitting || isCreateLoading}
+          loading={isCreateLoading}
+          variant="outline"
+          onClick={() => {
+            onDiscard?.()
+          }}
+        >
+          Discard
+        </Button>
+
+        <Button
+          size="xs"
+          px={4}
+          type="submit"
+          width="150px"
+          alignSelf="end"
+          bg="brand.primary"
+          disabled={!isValid || isSubmitting || isCreateLoading}
+          loading={isCreateLoading}
+          onClick={() => {
+            const values = getValues()
+            onSave(values)
+          }}
+        >
+          {mode === 'create' ? 'Publish note' : 'Save changes'}
+        </Button>
+      </Flex>
+    </Flex>
   )
 }
 

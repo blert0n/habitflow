@@ -35,9 +35,10 @@ interface P {
   editing?: Habit
   onSubmit: (payload: CreateHabitPayload) => void
   onBack: () => void
+  loading?: boolean
 }
 
-export const Create = ({ editing, onSubmit, onBack }: P) => {
+export const Create = ({ editing, onSubmit, onBack, loading = false }: P) => {
   const {
     handleSubmit,
     control,
@@ -47,7 +48,7 @@ export const Create = ({ editing, onSubmit, onBack }: P) => {
     defaultValues: {
       name: editing ? editing.name : '',
       description: editing ? editing.description : '',
-      category: editing ? editing.categoryid : undefined,
+      category: editing ? editing.categoryid : 1,
       icon: '',
       startDate: editing
         ? (getStartDayjsFromRRule(editing.frequency) ?? dayjs())
@@ -179,7 +180,7 @@ export const Create = ({ editing, onSubmit, onBack }: P) => {
         onSubmit={handleSubmit(onFormSubmit)}
         onBack={onBack}
         isValid={isValid}
-        isLoading={isSubmitting || isLoading}
+        isLoading={isSubmitting || isLoading || loading}
       />
     </Flex>
   )
