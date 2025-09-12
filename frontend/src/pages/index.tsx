@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import dayjs from 'dayjs'
 import { HeaderWithText } from '../components/ui/header-with-text'
-import { StatCards } from '../components/dashboard/stat-cards'
+// import { StatCards } from '../components/dashboard/stat-cards'
 import { Habit } from '../components/habits/habit'
 import { CalendarSm } from '../components/calendar/calendar-sm'
 import type { HabitsByDate } from '@/types/habits'
@@ -50,7 +50,7 @@ function App() {
           title="Hello!"
           text="Let's build some great habits today!"
         />
-        <StatCards />
+        {/* <StatCards /> */}
         <Flex direction={{ base: 'column', md: 'row' }} gap={2}>
           <Flex
             direction="column"

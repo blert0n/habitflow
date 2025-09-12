@@ -31,6 +31,9 @@ const CalendarLegend = ({ habits, onHabitVisibilityChange }: P) => {
           alignItems="center"
           gap={2}
           cursor="pointer"
+          onClick={() => {
+            onHabitVisibilityChange(habit.id)
+          }}
         >
           <Box
             w="20px"
@@ -41,9 +44,6 @@ const CalendarLegend = ({ habits, onHabitVisibilityChange }: P) => {
             justifyContent="center"
             alignItems="center"
             _hover={{ scale: 1.1 }}
-            onClick={() => {
-              onHabitVisibilityChange(habit.id)
-            }}
           >
             {habit.selected && (
               <Box w="8px" h="8px" bg="white" rounded="full" />
