@@ -22,6 +22,7 @@ interface AuthContextType {
   isLoading: boolean
   isSigningUp: boolean
   isSigningIn: boolean
+  handleUserSignIn: (user: User) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -139,6 +140,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const handleUserSignIn = (signedUser: User) => {
+    setUser(signedUser)
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -149,6 +154,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         isSigningUp,
         isSigningIn,
+        handleUserSignIn,
       }}
     >
       {children}

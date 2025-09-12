@@ -47,6 +47,15 @@ func main() {
 
 	routes.RegisterRoutes(api)
 
+	go func() {
+		ticker := time.NewTicker(14 * time.Minute)
+		defer ticker.Stop()
+
+		for range ticker.C {
+			log.Println("tick")
+		}
+	}()
+
 	r.Use(static.Serve("/", static.LocalFile("./frontend/dist", true)))
 
 	r.NoRoute(func(c *gin.Context) {

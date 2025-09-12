@@ -24,6 +24,7 @@ import { NonAuthenticated } from './components/layout/non-authenticated.tsx'
 import ForgotPassword from './pages/forgot-password/index.tsx'
 import { Toaster } from './components/ui/toaster.tsx'
 import { AuthProvider } from './hooks/useAuth.tsx'
+import Demo from './pages/demo/index.tsx'
 // import { Categories } from './components/habits/categories.tsx'
 
 const queryClient = new QueryClient()
@@ -103,6 +104,12 @@ const forgotPasswordRoute = createRoute({
   component: ForgotPassword,
 })
 
+const demoRoute = createRoute({
+  getParentRoute: () => nonAuthenticatedRoute,
+  path: '/demo',
+  component: Demo,
+})
+
 const routeTree = rootRoute.addChildren([
   appLayoutRoute.addChildren([
     indexRoute,
@@ -114,6 +121,7 @@ const routeTree = rootRoute.addChildren([
     loginRoute,
     signUpRoute,
     forgotPasswordRoute,
+    demoRoute,
   ]),
 ])
 

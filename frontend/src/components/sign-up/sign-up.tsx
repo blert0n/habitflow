@@ -2,20 +2,20 @@ import {
   Box,
   Button,
   Flex,
-  IconButton,
   Input,
   InputGroup,
   Link,
   Text,
+  // IconButton,
 } from '@chakra-ui/react'
+// import { TextWithDivider } from '../ui/text-with-divider'
+// import { GoogleIcon } from '@/assets/icons/google'
 import { useForm, useWatch } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
-import { TextWithDivider } from '../ui/text-with-divider'
 import { PasswordWithValidator } from './password-with-validator'
 import type { RegisterData } from './types'
-import { GoogleIcon } from '@/assets/icons/google'
 import { useAuth } from '@/hooks/useAuth'
 
 const SignUp = () => {
@@ -190,7 +190,7 @@ const SignUp = () => {
           >
             Sign up
           </Button>
-          <Flex mt={4}>
+          {/* <Flex mt={4}>
             <TextWithDivider text="Or continue with" />
           </Flex>
           <Flex gap={4} alignItems="center" my={2}>
@@ -211,8 +211,8 @@ const SignUp = () => {
                 Google
               </Text>
             </IconButton>
-          </Flex>
-          <Flex alignSelf="center" alignItems="center" gap={1}>
+          </Flex> */}
+          <Flex alignSelf="center" alignItems="center" gap={1} mb={4}>
             <Text fontSize={14} color="gray.600">
               Already have an account?
             </Text>
