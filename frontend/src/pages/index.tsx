@@ -82,14 +82,13 @@ function App() {
                         description={habit.description}
                         checked={habit.isCompleted}
                         onCheck={() => {
-                          console.log(
-                            habitsDate.format('HH:mm:ss'),
-                            'format time',
-                          )
                           onCheckingIdChange(habit.id, habitsDate)
                           onCheck(habit.id, habit.isCompleted, habitsDate)
                         }}
                         isChecking={isChecking && checkingId === habit.id}
+                        isCheckingDisabled={
+                          isChecking && checkingId !== habit.id
+                        }
                       />
                     ))}
                   <Box position="absolute" bottom="0" left="0" right="0" pt={2}>

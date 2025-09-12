@@ -1,5 +1,9 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import {
+  useIsFetching,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import { client } from '@/util/client'
 
@@ -13,6 +17,8 @@ interface HookOutput {
 export const useCompleteHabits = (): HookOutput => {
   const queryClient = useQueryClient()
   const [checkingId, setCheckingId] = useState(0)
+  const [pendingReset, setPendingReset] = useState(false)
+  const isRefetching = useIsFetching({ queryKey: ['habits'] }) > 0
 
   const markAsComplete = useMutation({
     mutationFn: (vars: { id: number; date: string }) =>
@@ -20,9 +26,7 @@ export const useCompleteHabits = (): HookOutput => {
         method: 'POST',
         body: JSON.stringify(vars),
       }),
-    onSettled: () => {
-      setCheckingId(0)
-    },
+    onSettled: () => setPendingReset(true),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['habits'] })
     },
@@ -34,13 +38,19 @@ export const useCompleteHabits = (): HookOutput => {
         method: 'POST',
         body: JSON.stringify(vars),
       }),
-    onSettled: () => {
-      setCheckingId(0)
-    },
+    onSettled: () => setPendingReset(true),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['habits'] })
     },
   })
+
+  useEffect(() => {
+    if (!isRefetching && pendingReset) {
+      setCheckingId(0)
+      setPendingReset(false)
+    }
+  }, [isRefetching, pendingReset])
+
   const onCheck = (id: number, check: boolean, date: dayjs.Dayjs) => {
     if (date.isAfter(dayjs())) return
     const payload = {
@@ -48,6 +58,8 @@ export const useCompleteHabits = (): HookOutput => {
       date: dayjs(date).format('YYYY-MM-DD'),
       time: dayjs().format('HH:mm:ss'),
     }
+
+    setCheckingId(id)
 
     !check ? markAsComplete.mutate(payload) : markAsIncomplete.mutate(payload)
   }
@@ -58,7 +70,9 @@ export const useCompleteHabits = (): HookOutput => {
     setCheckingId(id)
   }
 
-  const isChecking = markAsComplete.isPending || markAsIncomplete.isPending
+  const isChecking =
+    (markAsComplete.isPending || markAsIncomplete.isPending || isRefetching) &&
+    checkingId !== 0
 
   return {
     isChecking,

@@ -19,6 +19,7 @@ interface P {
   description: string
   checked?: boolean
   isChecking: boolean
+  isCheckingDisabled?: boolean
   onCheck: () => void
 }
 
@@ -28,12 +29,13 @@ const Habit = ({
   description,
   checked = false,
   isChecking,
+  isCheckingDisabled = false,
   onCheck,
 }: P) => {
   const [isCreateNoteOpen, setIsCreateNoteOpen] = useState(false)
 
   const handleClick = () => {
-    if (isChecking) return
+    if (isChecking || isCheckingDisabled) return
     onCheck()
   }
 
@@ -67,7 +69,7 @@ const Habit = ({
       borderColor="gray.200"
       position="relative"
       overflow="hidden"
-      cursor={isChecking ? 'not-allowed' : 'pointer'}
+      cursor={isChecking || isCheckingDisabled ? 'not-allowed' : 'pointer'}
       onClick={handleClick}
       opacity={isChecking ? 0.8 : 1}
       transition="opacity 0.2s"

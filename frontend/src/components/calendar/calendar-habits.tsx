@@ -59,6 +59,7 @@ const CalendarHabits = ({
                 description={habit.description}
                 checked={habit.isCompleted}
                 isChecking={isChecking && checkingId === habit.id}
+                isCheckingDisabled={isChecking && checkingId !== habit.id}
                 onCheck={() => {
                   onCheckingIdChange(habit.id, date)
                   onCheck(habit.id, habit.isCompleted, date)
