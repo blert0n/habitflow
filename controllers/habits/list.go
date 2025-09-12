@@ -92,12 +92,6 @@ func ListHabitsByDate(c *gin.Context) {
 	}
 	uid := userID.(int32)
 
-	habits, err := database.Queries.ListHabits(c, pgtype.Int4{Int32: uid, Valid: true})
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
 	dateStr := c.Query("date")
 	targetDate := time.Now().UTC()
 	if dateStr != "" {
@@ -109,55 +103,11 @@ func ListHabitsByDate(c *gin.Context) {
 		}
 	}
 
-	todaysHabits := []HabitResponse{}
+	todaysHabits, err := GetHabitsForDate(c, uid, targetDate)
 
-	for _, h := range habits {
-
-		log, _ := database.Queries.IsCompleted(c, db.IsCompletedParams{
-			HabitID: h.ID,
-			UserID:  uid,
-			Date:    dateStr,
-		})
-
-		excluded := []string{}
-		if h.ExcludedDates != nil {
-			switch v := h.ExcludedDates.(type) {
-			case []time.Time:
-				for _, d := range v {
-					excluded = append(excluded, d.Format("2006-01-02"))
-				}
-			case []interface{}:
-				for _, d := range v {
-					if t, ok := d.(time.Time); ok {
-						excluded = append(excluded, t.Format("2006-01-02"))
-					}
-				}
-			}
-		}
-
-		occurrences := utils.GetOccurrencesWithExclusions(utils.TextToString(h.Frequency), excluded, targetDate)
-
-		if !utils.ContainsDate(occurrences, targetDate) {
-			continue
-		}
-
-		isDaily, selectedDays, _ := utils.ParseRRule(utils.TextToString(h.Frequency))
-
-		todaysHabits = append(todaysHabits, HabitResponse{
-			ID:            h.ID,
-			Name:          h.Name,
-			Description:   utils.TextToString(h.Description),
-			CreatedAt:     h.Createdat.Time.Format(time.RFC3339),
-			UpdatedAt:     h.Updatedat.Time.Format(time.RFC3339),
-			CategoryID:    utils.Int4ToInt32(h.Categoryid),
-			Color:         utils.TextToString(h.Color),
-			Frequency:     utils.TextToString(h.Frequency),
-			UserID:        utils.Int4ToInt32(h.Userid),
-			IsDaily:       isDaily,
-			SelectedDays:  selectedDays,
-			ExcludedDates: excluded,
-			IsCompleted:   log,
-		})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	pageStr := c.Query("page")
@@ -298,4 +248,64 @@ func Options(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, habits)
+}
+
+func GetHabitsForDate(c *gin.Context, userID int32, targetDate time.Time) ([]HabitResponse, error) {
+	habits, err := database.Queries.ListHabits(c, pgtype.Int4{Int32: userID, Valid: true})
+	if err != nil {
+		return nil, err
+	}
+
+	todaysHabits := []HabitResponse{}
+	dateStr := targetDate.Format("2006-01-02")
+
+	for _, h := range habits {
+		log, _ := database.Queries.IsCompleted(c, db.IsCompletedParams{
+			HabitID: h.ID,
+			UserID:  userID,
+			Date:    dateStr,
+		})
+
+		excluded := []string{}
+		if h.ExcludedDates != nil {
+			switch v := h.ExcludedDates.(type) {
+			case []time.Time:
+				for _, d := range v {
+					excluded = append(excluded, d.Format("2006-01-02"))
+				}
+			case []interface{}:
+				for _, d := range v {
+					if t, ok := d.(time.Time); ok {
+						excluded = append(excluded, t.Format("2006-01-02"))
+					}
+				}
+			}
+		}
+
+		occurrences := utils.GetOccurrencesWithExclusions(utils.TextToString(h.Frequency), excluded, targetDate)
+
+		if !utils.ContainsDate(occurrences, targetDate) {
+			continue
+		}
+
+		isDaily, selectedDays, _ := utils.ParseRRule(utils.TextToString(h.Frequency))
+
+		todaysHabits = append(todaysHabits, HabitResponse{
+			ID:            h.ID,
+			Name:          h.Name,
+			Description:   utils.TextToString(h.Description),
+			CreatedAt:     h.Createdat.Time.Format(time.RFC3339),
+			UpdatedAt:     h.Updatedat.Time.Format(time.RFC3339),
+			CategoryID:    utils.Int4ToInt32(h.Categoryid),
+			Color:         utils.TextToString(h.Color),
+			Frequency:     utils.TextToString(h.Frequency),
+			UserID:        utils.Int4ToInt32(h.Userid),
+			IsDaily:       isDaily,
+			SelectedDays:  selectedDays,
+			ExcludedDates: excluded,
+			IsCompleted:   log,
+		})
+	}
+
+	return todaysHabits, nil
 }

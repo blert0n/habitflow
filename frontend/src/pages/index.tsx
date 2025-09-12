@@ -126,6 +126,7 @@ function App() {
               selectedDate={habitsDate}
               onDateChange={(date) => {
                 setHabitsDate(date)
+                setPage(1)
               }}
             />
           </Flex>

@@ -29,6 +29,7 @@ export const useCompleteHabits = (): HookOutput => {
     onSettled: () => setPendingReset(true),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['habits'] })
+      queryClient.invalidateQueries({ queryKey: ['stats'] })
     },
   })
 
@@ -41,6 +42,7 @@ export const useCompleteHabits = (): HookOutput => {
     onSettled: () => setPendingReset(true),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['habits'] })
+      queryClient.invalidateQueries({ queryKey: ['stats'] })
     },
   })
 

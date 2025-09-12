@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import {
-  Box,
   IconButton,
   Link,
-  Tag,
   Text,
   useBreakpointValue,
+  // Tag,
+  // Box,
 } from '@chakra-ui/react'
 import { Card } from '@chakra-ui/react/card'
 import { Flex } from '@chakra-ui/react/flex'
@@ -126,7 +126,7 @@ const Sidebar = () => {
               </Flex>
             </Link>
           ))}
-          {!isMobile && isOpen && (
+          {/* {!isMobile && isOpen && (
             <Flex alignSelf="start" direction="column" gap={3}>
               <Text fontSize={14} color="gray.500" fontWeight="semibold">
                 Today
@@ -176,7 +176,7 @@ const Sidebar = () => {
                 </Flex>
               </Flex>
             </Flex>
-          )}
+          )} */}
         </Flex>
       </Card.Body>
     </MotionCard>

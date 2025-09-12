@@ -85,7 +85,6 @@ const CalendarLg = () => {
   }, [activeHabits])
 
   const onHabitVisibilityChange = (id: number) => {
-    console.log(id, 'id')
     setVisibleHabits((prev) =>
       prev.map((habit) => {
         if (habit.id !== id) return habit

@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/blert0n/habitflow/controllers/auth"
 	"github.com/blert0n/habitflow/controllers/habits"
 	"github.com/blert0n/habitflow/controllers/logs"
@@ -14,6 +16,8 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	rg.GET("/habits/options", middleware.IsAuthenticated(), habits.Options)
 	rg.GET("/habits/by-date", middleware.IsAuthenticated(), habits.ListHabitsByDate)
 	rg.GET("/habits/matrix", middleware.IsAuthenticated(), habits.ListHabitsByRange)
+	rg.GET("/habits/progress", middleware.IsAuthenticated(), habits.GetProgress)
+	rg.GET("/habits/progress/week", middleware.IsAuthenticated(), habits.GetWeeklyProgress)
 	rg.POST("/habits/create", middleware.IsAuthenticated(), habits.Create)
 	rg.POST("/habits/edit", middleware.IsAuthenticated(), habits.Edit)
 	rg.POST("/logs/check", middleware.IsAuthenticated(), logs.MarkAsComplete)
@@ -30,5 +34,8 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	rg.GET("/auth/demo", auth.Demo)
 	rg.GET("/auth/google/login", auth.GoogleLogin)
 	rg.GET("/auth/google/callback", auth.GoogleCallback)
+	rg.GET("/ping", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{"ping": "pong"})
+	})
 
 }

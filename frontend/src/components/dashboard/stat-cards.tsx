@@ -1,9 +1,65 @@
-import { Flex } from '@chakra-ui/react/flex'
+import { Flex, Skeleton, SkeletonText } from '@chakra-ui/react'
 import { Text } from '@chakra-ui/react/text'
 import { Progress } from '@chakra-ui/react/progress'
-import { ArrowUp, Flame } from 'lucide-react'
+import { Flame } from 'lucide-react'
+import { useProgressStats } from '@/hooks/useProgressQuery'
+
+const StatCardSkeleton = () => (
+  <Flex
+    direction="column"
+    justifyContent="space-between"
+    flex={1}
+    padding={{ base: 4, sm: 2, md: 4 }}
+    maxW={{ base: '100%', sm: '400px', md: '600px' }}
+    bg="white"
+    borderRadius="lg"
+    borderWidth="1px"
+    borderColor="gray.200"
+    gap={4}
+    className="app-box-shadow"
+  >
+    <Skeleton height="24px" width="60%" />
+    <SkeletonText mt="4" noOfLines={2} gap={2} />
+  </Flex>
+)
+interface Progress {
+  today_completed: number
+  today_total: number
+  weekly_completion_rate: number
+  week_completions: number
+  total_possible: number
+}
 
 const StatCards = () => {
+  const {
+    isLoading,
+    progressPercent,
+    weeklyColor,
+    weekRatesDifference,
+    trendIcon,
+    weekTrendRateColor,
+    weeklyPercent,
+    todayCompleted,
+    todayTotal,
+  } = useProgressStats({
+    includeLastWeek: true,
+  })
+
+  if (isLoading) {
+    return (
+      <Flex
+        direction={{ base: 'column', sm: 'row' }}
+        gap={{ base: 4, sm: 2, md: 4 }}
+        flex={1}
+        justifyContent="space-between"
+      >
+        {Array.from({ length: 3 }).map((_, idx) => (
+          <StatCardSkeleton key={idx} />
+        ))}
+      </Flex>
+    )
+  }
+
   return (
     <Flex
       direction={{ base: 'column', sm: 'row' }}
@@ -29,7 +85,7 @@ const StatCards = () => {
             Today's progress
           </Text>
           <Text color="brand.primary" fontSize={24} fontWeight="semibold">
-            75%
+            {progressPercent}%
           </Text>
         </Flex>
         <Flex direction="column">
@@ -37,7 +93,7 @@ const StatCards = () => {
             variant="subtle"
             size="lg"
             shape="rounded"
-            value={75}
+            value={progressPercent}
             max={100}
             colorPalette="blue"
           >
@@ -46,12 +102,15 @@ const StatCards = () => {
             </Progress.Track>
             <Progress.Label fontWeight="normal">
               <Text color="gray.700" fontSize={12}>
-                3 of 4 habits completed
+                {todayTotal
+                  ? `${todayCompleted}/${todayTotal} habits completed`
+                  : `No habits scheduled today`}
               </Text>
             </Progress.Label>
           </Progress.Root>
         </Flex>
       </Flex>
+
       <Flex
         direction="column"
         justifyContent="space-between"
@@ -94,6 +153,7 @@ const StatCards = () => {
           </Flex>
         </Flex>
       </Flex>
+
       <Flex
         direction="column"
         justifyContent="space-between"
@@ -111,8 +171,8 @@ const StatCards = () => {
           <Text color="gray.800" fontSize={18} fontWeight={400}>
             This week
           </Text>
-          <Text color="brand.success" fontSize={24} fontWeight="semibold">
-            85%
+          <Text color={weeklyColor} fontSize={24} fontWeight="semibold">
+            {weeklyPercent}%
           </Text>
         </Flex>
         <Flex direction="column" gap={1}>
@@ -120,13 +180,16 @@ const StatCards = () => {
             Average completion rate
           </Text>
           <Flex alignItems="flex-end">
-            <ArrowUp size={16} stroke="#1fa751" className="float-animation" />
+            {trendIcon}
             <Text
-              color="brand.success"
+              color={weekTrendRateColor}
               fontWeight="semibold"
               fontSize={{ base: 12, sm: 10, md: 12 }}
             >
-              +5% from last week
+              {weekRatesDifference > 0
+                ? `+${weekRatesDifference}%`
+                : `${weekRatesDifference}%`}{' '}
+              from last week
             </Text>
           </Flex>
         </Flex>
