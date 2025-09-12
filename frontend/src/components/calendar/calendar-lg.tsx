@@ -1,7 +1,7 @@
 import { Flex } from '@chakra-ui/react/flex'
 import { Spacer } from '@chakra-ui/react/spacer'
 import { Box, Separator } from '@chakra-ui/react'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { CalendarDayLg } from './calendar-day-lg'
@@ -15,13 +15,15 @@ import { useCalendar } from '@/hooks/useCalendar'
 import { WEEK_DAYS } from '@/util/dates'
 import { client } from '@/util/client'
 
-const getUniqueHabits = (matrix?: HabitsMatrix): Array<Habit> => {
+type SelectedHabit = Habit & { selected: boolean }
+
+const getUniqueHabits = (matrix?: HabitsMatrix): Array<SelectedHabit> => {
   if (!matrix) return []
   const allHabits = Object.values(matrix).flat()
-  const uniqueHabits = new Map<number | string, Habit>()
+  const uniqueHabits = new Map<number | string, SelectedHabit>()
 
   for (const habit of allHabits) {
-    uniqueHabits.set(habit.id, habit)
+    uniqueHabits.set(habit.id, { ...habit, selected: true })
   }
 
   return Array.from(uniqueHabits.values())
@@ -71,7 +73,29 @@ const CalendarLg = () => {
     staleTime: 1000 * 60 * 5,
   })
 
-  const activeHabits = getUniqueHabits(habitsMatrix)
+  const activeHabits = useMemo(
+    () => getUniqueHabits(habitsMatrix),
+    [habitsMatrix],
+  )
+
+  const [visibleHabits, setVisibleHabits] = useState(activeHabits)
+
+  useEffect(() => {
+    setVisibleHabits(activeHabits)
+  }, [activeHabits])
+
+  const onHabitVisibilityChange = (id: number) => {
+    console.log(id, 'id')
+    setVisibleHabits((prev) =>
+      prev.map((habit) => {
+        if (habit.id !== id) return habit
+        return {
+          ...habit,
+          selected: !habit.selected,
+        }
+      }),
+    )
+  }
 
   return (
     <Flex direction="column" marginBottom={4} height="100%">
@@ -97,7 +121,10 @@ const CalendarLg = () => {
             }}
             isLoading={isLoadingByDate}
           />
-          <CalendarLegend habits={activeHabits} />
+          <CalendarLegend
+            habits={visibleHabits}
+            onHabitVisibilityChange={onHabitVisibilityChange}
+          />
         </Flex>
         <Box
           flex={{ base: 'none', midMd: 2 }}
@@ -154,6 +181,7 @@ const CalendarLg = () => {
                     currentDate={currentDate}
                     selectedDate={selectedDate}
                     habits={habitsMatrix?.[day.format('YYYY-MM-DD')] ?? []}
+                    visibleHabits={visibleHabits}
                     onSelect={(date) => {
                       handleSelectedDateChange(date)
                       setHabitsDate(date)

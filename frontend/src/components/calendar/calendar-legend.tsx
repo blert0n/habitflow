@@ -3,10 +3,11 @@ import { AppEmptyState } from '../ui/empty-state'
 import type { Habit } from '@/types/habits'
 
 interface P {
-  habits: Array<Habit>
+  habits: Array<Habit & { selected: boolean }>
+  onHabitVisibilityChange: (id: number) => void
 }
 
-const CalendarLegend = ({ habits }: P) => {
+const CalendarLegend = ({ habits, onHabitVisibilityChange }: P) => {
   return (
     <Box
       bg="white"
@@ -31,8 +32,26 @@ const CalendarLegend = ({ habits }: P) => {
           gap={2}
           cursor="pointer"
         >
-          <Box w="20px" h="20px" bg={habit.color} rounded="full" />
-          <Text color="gray.700">{habit.name}</Text>
+          <Box
+            w="20px"
+            h="20px"
+            bg={habit.selected ? habit.color : 'gray.300'}
+            rounded="full"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            _hover={{ scale: 1.1 }}
+            onClick={() => {
+              onHabitVisibilityChange(habit.id)
+            }}
+          >
+            {habit.selected && (
+              <Box w="8px" h="8px" bg="white" rounded="full" />
+            )}
+          </Box>
+          <Text color={habit.selected ? 'gray.700' : 'gray.500'}>
+            {habit.name}
+          </Text>
         </Box>
       ))}
       {habits.length === 0 && (

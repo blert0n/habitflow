@@ -27,6 +27,9 @@ export const Pagination = ({
   const [page, setPage] = useState(1)
   const currentPage = controlledPage ?? page
 
+  const totalPages = Math.ceil(totalCount / pageSize)
+  const hasNextPage = currentPage < totalPages
+
   const handlePageChange = (newPage: number) => {
     if (onPageChange) {
       onPageChange(newPage)
@@ -34,6 +37,8 @@ export const Pagination = ({
       setPage(newPage)
     }
   }
+
+  if (totalCount === 0 || !hasNextPage) return null
 
   return (
     <Stack gap="4">

@@ -10,6 +10,7 @@ interface P {
   currentDate: Dayjs
   selectedDate?: Dayjs | null
   habits?: Array<Habit>
+  visibleHabits?: Array<Habit & { selected: boolean }>
   onSelect?: (date: Dayjs) => void
 }
 
@@ -18,6 +19,7 @@ export const CalendarDayLg = ({
   currentDate,
   selectedDate,
   habits,
+  visibleHabits,
   onSelect,
 }: P) => {
   const isToday = day.isSame(dayjs(), 'day')
@@ -66,6 +68,10 @@ export const CalendarDayLg = ({
         gap="2px"
       >
         {(habits ?? []).map((habit) => {
+          const visible = visibleHabits?.find(
+            (visibleHabit) => visibleHabit.id === habit.id,
+          )?.selected
+          if (!visible) return null
           return (
             <Box
               key={`${currentDate.format('YYYY-MM-DD')}-${habit.id}`}

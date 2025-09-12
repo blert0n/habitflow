@@ -147,6 +147,13 @@ function App() {
           <Flex direction="column" gap={2} pb="60px" position="relative">
             <Flex direction="column" gap={2}>
               {isLoadingNotes && <AppSpinner />}
+              {!isLoadingNotes && !notes?.data.length && (
+                <AppEmptyState
+                  iconSize={24}
+                  circleSize={12}
+                  description="You can add notes by going to the notes page"
+                />
+              )}
               {!isLoadingNotes &&
                 notes?.data.map((note) => {
                   const previewNote = previewNoteContent(note.content)

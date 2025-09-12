@@ -37,6 +37,8 @@ const Notes = () => {
   const isMobile = useBreakpointValue({ base: true, midMd: false })
   const queryClient = useQueryClient()
 
+  const displayNotes = !isMobile || !hideNotes
+
   const { data, isLoading } = useQuery<PaginatedNotesResponse>({
     queryKey: ['listNotes', page],
     queryFn: () => client(`/notes/list?page=${page}`),
@@ -117,8 +119,9 @@ const Notes = () => {
     <Flex direction="column" paddingBottom="60px">
       <Flex
         direction={{ base: 'column', sm: 'row' }}
-        justify="space-between"
-        alignItems="center"
+        justify={{ base: 'start', sm: 'space-between' }}
+        alignItems={{ base: 'start', sm: 'center' }}
+        gap={{ base: 2, sm: 0 }}
         w="full"
         mb={4}
       >
@@ -156,7 +159,7 @@ const Notes = () => {
           gapY={2}
           minWidth={0}
           minHeight={{ base: 'auto', midMd: '400px' }}
-          pb={!hideNotes ? '60px' : 0}
+          pb={!hideNotes ? '60px' : 2}
           position="relative"
         >
           <Flex justifyContent="space-between" alignItems="center">
@@ -178,7 +181,7 @@ const Notes = () => {
           {isLoading && <NoteSkeleton count={5} />}
           {!isLoading && (data?.data.length ?? 0) > 0 && (
             <>
-              {!hideNotes &&
+              {displayNotes &&
                 data?.data.map((note) => {
                   const previewNote = previewNoteContent(note.content)
                   return (
@@ -194,7 +197,7 @@ const Notes = () => {
                   )
                 })}
               <Box position="absolute" bottom={0} pb={1}>
-                {!hideNotes && (
+                {displayNotes && (
                   <Pagination
                     totalCount={data?.totalCount ?? 0}
                     page={page}
@@ -208,7 +211,7 @@ const Notes = () => {
               </Box>
             </>
           )}
-          {!isLoading && !data?.data.length && (
+          {!isLoading && !data?.data.length && displayNotes && (
             <AppEmptyState
               circleSize={12}
               iconSize={24}
