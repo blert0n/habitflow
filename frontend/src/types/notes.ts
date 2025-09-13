@@ -1,6 +1,7 @@
 export interface Note {
   id: number
   habit_id: number
+  habit_name: string
   user_id: number
   title: string
   content: any

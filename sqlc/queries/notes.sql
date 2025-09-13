@@ -1,6 +1,7 @@
 -- name: ListNotes :many
-SELECT *
-FROM notes
+SELECT n.*,h.name as habit_name
+FROM notes n
+INNER JOIN habits h ON n.habit_id = h.id
 WHERE user_id = $1
   AND ($3::bool IS FALSE OR habit_id = $2)
 ORDER BY created_at DESC

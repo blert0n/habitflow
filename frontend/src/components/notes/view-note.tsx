@@ -61,10 +61,7 @@ const ViewNote = ({ note, onEdit, onDelete }: P) => {
         <Flex gap={2}>
           <TagIcon strokeWidth={1} size={16} />
           <Tag.Root size="sm">
-            <Tag.Label>Workout</Tag.Label>
-          </Tag.Root>
-          <Tag.Root size="sm">
-            <Tag.Label>Progress</Tag.Label>
+            <Tag.Label>{note.habit_name}</Tag.Label>
           </Tag.Root>
         </Flex>
         <Separator />

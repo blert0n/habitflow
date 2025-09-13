@@ -1,15 +1,17 @@
 'use client'
 
-import { Flex, Text } from '@chakra-ui/react'
+import { Flex, Tag, Text } from '@chakra-ui/react'
+import { TagIcon } from 'lucide-react'
 
 interface NoteProps {
   title: string
   note: string
   date: string
+  habit?: string
   onClick?: () => void
 }
 
-const Note = ({ title, note, date, onClick }: NoteProps) => {
+const Note = ({ title, note, habit, date, onClick }: NoteProps) => {
   return (
     <Flex
       direction="column"
@@ -41,6 +43,12 @@ const Note = ({ title, note, date, onClick }: NoteProps) => {
       <Text color="gray.600" fontSize={12}>
         {note}
       </Text>
+      <Flex>
+        <Tag.Root size="sm">
+          <TagIcon strokeWidth={1} size={12} />
+          <Tag.Label fontSize={10}>{habit}</Tag.Label>
+        </Tag.Root>
+      </Flex>
     </Flex>
   )
 }

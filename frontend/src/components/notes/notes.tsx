@@ -193,6 +193,7 @@ const Notes = () => {
                       onClick={() => {
                         onViewNote(note)
                       }}
+                      habit={note.habit_name}
                     />
                   )
                 })}

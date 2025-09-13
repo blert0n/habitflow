@@ -119,8 +119,9 @@ func (q *Queries) EditNote(ctx context.Context, arg EditNoteParams) (Notes, erro
 }
 
 const listNotes = `-- name: ListNotes :many
-SELECT id, habit_id, content, created_at, updated_at, user_id, title
-FROM notes
+SELECT n.id, n.habit_id, n.content, n.created_at, n.updated_at, n.user_id, n.title,h.name as habit_name
+FROM notes n
+INNER JOIN habits h ON n.habit_id = h.id
 WHERE user_id = $1
   AND ($3::bool IS FALSE OR habit_id = $2)
 ORDER BY created_at DESC
@@ -136,7 +137,18 @@ type ListNotesParams struct {
 	Offset  int32       `json:"offset"`
 }
 
-func (q *Queries) ListNotes(ctx context.Context, arg ListNotesParams) ([]Notes, error) {
+type ListNotesRow struct {
+	ID        int32              `json:"id"`
+	HabitID   int32              `json:"habit_id"`
+	Content   string             `json:"content"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+	UserID    pgtype.Int4        `json:"user_id"`
+	Title     string             `json:"title"`
+	HabitName string             `json:"habit_name"`
+}
+
+func (q *Queries) ListNotes(ctx context.Context, arg ListNotesParams) ([]ListNotesRow, error) {
 	rows, err := q.db.Query(ctx, listNotes,
 		arg.UserID,
 		arg.HabitID,
@@ -148,9 +160,9 @@ func (q *Queries) ListNotes(ctx context.Context, arg ListNotesParams) ([]Notes, 
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Notes{}
+	items := []ListNotesRow{}
 	for rows.Next() {
-		var i Notes
+		var i ListNotesRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.HabitID,
@@ -159,6 +171,7 @@ func (q *Queries) ListNotes(ctx context.Context, arg ListNotesParams) ([]Notes, 
 			&i.UpdatedAt,
 			&i.UserID,
 			&i.Title,
+			&i.HabitName,
 		); err != nil {
 			return nil, err
 		}

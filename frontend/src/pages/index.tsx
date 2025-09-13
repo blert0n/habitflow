@@ -163,6 +163,7 @@ function App() {
                       key={note.id}
                       title={note.title}
                       note={previewNote}
+                      habit={note.habit_name}
                       date={formatFriendlyDate(dayjs(note.created_at))}
                     />
                   )
