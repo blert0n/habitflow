@@ -24,4 +24,13 @@ SELECT EXISTS (
       AND date = $3
 ) AS is_completed;
 
+-- name: GetCompletionsInRange :many
+SELECT date, TRUE as completed, time as timeAtCompletion
+FROM habit_completions_log
+WHERE habit_id = $1
+  AND user_id = $2
+  AND date BETWEEN $3 AND $4
+ORDER By id desc;
+
+
 

@@ -89,3 +89,20 @@ export interface HabitsByDate {
 }
 
 export type HabitsMatrix = Record<string, Array<Habit>>
+
+export type OneHabit = {
+  id: number
+  name: string
+  description: string
+  createdat: string
+  updatedat: string
+  categoryid: number
+  color: string
+  frequency: string
+  userid: number
+}
+
+export interface HabitLog {
+  completed: boolean
+  time: string
+}

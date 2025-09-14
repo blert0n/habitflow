@@ -1,5 +1,6 @@
 import { Flex, IconButton, Menu, Progress, Text } from '@chakra-ui/react'
 import { EllipsisVertical } from 'lucide-react'
+import { useNavigate } from '@tanstack/react-router'
 import { HeaderWithText } from '../ui/header-with-text'
 import { AppMenu } from '../ui/menu'
 import { ScheduledWeekDays } from './scheduled-week-days'
@@ -7,6 +8,7 @@ import type { AllowedDayString } from '@/types/habits'
 import type { CategoryWithIcon } from '@/hooks/useCategories'
 
 interface P {
+  id: number
   title: string
   text: string
   category?: CategoryWithIcon
@@ -17,6 +19,7 @@ interface P {
 }
 
 const ListHabit = ({
+  id,
   title,
   text,
   category,
@@ -25,6 +28,8 @@ const ListHabit = ({
   onEdit,
   onDelete,
 }: P) => {
+  const navigate = useNavigate()
+
   return (
     <Flex
       w={{ midSmDown: 'full' }}
@@ -63,6 +68,16 @@ const ListHabit = ({
             </IconButton>
           }
         >
+          {id && (
+            <Menu.Item
+              value="details"
+              onClick={() => {
+                navigate({ to: `logs/${id}` })
+              }}
+            >
+              Logs
+            </Menu.Item>
+          )}
           <Menu.Item
             value="edit"
             onClick={() => {

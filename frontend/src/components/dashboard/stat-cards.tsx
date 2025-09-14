@@ -1,27 +1,10 @@
-import { Flex, Skeleton, SkeletonText } from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
 import { Text } from '@chakra-ui/react/text'
 import { Progress } from '@chakra-ui/react/progress'
 import { Flame } from 'lucide-react'
+import { StatCardSkeleton } from '../ui/stat-card-skeleton'
 import { useProgressStats } from '@/hooks/useProgressQuery'
 
-const StatCardSkeleton = () => (
-  <Flex
-    direction="column"
-    justifyContent="space-between"
-    flex={1}
-    padding={{ base: 4, sm: 2, md: 4 }}
-    maxW={{ base: '100%', sm: '400px', md: '600px' }}
-    bg="white"
-    borderRadius="lg"
-    borderWidth="1px"
-    borderColor="gray.200"
-    gap={4}
-    className="app-box-shadow"
-  >
-    <Skeleton height="24px" width="60%" />
-    <SkeletonText mt="4" noOfLines={2} gap={2} />
-  </Flex>
-)
 interface Progress {
   today_completed: number
   today_total: number

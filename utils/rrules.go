@@ -138,6 +138,8 @@ func GenerateHabitOccurrencesByDate(habits []MatrixHabit, matrix []time.Time) ma
 			return result
 		}
 
+		start = time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, start.Location())
+		end = time.Date(end.Year(), end.Month(), end.Day(), 23, 59, 59, int(time.Second-time.Nanosecond), end.Location())
 		allOccurrences := r.Between(start, end, true)
 
 		for _, occ := range allOccurrences {
@@ -165,4 +167,45 @@ func GenerateHabitOccurrencesByDate(habits []MatrixHabit, matrix []time.Time) ma
 	}
 
 	return result
+}
+
+func GetOccurrencesForMonth(rruleStr string, excluded []string, targetDate time.Time) []time.Time {
+	if rruleStr == "" {
+		return nil
+	}
+
+	if !strings.Contains(rruleStr, "\nRRULE") {
+		rruleStr = strings.Replace(rruleStr, "RRULE", "\nRRULE", 1)
+	}
+
+	r, err := rrule.StrToRRule(rruleStr)
+	if err != nil {
+		return nil
+	}
+
+	if r.OrigOptions.Count > 0 {
+		return filterExcluded(r.All(), excluded)
+	}
+
+	year, month, _ := targetDate.Date()
+	location := targetDate.Location()
+
+	monthStart := time.Date(year, month, 1, 0, 0, 0, 0, location)
+	monthEnd := monthStart.AddDate(0, 1, -1).Add(time.Hour*23 + time.Minute*59 + time.Second*59)
+
+	start := r.OrigOptions.Dtstart
+	until := r.OrigOptions.Until
+
+	if start.Before(monthStart) {
+		start = monthStart
+	}
+	if !until.IsZero() && until.Before(monthEnd) {
+		monthEnd = until
+	}
+
+	if start.After(monthEnd) {
+		return nil
+	}
+
+	return filterExcluded(r.Between(start, monthEnd, true), excluded)
 }

@@ -13,6 +13,8 @@ import (
 
 func RegisterRoutes(rg *gin.RouterGroup) {
 	rg.GET("/habits/list", middleware.IsAuthenticated(), habits.List)
+	rg.GET("/habits/one", middleware.IsAuthenticated(), habits.ListOne)
+	rg.GET("/habits/one/monthly-logs", middleware.IsAuthenticated(), habits.GetHabitMonthlyLogs)
 	rg.GET("/habits/options", middleware.IsAuthenticated(), habits.Options)
 	rg.GET("/habits/by-date", middleware.IsAuthenticated(), habits.ListHabitsByDate)
 	rg.GET("/habits/matrix", middleware.IsAuthenticated(), habits.ListHabitsByRange)

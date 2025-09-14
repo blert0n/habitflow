@@ -25,6 +25,7 @@ import ForgotPassword from './pages/forgot-password/index.tsx'
 import { Toaster } from './components/ui/toaster.tsx'
 import { AuthProvider } from './hooks/useAuth.tsx'
 import Demo from './pages/demo/index.tsx'
+import { HabitLogs } from './components/habits/logs/habit-logs.tsx'
 // import { Categories } from './components/habits/categories.tsx'
 
 const queryClient = new QueryClient()
@@ -83,6 +84,13 @@ const habitsRoute = createRoute({
   path: '/habits',
   component: Habits,
 })
+
+const habitDetailRoute = createRoute({
+  getParentRoute: () => appLayoutRoute,
+  path: '/habits/logs/$habitId',
+  component: HabitLogs,
+})
+
 const notesRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
   path: '/notes',
@@ -114,7 +122,7 @@ const routeTree = rootRoute.addChildren([
   appLayoutRoute.addChildren([
     indexRoute,
     calendarRoute,
-    habitsRoute,
+    habitsRoute.addChildren([habitDetailRoute]),
     notesRoute,
   ]),
   nonAuthenticatedRoute.addChildren([

@@ -9,6 +9,53 @@ import (
 	"context"
 )
 
+const getCompletionsInRange = `-- name: GetCompletionsInRange :many
+SELECT date, TRUE as completed, time as timeAtCompletion
+FROM habit_completions_log
+WHERE habit_id = $1
+  AND user_id = $2
+  AND date BETWEEN $3 AND $4
+ORDER By id desc
+`
+
+type GetCompletionsInRangeParams struct {
+	HabitID int32  `json:"habit_id"`
+	UserID  int32  `json:"user_id"`
+	Date    string `json:"date"`
+	Date_2  string `json:"date_2"`
+}
+
+type GetCompletionsInRangeRow struct {
+	Date             string `json:"date"`
+	Completed        bool   `json:"completed"`
+	Timeatcompletion string `json:"timeatcompletion"`
+}
+
+func (q *Queries) GetCompletionsInRange(ctx context.Context, arg GetCompletionsInRangeParams) ([]GetCompletionsInRangeRow, error) {
+	rows, err := q.db.Query(ctx, getCompletionsInRange,
+		arg.HabitID,
+		arg.UserID,
+		arg.Date,
+		arg.Date_2,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetCompletionsInRangeRow{}
+	for rows.Next() {
+		var i GetCompletionsInRangeRow
+		if err := rows.Scan(&i.Date, &i.Completed, &i.Timeatcompletion); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const isCompleted = `-- name: IsCompleted :one
 SELECT EXISTS (
     SELECT 1

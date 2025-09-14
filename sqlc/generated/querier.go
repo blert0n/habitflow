@@ -24,7 +24,8 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id int32) error
 	EditNote(ctx context.Context, arg EditNoteParams) (Notes, error)
 	GetCategoryByID(ctx context.Context, id int32) (Category, error)
-	GetHabitByID(ctx context.Context, id int32) (Habits, error)
+	GetCompletionsInRange(ctx context.Context, arg GetCompletionsInRangeParams) ([]GetCompletionsInRangeRow, error)
+	GetHabitByID(ctx context.Context, arg GetHabitByIDParams) (GetHabitByIDRow, error)
 	GetUserByEmail(ctx context.Context, email string) (Users, error)
 	GetUserByID(ctx context.Context, id int32) (GetUserByIDRow, error)
 	HabitOptions(ctx context.Context, userid pgtype.Int4) ([]HabitOptionsRow, error)

@@ -30,6 +30,8 @@ const MONTHS = Array.from({ length: 12 }, (_, i) =>
   dayjs().month(i).format('MMM'),
 )
 
+const NORMALIZED_FORMAT = 'YYYY-MM-DD'
+
 const WEEK_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const WEEK_DAYS_LONG = [
   'Sunday',
@@ -96,4 +98,5 @@ export {
   getCalendarMatrix,
   formatFriendlyDate,
   isDayInCurrentWeek,
+  NORMALIZED_FORMAT,
 }

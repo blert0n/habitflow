@@ -14,8 +14,21 @@ INSERT INTO habits (
 RETURNING *;
 
 -- name: GetHabitByID :one
-SELECT * FROM habits
-WHERE id = $1;
+SELECT h.id,
+       h.name,
+       h.description,
+       h.createdAt,
+       h.updatedAt,
+       h.categoryId,
+       h.color,
+       h.frequency,
+       h.userId,
+       COALESCE(array_agg(he.excluded_date ORDER BY he.excluded_date) FILTER (WHERE he.excluded_date IS NOT NULL), '{}') AS excluded_dates
+FROM habits h
+LEFT JOIN habit_excluded_dates he ON he.habit_id = h.id
+WHERE h.id = $1 AND h.userId = $2 
+GROUP BY h.id
+ORDER BY h.id;
 
 -- name: ListHabits :many
 SELECT h.id,

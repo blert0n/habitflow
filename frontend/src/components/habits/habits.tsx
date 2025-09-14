@@ -178,6 +178,7 @@ const Habits = () => {
           (habits ?? []).map((habit) => (
             <ListHabit
               key={habit.id}
+              id={habit.id}
               title={habit.name}
               text={habit.description}
               selectedDays={habit.selectedDays ?? []}

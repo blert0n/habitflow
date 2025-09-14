@@ -111,13 +111,44 @@ func (q *Queries) DeleteHabitExcludedDate(ctx context.Context, arg DeleteHabitEx
 }
 
 const getHabitByID = `-- name: GetHabitByID :one
-SELECT id, name, description, createdat, updatedat, categoryid, color, frequency, userid FROM habits
-WHERE id = $1
+SELECT h.id,
+       h.name,
+       h.description,
+       h.createdAt,
+       h.updatedAt,
+       h.categoryId,
+       h.color,
+       h.frequency,
+       h.userId,
+       COALESCE(array_agg(he.excluded_date ORDER BY he.excluded_date) FILTER (WHERE he.excluded_date IS NOT NULL), '{}') AS excluded_dates
+FROM habits h
+LEFT JOIN habit_excluded_dates he ON he.habit_id = h.id
+WHERE h.id = $1 AND h.userId = $2 
+GROUP BY h.id
+ORDER BY h.id
 `
 
-func (q *Queries) GetHabitByID(ctx context.Context, id int32) (Habits, error) {
-	row := q.db.QueryRow(ctx, getHabitByID, id)
-	var i Habits
+type GetHabitByIDParams struct {
+	ID     int32       `json:"id"`
+	Userid pgtype.Int4 `json:"userid"`
+}
+
+type GetHabitByIDRow struct {
+	ID            int32            `json:"id"`
+	Name          string           `json:"name"`
+	Description   pgtype.Text      `json:"description"`
+	Createdat     pgtype.Timestamp `json:"createdat"`
+	Updatedat     pgtype.Timestamp `json:"updatedat"`
+	Categoryid    pgtype.Int4      `json:"categoryid"`
+	Color         pgtype.Text      `json:"color"`
+	Frequency     pgtype.Text      `json:"frequency"`
+	Userid        pgtype.Int4      `json:"userid"`
+	ExcludedDates interface{}      `json:"excluded_dates"`
+}
+
+func (q *Queries) GetHabitByID(ctx context.Context, arg GetHabitByIDParams) (GetHabitByIDRow, error) {
+	row := q.db.QueryRow(ctx, getHabitByID, arg.ID, arg.Userid)
+	var i GetHabitByIDRow
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
@@ -128,6 +159,7 @@ func (q *Queries) GetHabitByID(ctx context.Context, id int32) (Habits, error) {
 		&i.Color,
 		&i.Frequency,
 		&i.Userid,
+		&i.ExcludedDates,
 	)
 	return i, err
 }
