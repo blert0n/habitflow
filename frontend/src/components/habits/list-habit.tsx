@@ -8,7 +8,7 @@ import type { AllowedDayString } from '@/types/habits'
 import type { CategoryWithIcon } from '@/hooks/useCategories'
 
 interface P {
-  id: number
+  id?: number
   title: string
   text: string
   category?: CategoryWithIcon
