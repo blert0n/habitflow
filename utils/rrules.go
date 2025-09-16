@@ -209,3 +209,36 @@ func GetOccurrencesForMonth(rruleStr string, excluded []string, targetDate time.
 
 	return filterExcluded(r.Between(start, monthEnd, true), excluded)
 }
+
+func GetOccurrencesUntilToday(rruleStr string, excluded []string, today time.Time) []time.Time {
+	if rruleStr == "" {
+		return nil
+	}
+
+	if !strings.Contains(rruleStr, "\nRRULE") {
+		rruleStr = strings.Replace(rruleStr, "RRULE", "\nRRULE", 1)
+	}
+
+	r, err := rrule.StrToRRule(rruleStr)
+	if err != nil {
+		return nil
+	}
+
+	if r.OrigOptions.Count > 0 {
+		return filterExcluded(r.All(), excluded)
+	}
+
+	start := r.OrigOptions.Dtstart
+	until := r.OrigOptions.Until
+
+	end := today
+	if !until.IsZero() && until.Before(end) {
+		end = until
+	}
+
+	if start.After(end) {
+		return nil
+	}
+
+	return filterExcluded(r.Between(start, end, true), excluded)
+}

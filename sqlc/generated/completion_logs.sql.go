@@ -9,6 +9,45 @@ import (
 	"context"
 )
 
+const getAllHabitCompletions = `-- name: GetAllHabitCompletions :many
+SELECT date, TRUE as completed, time as timeAtCompletion
+FROM habit_completions_log
+WHERE habit_id = $1
+  AND user_id = $2
+  ORDER BY date DESC
+`
+
+type GetAllHabitCompletionsParams struct {
+	HabitID int32 `json:"habit_id"`
+	UserID  int32 `json:"user_id"`
+}
+
+type GetAllHabitCompletionsRow struct {
+	Date             string `json:"date"`
+	Completed        bool   `json:"completed"`
+	Timeatcompletion string `json:"timeatcompletion"`
+}
+
+func (q *Queries) GetAllHabitCompletions(ctx context.Context, arg GetAllHabitCompletionsParams) ([]GetAllHabitCompletionsRow, error) {
+	rows, err := q.db.Query(ctx, getAllHabitCompletions, arg.HabitID, arg.UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAllHabitCompletionsRow{}
+	for rows.Next() {
+		var i GetAllHabitCompletionsRow
+		if err := rows.Scan(&i.Date, &i.Completed, &i.Timeatcompletion); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getCompletionsInRange = `-- name: GetCompletionsInRange :many
 SELECT date, TRUE as completed, time as timeAtCompletion
 FROM habit_completions_log

@@ -32,5 +32,12 @@ WHERE habit_id = $1
   AND date BETWEEN $3 AND $4
 ORDER By id desc;
 
+-- name: GetAllHabitCompletions :many
+SELECT date, TRUE as completed, time as timeAtCompletion
+FROM habit_completions_log
+WHERE habit_id = $1
+  AND user_id = $2
+  ORDER BY date DESC;
+
 
 

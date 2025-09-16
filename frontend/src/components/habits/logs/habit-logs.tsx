@@ -14,7 +14,7 @@ import dayjs from 'dayjs'
 import { useCallback, useEffect, useState } from 'react'
 import { StatCard } from './stat-card'
 import type { Dayjs } from 'dayjs'
-import type { HabitLog, OneHabit } from '@/types/habits'
+import type { HabitLog, HabitStreak, OneHabit } from '@/types/habits'
 import type { PaginatedNotesResponse } from '@/types/notes'
 import { HeaderWithText } from '@/components/ui/header-with-text'
 import { client } from '@/util/client'
@@ -31,21 +31,24 @@ import { Note } from '@/components/notes/note'
 const STATS = [
   {
     title: 'Streak',
-    value: '4 days',
-    description: 'Keep it up',
+    valueKey: 'streak',
+    description: (val: number) => (val > 0 ? 'Keep it up' : 'No streak yet'),
     icon: <Flame strokeWidth={1.5} stroke="gray" />,
+    format: (val: number) => `${val} days`,
   },
   {
     title: 'Completion rate',
-    value: '85%',
-    description: 'This month',
+    valueKey: 'completion_avg_rate',
+    description: () => 'All time',
     icon: <ChartSpline strokeWidth={1.5} stroke="gray" />,
+    format: (val: number) => `${(val * 100).toFixed(0)}%`,
   },
   {
     title: 'Total days',
-    value: 23,
-    description: 'Since start',
+    valueKey: 'total_day_since_start',
+    description: () => 'Since start',
     icon: <Calendar strokeWidth={1.5} stroke="gray" />,
+    format: (val: number) => val.toString(),
   },
 ]
 
@@ -67,6 +70,8 @@ const HabitLogs = () => {
     setCurrentDate(date)
   }, [])
 
+  const today = dayjs()
+
   const {
     data: habit,
     isLoading: isLoadingHabit,
@@ -74,6 +79,15 @@ const HabitLogs = () => {
   } = useQuery<OneHabit>({
     queryKey: ['oneHabit', habitId],
     queryFn: () => client(`/habits/one?id=${habitId}`),
+    retry: false,
+  })
+
+  const { data: habitStreak } = useQuery<HabitStreak>({
+    queryKey: ['habitStreak', habitId],
+    queryFn: () =>
+      client(
+        `/habits/one/streak?id=${habitId}&date=${today.format(NORMALIZED_FORMAT)}`,
+      ),
     retry: false,
   })
 
@@ -96,8 +110,6 @@ const HabitLogs = () => {
       ),
     enabled: !!Number.parseInt(habitId),
   })
-
-  const today = dayjs()
 
   const [recentActivity, setRecentActivity] = useState<Array<RecentActivity>>(
     [],
@@ -184,15 +196,19 @@ const HabitLogs = () => {
         justifyContent="space-between"
         mb={4}
       >
-        {STATS.map((stat) => (
-          <StatCard
-            key={stat.title}
-            title={stat.title}
-            value={stat.value}
-            description={stat.description}
-            icon={stat.icon}
-          />
-        ))}
+        {STATS.map((stat) => {
+          const rawValue =
+            habitStreak?.[stat.valueKey as keyof HabitStreak] ?? 0
+          return (
+            <StatCard
+              key={stat.title}
+              title={stat.title}
+              value={stat.format(rawValue)}
+              description={stat.description(rawValue)}
+              icon={stat.icon}
+            />
+          )
+        })}
       </Flex>
       <Flex gap={4} height="100%" direction={{ base: 'column', md: 'row' }}>
         <Flex

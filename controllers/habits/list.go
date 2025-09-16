@@ -53,22 +53,7 @@ func List(c *gin.Context) {
 	for _, h := range habits {
 		isDaily, selectedDays, _ := utils.ParseRRule(utils.TextToString(h.Frequency))
 
-		excluded := []string{}
-
-		if h.ExcludedDates != nil {
-			switch v := h.ExcludedDates.(type) {
-			case []time.Time:
-				for _, d := range v {
-					excluded = append(excluded, d.Format("2006-01-02"))
-				}
-			case []interface{}:
-				for _, d := range v {
-					if t, ok := d.(time.Time); ok {
-						excluded = append(excluded, t.Format("2006-01-02"))
-					}
-				}
-			}
-		}
+		excludedDates := utils.NormalizeExcludedDates(h.ExcludedDates)
 
 		resp = append(resp, HabitResponse{
 			ID:            h.ID,
@@ -82,7 +67,7 @@ func List(c *gin.Context) {
 			UserID:        utils.Int4ToInt32(h.Userid),
 			IsDaily:       isDaily,
 			SelectedDays:  selectedDays,
-			ExcludedDates: excluded,
+			ExcludedDates: excludedDates,
 		})
 	}
 
@@ -217,21 +202,7 @@ func ListHabitsByRange(c *gin.Context) {
 
 	habits := make([]utils.MatrixHabit, 0, len(dbHabits))
 	for _, h := range dbHabits {
-		excludedDates := []string{}
-		if h.ExcludedDates != nil {
-			switch v := h.ExcludedDates.(type) {
-			case []time.Time:
-				for _, d := range v {
-					excludedDates = append(excludedDates, d.Format("2006-01-02"))
-				}
-			case []interface{}:
-				for _, d := range v {
-					if t, ok := d.(time.Time); ok {
-						excludedDates = append(excludedDates, t.Format("2006-01-02"))
-					}
-				}
-			}
-		}
+		excludedDates := utils.NormalizeExcludedDates(h.ExcludedDates)
 
 		_, _, startDate := utils.ParseRRule(utils.TextToString(h.Frequency))
 
@@ -302,21 +273,7 @@ func GetHabitsForDate(c *gin.Context, userID int32, targetDate time.Time) ([]Hab
 			Date:    dateStr,
 		})
 
-		excluded := []string{}
-		if h.ExcludedDates != nil {
-			switch v := h.ExcludedDates.(type) {
-			case []time.Time:
-				for _, d := range v {
-					excluded = append(excluded, d.Format("2006-01-02"))
-				}
-			case []interface{}:
-				for _, d := range v {
-					if t, ok := d.(time.Time); ok {
-						excluded = append(excluded, t.Format("2006-01-02"))
-					}
-				}
-			}
-		}
+		excluded := utils.NormalizeExcludedDates(h.ExcludedDates)
 
 		occurrences := utils.GetOccurrencesWithExclusions(utils.TextToString(h.Frequency), excluded, targetDate)
 
@@ -344,105 +301,4 @@ func GetHabitsForDate(c *gin.Context, userID int32, targetDate time.Time) ([]Hab
 	}
 
 	return todaysHabits, nil
-}
-func GetHabitMonthlyLogs(c *gin.Context) {
-
-	userId, exists := c.Get("userId")
-
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Not authorized"})
-		return
-	}
-
-	uid := userId.(int32)
-	date := c.Query("date")
-	habitId := c.Query("habitId")
-
-	targetDate := time.Now().UTC()
-
-	if date != "" {
-		if t, err := time.Parse("2006-01-02", date); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date format"})
-			return
-		} else {
-			targetDate = t
-		}
-	}
-	parsedHabitId, err := strconv.Atoi(habitId)
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"Error": "Bad params"})
-		return
-	}
-
-	habit, err := database.Queries.GetHabitByID(c, db.GetHabitByIDParams{
-		ID:     int32(parsedHabitId),
-		Userid: pgtype.Int4{Int32: uid, Valid: true},
-	})
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch habits"})
-		return
-	}
-
-	excludedDates := []string{}
-	if habit.ExcludedDates != nil {
-		switch v := habit.ExcludedDates.(type) {
-		case []time.Time:
-			for _, d := range v {
-				excludedDates = append(excludedDates, d.Format("2006-01-02"))
-			}
-		case []interface{}:
-			for _, d := range v {
-				if t, ok := d.(time.Time); ok {
-					excludedDates = append(excludedDates, t.Format("2006-01-02"))
-				}
-			}
-		}
-	}
-
-	allMonth := utils.GetOccurrencesForMonth(
-		utils.TextToString(habit.Frequency),
-		excludedDates,
-		targetDate,
-	)
-
-	response := make(map[string]CompletionInfo, len(allMonth))
-
-	if len(allMonth) == 0 {
-		c.JSON(http.StatusOK, response)
-		return
-	}
-
-	firstDate := allMonth[0].Format("2006-01-02")
-	lastDate := allMonth[len(allMonth)-1].Format("2006-01-02")
-
-	completionLogs, _ := database.Queries.GetCompletionsInRange(c, db.GetCompletionsInRangeParams{
-		UserID:  uid,
-		HabitID: int32(parsedHabitId),
-		Date:    firstDate,
-		Date_2:  lastDate,
-	})
-
-	logLookup := make(map[string]CompletionInfo, len(completionLogs))
-	for _, log := range completionLogs {
-		logLookup[log.Date] = CompletionInfo{
-			Completed: log.Completed,
-			Time:      log.Timeatcompletion,
-		}
-	}
-
-	for _, date := range allMonth {
-		formattedDate := date.Format("2006-01-02")
-		if info, exists := logLookup[formattedDate]; exists {
-			response[formattedDate] = info
-		} else {
-			response[formattedDate] = CompletionInfo{
-				Completed: false,
-				Time:      "",
-			}
-		}
-	}
-
-	c.JSON(http.StatusOK, response)
 }

@@ -23,6 +23,7 @@ type Querier interface {
 	DeleteNote(ctx context.Context, arg DeleteNoteParams) error
 	DeleteUser(ctx context.Context, id int32) error
 	EditNote(ctx context.Context, arg EditNoteParams) (Notes, error)
+	GetAllHabitCompletions(ctx context.Context, arg GetAllHabitCompletionsParams) ([]GetAllHabitCompletionsRow, error)
 	GetCategoryByID(ctx context.Context, id int32) (Category, error)
 	GetCompletionsInRange(ctx context.Context, arg GetCompletionsInRangeParams) ([]GetCompletionsInRangeRow, error)
 	GetHabitByID(ctx context.Context, arg GetHabitByIDParams) (GetHabitByIDRow, error)

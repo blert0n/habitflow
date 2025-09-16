@@ -106,3 +106,9 @@ export interface HabitLog {
   completed: boolean
   time: string
 }
+
+export interface HabitStreak {
+  completion_avg_rate: number
+  streak: number
+  total_day_since_start: number
+}
