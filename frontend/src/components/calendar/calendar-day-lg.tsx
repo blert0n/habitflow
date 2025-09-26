@@ -47,19 +47,19 @@ export const CalendarDayLg = ({
   return (
     <Flex
       width="100%"
-      height={{ base: '90px', sm: '110px' }}
+      height={{ base: '110px', sm: '130px' }}
       fontSize="xs"
       fontWeight={isCurrentDate ? 'medium' : 'normal'}
       colorScheme="blackAlpha"
-      bg={isCurrentDate ? 'white' : 'transparent'}
+      bg={isCurrentDate ? 'white' : 'gray.100'}
       border="1px solid"
       borderColor={isCurrentDate ? 'gray.200' : 'gray.200'}
       borderRadius={{ base: 'lg', sm: 'xl' }}
-      p={{ base: 2.5, sm: 3 }}
+      p={{ base: 0.5, sm: 2 }}
       boxShadow={isCurrentDate ? 'sm' : 'none'}
       cursor="pointer"
       transition="all 0.2s ease"
-      opacity={isCurrentDate ? 1 : 0.8}
+      // opacity={isCurrentDate ? 1 : 0.8}
       _hover={{
         transform: {
           base: 'none',
@@ -71,13 +71,13 @@ export const CalendarDayLg = ({
         opacity: isCurrentDate ? 1 : 0.9,
       }}
       direction="column"
-      gap={{ base: 1.5, sm: 2 }}
+      gap={{ base: 1, sm: 2 }}
       onClick={() => {
         onSelect?.(day)
       }}
     >
       {/* Date Number */}
-      <Flex justify="space-between" align="center">
+      <Flex justify="space-between" align="center" p={{ base: 1, sm: 0 }}>
         <Text
           color={
             isSelected
@@ -112,11 +112,11 @@ export const CalendarDayLg = ({
       </Flex>
 
       {/* Habits Dots */}
-      <Box flex={1} display="flex" alignItems="center">
+      <Box flex={1} display="flex" alignItems="center" p={{ base: 1, sm: 0 }}>
         <Box
           display="grid"
           gridTemplateColumns={{
-            base: 'repeat(3, 8px)',
+            base: 'repeat(3, 10px)',
             sm: 'repeat(4, 10px)',
           }}
           gap={{ base: '3px', sm: '3px' }}
@@ -171,7 +171,7 @@ export const CalendarDayLg = ({
           }
         >
           <Text
-            fontSize={{ base: '8px', sm: '10px' }}
+            fontSize={{ base: '12px', sm: '10px' }}
             fontWeight="medium"
             color={
               completedHabits === totalVisibleHabits

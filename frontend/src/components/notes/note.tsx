@@ -1,7 +1,7 @@
 'use client'
-
-import { Flex, Tag, Text } from '@chakra-ui/react'
-import { TagIcon } from 'lucide-react'
+import { Flex, Text } from '@chakra-ui/react'
+import dayjs from 'dayjs'
+import { formatFriendlyDate } from '@/util/dates'
 
 interface NoteProps {
   title: string
@@ -11,19 +11,19 @@ interface NoteProps {
   onClick?: () => void
 }
 
-const Note = ({ title, note, habit, date, onClick }: NoteProps) => {
+const Note = ({ title, note, date, onClick }: NoteProps) => {
   return (
     <Flex
       direction="column"
-      py={2}
-      px={3}
       gap={1}
-      borderRadius="lg"
+      py={2}
+      px={{ base: 3, sm: 4 }}
+      borderRadius="xl"
       borderWidth="1px"
-      borderColor="gray.200"
-      bg="white"
+      borderColor="#fef7c0"
+      bg="#fefce8"
       _hover={{
-        bgColor: 'gray.50',
+        bgColor: '#fef7c0',
         transform: 'translateY(-1px)',
       }}
       cursor="pointer"
@@ -31,34 +31,23 @@ const Note = ({ title, note, habit, date, onClick }: NoteProps) => {
       transition="all 0.2s ease"
       position="relative"
     >
-      <Flex justify="space-between" align="flex-start" gap={3}>
-        <Text
-          color="gray.800"
-          fontSize="sm"
-          fontWeight="semibold"
-          flex="1"
-          minWidth={0}
-          lineHeight="1.4"
-        >
-          {title}
-        </Text>
-        <Text
-          fontSize="xs"
-          color="gray.600"
-          whiteSpace="nowrap"
-          bg="gray.100"
-          px={2}
-          py={1}
-          borderRadius="full"
-          fontWeight="medium"
-        >
-          {date}
-        </Text>
-      </Flex>
-
       <Text
         color="gray.600"
+        fontWeight="semibold"
         fontSize="sm"
+        lineHeight="1.5"
+        overflow="hidden"
+        css={{
+          display: '-webkit-box',
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: 'vertical',
+        }}
+      >
+        {title}
+      </Text>
+      <Text
+        color="gray.800"
+        fontSize="xs"
         lineHeight="1.5"
         overflow="hidden"
         css={{
@@ -69,19 +58,18 @@ const Note = ({ title, note, habit, date, onClick }: NoteProps) => {
       >
         {note}
       </Text>
-      <Flex justify="flex-start" mt={1}>
-        <Tag.Root
-          size="sm"
-          bg="gray.100"
-          borderColor="gray.200"
-          borderWidth="1px"
-        >
-          <TagIcon strokeWidth={1.5} size={14} color="#6b7280" />
-          <Tag.Label fontSize="xs" color="gray.700" fontWeight="medium">
-            {habit}
-          </Tag.Label>
-        </Tag.Root>
-      </Flex>
+      <Text
+        color="gray.800"
+        fontSize="10px"
+        overflow="hidden"
+        css={{
+          display: '-webkit-box',
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: 'vertical',
+        }}
+      >
+        {formatFriendlyDate(dayjs(date))}
+      </Text>
     </Flex>
   )
 }

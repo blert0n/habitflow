@@ -100,31 +100,11 @@ const CalendarLg = () => {
     <Flex direction="column" marginBottom={4} height="100%">
       <HeaderWithText title="Calendar" text="Track your habits across time!" />
       <Spacer marginBottom={4} />
-      <Flex gap={4} height="100%" direction={{ base: 'column', md: 'row' }}>
-        <Flex
-          flex={1}
-          gap={2}
-          minWidth={0}
-          width="full"
-          justifyContent="space-between"
-          direction={{ base: 'row', md: 'column' }}
-          mb={{ base: 4, md: 0 }}
-        >
-          <CalendarHabits
-            date={habitsDate}
-            habits={habitsByDate?.data}
-            total={habitsByDate?.totalCount}
-            page={page}
-            onPageChange={(newPage) => {
-              setPage(newPage)
-            }}
-            isLoading={isLoadingByDate}
-          />
-          <CalendarLegend
-            habits={visibleHabits}
-            onHabitVisibilityChange={onHabitVisibilityChange}
-          />
-        </Flex>
+      <Flex
+        gap={4}
+        height="100%"
+        direction={{ base: 'column-reverse', md: 'row' }}
+      >
         <Box
           flex={{ base: 'none', midMd: 2 }}
           bg="white"
@@ -197,6 +177,30 @@ const CalendarLg = () => {
                 ))}
           </Box>
         </Box>
+        <Flex
+          flex={1}
+          gap={2}
+          minWidth={0}
+          width="full"
+          justifyContent="space-between"
+          direction={{ base: 'row', md: 'column' }}
+          mb={{ base: 4, md: 0 }}
+        >
+          <CalendarHabits
+            date={habitsDate}
+            habits={habitsByDate?.data}
+            total={habitsByDate?.totalCount}
+            page={page}
+            onPageChange={(newPage) => {
+              setPage(newPage)
+            }}
+            isLoading={isLoadingByDate}
+          />
+          <CalendarLegend
+            habits={visibleHabits}
+            onHabitVisibilityChange={onHabitVisibilityChange}
+          />
+        </Flex>
       </Flex>
     </Flex>
   )
