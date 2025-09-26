@@ -22,11 +22,8 @@ const Note = ({ title, note, habit, date, onClick }: NoteProps) => {
       borderWidth="1px"
       borderColor="gray.200"
       bg="white"
-      boxShadow="xs"
       _hover={{
         bgColor: 'gray.50',
-        borderColor: 'gray.300',
-        boxShadow: 'sm',
         transform: 'translateY(-1px)',
       }}
       cursor="pointer"
