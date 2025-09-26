@@ -31,6 +31,7 @@ export const CalendarDayLg = ({
     : isToday
 
   const date = dayjs(day).format('D')
+  const isTodayInCurrentMonth = isToday && isCurrentDate && !isSelected
 
   const totalVisibleHabits =
     habits?.filter(
@@ -78,8 +79,24 @@ export const CalendarDayLg = ({
       {/* Date Number */}
       <Flex justify="space-between" align="center">
         <Text
-          color={isSelected ? 'white' : isCurrentDate ? 'gray.900' : 'gray.500'}
+          color={
+            isSelected
+              ? 'white'
+              : isTodayInCurrentMonth
+                ? 'blue.600'
+                : isCurrentDate
+                  ? 'gray.900'
+                  : 'gray.500'
+          }
           bg={isSelected ? 'brand.primary' : 'transparent'}
+          border="1px solid"
+          borderColor={
+            isSelected
+              ? 'brand.primary'
+              : isTodayInCurrentMonth
+                ? 'blue.300'
+                : 'transparent'
+          }
           width="fit-content"
           minWidth={{ base: '20px', sm: '24px' }}
           height={{ base: '20px', sm: '24px' }}
@@ -92,14 +109,6 @@ export const CalendarDayLg = ({
         >
           {date}
         </Text>
-        {isToday && !isSelected && isCurrentDate && (
-          <Box
-            w={{ base: '4px', sm: '6px' }}
-            h={{ base: '4px', sm: '6px' }}
-            bg="blue.500"
-            borderRadius="full"
-          />
-        )}
       </Flex>
 
       {/* Habits Dots */}
