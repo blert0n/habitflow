@@ -28,10 +28,12 @@ const CalendarSm = ({ selectedDate, onDateChange }: CalendarSmProps) => {
       bg="white"
       flex={1}
       p={4}
-      borderRadius="lg"
+      borderRadius="xl"
       borderWidth="1px"
       borderColor="gray.200"
-      overflowY="hidden"
+      overflowY="auto"
+      overflowX="visible"
+      transition="all 0.2s ease"
     >
       <CalendarHeader
         currentDate={currentDate}
@@ -42,26 +44,52 @@ const CalendarSm = ({ selectedDate, onDateChange }: CalendarSmProps) => {
       />
       <Spacer marginTop={4} />
 
-      <Flex justify="center" mb={6} gap={1}>
+      <Flex justify="center" mb={4} gap={1}>
         {WEEK_DAYS.map((day) => (
-          <Text
+          <Box
             key={day}
-            fontSize="xs"
             flex="1"
             maxW="1/7"
-            textAlign="center"
-            color="gray.500"
+            py={2}
+            borderBottom="2px solid"
+            borderColor="gray.100"
+            position="relative"
+            _after={{
+              content: '""',
+              position: 'absolute',
+              bottom: '-2px',
+              left: '20%',
+              right: '20%',
+              height: '2px',
+              background:
+                'linear-gradient(to right, transparent, #e4e4e7, transparent)',
+            }}
           >
-            {day}
-          </Text>
+            <Text
+              fontSize="xs"
+              textAlign="center"
+              color="gray.600"
+              fontWeight="semibold"
+              letterSpacing="wide"
+            >
+              {day}
+            </Text>
+          </Box>
         ))}
       </Flex>
 
-      <Flex direction="column" gap={2} overflowY="hidden">
+      <Flex direction="column" gap={3} overflow="visible" px={2}>
         {calendarMatrix.map((week, rowIndex) => (
-          <Flex key={rowIndex} justify="center" gap={1}>
+          <Flex key={rowIndex} justify="center" gap={2} overflow="visible">
             {week.map((day) => (
-              <Box key={day.toISOString()} flex="1" maxW="1/7">
+              <Box
+                key={day.toISOString()}
+                flex="1"
+                maxW="1/7"
+                position="relative"
+                overflow="visible"
+                px={1}
+              >
                 <CalendarDay
                   day={day}
                   currentDate={currentDate}

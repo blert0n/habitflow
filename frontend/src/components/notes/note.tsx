@@ -15,38 +15,74 @@ const Note = ({ title, note, habit, date, onClick }: NoteProps) => {
   return (
     <Flex
       direction="column"
-      padding={2}
+      py={2}
+      px={3}
       gap={1}
-      borderRadius="sm"
+      borderRadius="lg"
       borderWidth="1px"
       borderColor="gray.200"
       bg="white"
-      _hover={{ bgColor: 'bg' }}
+      boxShadow="xs"
+      _hover={{
+        bgColor: 'gray.50',
+        borderColor: 'gray.300',
+        boxShadow: 'sm',
+        transform: 'translateY(-1px)',
+      }}
       cursor="pointer"
       onClick={() => onClick?.()}
+      transition="all 0.2s ease"
+      position="relative"
     >
-      <Flex justify="space-between" align="flex-start" gap={2}>
+      <Flex justify="space-between" align="flex-start" gap={3}>
         <Text
-          color="gray.700"
-          fontSize={13}
-          fontWeight="medium"
+          color="gray.800"
+          fontSize="sm"
+          fontWeight="semibold"
           flex="1"
           minWidth={0}
+          lineHeight="1.4"
         >
           {title}
         </Text>
-        <Text fontSize={10} color="gray.500" whiteSpace="nowrap">
+        <Text
+          fontSize="xs"
+          color="gray.600"
+          whiteSpace="nowrap"
+          bg="gray.100"
+          px={2}
+          py={1}
+          borderRadius="full"
+          fontWeight="medium"
+        >
           {date}
         </Text>
       </Flex>
 
-      <Text color="gray.600" fontSize={12}>
+      <Text
+        color="gray.600"
+        fontSize="sm"
+        lineHeight="1.5"
+        overflow="hidden"
+        css={{
+          display: '-webkit-box',
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: 'vertical',
+        }}
+      >
         {note}
       </Text>
-      <Flex>
-        <Tag.Root size="sm">
-          <TagIcon strokeWidth={1} size={12} />
-          <Tag.Label fontSize={10}>{habit}</Tag.Label>
+      <Flex justify="flex-start" mt={1}>
+        <Tag.Root
+          size="sm"
+          bg="gray.100"
+          borderColor="gray.200"
+          borderWidth="1px"
+        >
+          <TagIcon strokeWidth={1.5} size={14} color="#6b7280" />
+          <Tag.Label fontSize="xs" color="gray.700" fontWeight="medium">
+            {habit}
+          </Tag.Label>
         </Tag.Root>
       </Flex>
     </Flex>
