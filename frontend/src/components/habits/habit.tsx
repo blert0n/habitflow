@@ -61,7 +61,7 @@ const Habit = ({
     <Flex
       justifyContent="space-between"
       alignItems="center"
-      padding={2}
+      padding={{ base: 1, sm: 2 }}
       flex={1}
       gap={2}
       borderRadius="lg"

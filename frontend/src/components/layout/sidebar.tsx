@@ -9,18 +9,14 @@ import {
 } from '@chakra-ui/react'
 import { Card } from '@chakra-ui/react/card'
 import { Flex } from '@chakra-ui/react/flex'
-import {
-  Calendar,
-  // ChartNoAxesCombined,
-  ChartSpline,
-  ChevronLeft,
-  List,
-  Menu,
-  NotebookPen,
-  // Trophy,
-} from 'lucide-react'
 import { useRouterState } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
+import { DiagramIcon } from '@/assets/icons/diagram'
+import { CalendarIcon } from '@/assets/icons/calendar'
+import { NotebookIcon } from '@/assets/icons/notebook'
+import { ListIcon } from '@/assets/icons/list'
+import { LeftArrowIcon } from '@/assets/icons/back-arrow'
+import { MenuIcon } from '@/assets/icons/menu'
 
 const isActive = (href: string, pathname: string) => {
   if (href === '/') return pathname === '/'
@@ -30,12 +26,38 @@ const isActive = (href: string, pathname: string) => {
 const MotionCard = motion.create(Card.Root)
 
 const sidebarLinks = [
-  { href: '/', icon: ChartSpline, label: 'Dashboard' },
-  { href: '/calendar', icon: Calendar, label: 'Calendar' },
-  { href: '/habits', icon: List, label: 'All habits' },
-  { href: '/notes', icon: NotebookPen, label: 'Notes' },
-  // { href: '/analytics', icon: ChartNoAxesCombined, label: 'Analytics' },
-  // { href: '/badges', icon: Trophy, label: 'Badges' },
+  {
+    href: '/',
+    icon: DiagramIcon,
+    label: 'Dashboard',
+    color: '#2D7FF9',
+    gradient:
+      'linear-gradient(135deg, rgba(45, 127, 249, 0.12), rgba(45, 127, 249, 0.06))',
+  },
+  {
+    href: '/calendar',
+    icon: CalendarIcon,
+    label: 'Calendar',
+    color: '#8A2CF7',
+    gradient:
+      'linear-gradient(135deg, rgba(138, 44, 247, 0.12), rgba(138, 44, 247, 0.06))',
+  },
+  {
+    href: '/habits',
+    icon: ListIcon,
+    label: 'All habits',
+    color: '#FF6161',
+    gradient:
+      'linear-gradient(135deg, rgba(255, 97, 97, 0.12), rgba(255, 97, 97, 0.06))',
+  },
+  {
+    href: '/notes',
+    icon: NotebookIcon,
+    label: 'Notes',
+    color: '#F5B900',
+    gradient:
+      'linear-gradient(135deg, rgba(245, 185, 0, 0.12), rgba(245, 185, 0, 0.06))',
+  },
 ]
 const Sidebar = () => {
   const pathname = useRouterState({
@@ -43,22 +65,19 @@ const Sidebar = () => {
   })
 
   const [isOpen, setIsOpen] = useState(true)
-
   const isMobile = useBreakpointValue({ base: true, midMd: false })
+
+  // Don't render sidebar on mobile
+  if (isMobile) {
+    return null
+  }
 
   return (
     <MotionCard
       initial={false}
-      animate={
-        !isMobile
-          ? { width: isOpen ? 200 : 60, height: '100%' }
-          : { width: '100%', height: '60px' }
-      }
+      animate={{ width: isOpen ? 200 : 60, height: '100%' }}
       transition={{ duration: 0.3 }}
-      position={isMobile ? 'fixed' : 'relative'}
-      bottom={isMobile ? 0 : 'auto'}
-      left={0}
-      right={0}
+      position="relative"
       zIndex={10}
       borderRadius="none"
       boxShadow="md"
@@ -67,57 +86,54 @@ const Sidebar = () => {
     >
       <Card.Body px={2} py={2} height="full">
         <Flex
-          direction={isMobile ? 'row' : 'column'}
+          direction="column"
           align="center"
-          justify={isMobile ? 'space-around' : 'flex-start'}
+          justify="flex-start"
           height="full"
           gap={2}
         >
-          {/* Show toggle only on desktop */}
-          {!isMobile && (
-            <Flex>
-              <IconButton
-                aria-label="Toggle sidebar"
-                size="sm"
-                variant="ghost"
-                onClick={() => setIsOpen((prev) => !prev)}
-              >
-                {isOpen ? <ChevronLeft /> : <Menu />}
-              </IconButton>
-            </Flex>
-          )}
+          <Flex>
+            <IconButton
+              aria-label="Toggle sidebar"
+              size="sm"
+              variant="ghost"
+              onClick={() => setIsOpen((prev) => !prev)}
+            >
+              {isOpen ? (
+                <LeftArrowIcon boxSize="16px" />
+              ) : (
+                <MenuIcon boxSize="16px" color="brand.primary" />
+              )}
+            </IconButton>
+          </Flex>
 
-          {sidebarLinks.map(({ href, icon: Icon, label }) => (
+          {sidebarLinks.map(({ href, icon: Icon, label, color, gradient }) => (
             <Link
               key={label}
               href={href}
               textDecoration="none"
               _focus={{ boxShadow: 'none' }}
               flexShrink={0}
-              width={isMobile ? 'auto' : 'full'}
+              width="full"
             >
               <Flex
                 alignItems="center"
-                gap={isOpen && !isMobile ? 3 : 0}
+                gap={isOpen ? 3 : 0}
                 p={2}
-                pr={isMobile ? 2 : 4}
+                pr={4}
                 borderRadius="md"
-                backgroundColor={
-                  isActive(href, pathname) ? 'brand.primary' : 'transparent'
-                }
-                justifyContent={
-                  isMobile ? 'center' : isOpen ? 'flex-start' : 'center'
-                }
+                background={isActive(href, pathname) ? gradient : 'transparent'}
+                justifyContent={isOpen ? 'flex-start' : 'center'}
                 width="full"
               >
-                <Icon
-                  size={20}
-                  stroke={isActive(href, pathname) ? 'white' : '#52525b'}
-                />
-                {!isMobile && isOpen && (
+                <Icon boxSize="20px" color={color} />
+                {isOpen && (
                   <Text
                     fontSize="14px"
-                    color={isActive(href, pathname) ? 'white' : 'gray.800'}
+                    color={isActive(href, pathname) ? color : 'gray.600'}
+                    fontWeight={
+                      isActive(href, pathname) ? 'semibold' : 'normal'
+                    }
                     whiteSpace="nowrap"
                   >
                     {label}

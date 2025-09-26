@@ -23,7 +23,7 @@ const ScheduledWeekDays = ({
   activeColor = 'gray.900',
   selectedDays,
   isRandom = false,
-  boxSize = 5,
+  boxSize = 6,
   interactive = false,
   isDaily = false,
   onDayClick,

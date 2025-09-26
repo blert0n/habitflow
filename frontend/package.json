@@ -48,7 +48,8 @@
     "react-hook-form": "^7.62.0",
     "react-icons": "^5.5.0",
     "rrule": "^2.8.1",
-    "tailwindcss": "^4.0.6"
+    "tailwindcss": "^4.0.6",
+    "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
     "@chakra-ui/cli": "^3.26.0",
@@ -59,6 +60,7 @@
     "@types/node": "^24.1.0",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
+    "@types/tinycolor2": "^1.4.6",
     "@vitejs/plugin-react": "^4.3.4",
     "jsdom": "^26.0.0",
     "prettier": "^3.5.3",

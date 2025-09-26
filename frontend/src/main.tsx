@@ -44,7 +44,7 @@ const appLayoutRoute = createRoute({
   id: 'app-layout',
   component: () => (
     <Layout>
-      <Box padding={4} className="full-width">
+      <Box padding={{ base: 2, sm: 4 }} className="full-width">
         <Outlet />
       </Box>
     </Layout>

@@ -36,7 +36,7 @@ const CalendarHabits = ({
       borderWidth="1px"
       borderColor="gray.200"
       fontSize="sm"
-      p={4}
+      p={{ base: 2, sm: 4 }}
       width="full"
     >
       <Box mb={3}>

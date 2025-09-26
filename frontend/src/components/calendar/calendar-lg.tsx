@@ -135,6 +135,7 @@ const CalendarLg = () => {
           display="flex"
           flexDirection="column"
           height="100%"
+          overflowX="auto"
         >
           <CalendarHeader
             currentDate={currentDate}
@@ -153,12 +154,15 @@ const CalendarLg = () => {
                 textAlign="center"
                 fontWeight="semibold"
                 color="gray.500"
+                borderBottom="2px solid transparent"
+                borderImage="linear-gradient(to right, #e4e4e7, transparent)"
+                borderImageSlice={1}
               >
                 {day}
               </Box>
             ))}
           </Flex>
-          <Separator marginY={3} />
+          {/* <Separator marginY={3} /> */}
           <Box
             flex={1}
             bg="white"
@@ -166,8 +170,10 @@ const CalendarLg = () => {
             gridTemplateColumns="repeat(7, 1fr)"
             gridAutoRows="1fr"
             gap={1}
+            gapY={3}
             height="100%"
-            overflow="hidden"
+            overflowX="auto"
+            py={4}
           >
             {isLoadingMatrix
               ? allDays.map((day) => (

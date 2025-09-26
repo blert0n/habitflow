@@ -222,15 +222,42 @@ func ListHabitsByRange(c *gin.Context) {
 		matrix = append(matrix, d)
 	}
 
+	completionsByHabit := make(map[int32]map[string]bool)
+	for _, h := range habits {
+		completions, err := database.Queries.GetCompletionsInRange(c, db.GetCompletionsInRangeParams{
+			HabitID: h.ID,
+			UserID:  uid,
+			Date:    start.Format("2006-01-02"),
+			Date_2:  end.Format("2006-01-02"),
+		})
+
+		if err != nil {
+			completionsByHabit[h.ID] = make(map[string]bool)
+			continue
+		}
+
+		habitCompletions := make(map[string]bool)
+		for _, completion := range completions {
+			habitCompletions[completion.Date] = completion.Completed
+		}
+		completionsByHabit[h.ID] = habitCompletions
+	}
+
 	occurrences := utils.GenerateHabitOccurrencesByDate(habits, matrix)
 
 	response := make(map[string][]HabitResponse)
 	for date, hs := range occurrences {
 		for _, h := range hs {
+			isCompleted := false
+			if habitCompletions, exists := completionsByHabit[h.ID]; exists {
+				isCompleted = habitCompletions[date]
+			}
+
 			response[date] = append(response[date], HabitResponse{
-				ID:    h.ID,
-				Name:  h.Name,
-				Color: h.Color,
+				ID:          h.ID,
+				Name:        h.Name,
+				Color:       h.Color,
+				IsCompleted: isCompleted,
 			})
 		}
 	}

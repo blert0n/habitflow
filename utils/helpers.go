@@ -35,7 +35,9 @@ func CalculateStreak(occurrences []time.Time, completions []db.GetAllHabitComple
 		completed[c.Date] = true
 	}
 
+	today := time.Now().Format("2006-01-02")
 	streak := 0
+
 	for i := len(occurrences) - 1; i >= 0; i-- {
 		occ := occurrences[i]
 		if occ.After(targetDate) {
@@ -45,6 +47,9 @@ func CalculateStreak(occurrences []time.Time, completions []db.GetAllHabitComple
 		if completed[key] {
 			streak++
 		} else {
+			if key == today {
+				continue
+			}
 			break
 		}
 	}

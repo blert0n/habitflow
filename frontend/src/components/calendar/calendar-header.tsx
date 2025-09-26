@@ -1,11 +1,12 @@
 'use client'
 
 import { Flex, IconButton, Text } from '@chakra-ui/react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
 import dayjs from 'dayjs'
 import { MonthPopover } from './month-popover'
 import { YearPopover } from './year-popover'
 import type { Dayjs } from 'dayjs'
+import { LeftArrowIcon } from '@/assets/icons/back-arrow'
+import { RightArrowIcon } from '@/assets/icons/right-arrow'
 
 interface CalendarHeaderProps {
   currentDate: Dayjs
@@ -48,7 +49,7 @@ const CalendarHeader = ({
           variant="ghost"
           onClick={onPrevMonth}
         >
-          <ChevronLeft size={16} />
+          <LeftArrowIcon boxSize="16px" />
         </IconButton>
         <IconButton
           aria-label="Next month"
@@ -56,7 +57,7 @@ const CalendarHeader = ({
           variant="ghost"
           onClick={onNextMonth}
         >
-          <ChevronRight size={16} />
+          <RightArrowIcon boxSize="16px" />
         </IconButton>
       </Flex>
     </Flex>
