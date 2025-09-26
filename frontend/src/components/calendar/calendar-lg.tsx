@@ -1,6 +1,6 @@
 import { Flex } from '@chakra-ui/react/flex'
 import { Spacer } from '@chakra-ui/react/spacer'
-import { Box, Separator } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
