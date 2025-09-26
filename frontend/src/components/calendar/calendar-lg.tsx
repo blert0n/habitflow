@@ -137,14 +137,15 @@ const CalendarLg = () => {
           height="100%"
           overflowX="auto"
         >
-          <CalendarHeader
-            currentDate={currentDate}
-            onPrevMonth={handlePrevMonth}
-            onNextMonth={handleNextMonth}
-            onMonthChange={handleMonthChange}
-            onYearChange={handleYearChange}
-          />
-          <Separator marginY={3} />
+          <Box mb={3}>
+            <CalendarHeader
+              currentDate={currentDate}
+              onPrevMonth={handlePrevMonth}
+              onNextMonth={handleNextMonth}
+              onMonthChange={handleMonthChange}
+              onYearChange={handleYearChange}
+            />
+          </Box>
           <Flex justify="center" gap={1} mb={2}>
             {WEEK_DAYS.map((day) => (
               <Box
