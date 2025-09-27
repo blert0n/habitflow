@@ -13,6 +13,7 @@ import {
   DateHeaderWeekView,
   HabitListWeekView,
 } from './day-headers'
+import { DayView } from './day-view'
 import type { Habit, HabitsByDate, HabitsMatrix } from '@/types/habits'
 import { HeaderWithText } from '@/components/ui/header-with-text'
 import { CalendarHeader } from '@/components/calendar/calendar-header'
@@ -139,6 +140,12 @@ const CalendarLg = () => {
             />
           </Box>
           <Flex justify="center" gap={1} mb={2}>
+            {view === 'Day' && (
+              <DayView
+                habits={habitsMatrix?.[currentDate.format(NORMALIZED_FORMAT)]}
+                date={currentDate.format(NORMALIZED_FORMAT)}
+              />
+            )}
             {view === 'Week' && (
               <Box
                 flex={1}
@@ -214,35 +221,37 @@ const CalendarLg = () => {
             </Box>
           )}
         </Box>
-        <Flex
-          flex={1}
-          gap={4}
-          minWidth={0}
-          width="full"
-          direction={{ base: 'column', md: 'row', lg: 'column' }}
-          mb={{ base: 4, lg: 0 }}
-          maxW={{ base: '100%', lg: '320px' }}
-          alignItems="stretch"
-        >
-          <Box flex={1} display="flex">
-            <CalendarHabits
-              date={habitsDate}
-              habits={habitsByDate?.data}
-              total={habitsByDate?.totalCount}
-              page={page}
-              onPageChange={(newPage) => {
-                setPage(newPage)
-              }}
-              isLoading={isLoadingByDate}
-            />
-          </Box>
-          <Box flex={1} display="flex">
-            <CalendarLegend
-              habits={visibleHabits}
-              onHabitVisibilityChange={onHabitVisibilityChange}
-            />
-          </Box>
-        </Flex>
+        {view !== 'Day' && (
+          <Flex
+            flex={1}
+            gap={4}
+            minWidth={0}
+            width="full"
+            direction={{ base: 'column', md: 'row', lg: 'column' }}
+            mb={{ base: 4, lg: 0 }}
+            maxW={{ base: '100%', lg: '320px' }}
+            alignItems="stretch"
+          >
+            <Box flex={1} display="flex">
+              <CalendarHabits
+                date={habitsDate}
+                habits={habitsByDate?.data}
+                total={habitsByDate?.totalCount}
+                page={page}
+                onPageChange={(newPage) => {
+                  setPage(newPage)
+                }}
+                isLoading={isLoadingByDate}
+              />
+            </Box>
+            <Box flex={1} display="flex">
+              <CalendarLegend
+                habits={visibleHabits}
+                onHabitVisibilityChange={onHabitVisibilityChange}
+              />
+            </Box>
+          </Flex>
+        )}
       </Flex>
     </Flex>
   )

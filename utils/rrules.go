@@ -15,6 +15,7 @@ type MatrixHabit struct {
 	RRule        string
 	Color        string
 	ExcludeDates []string
+	Frequency    string
 }
 
 var dayMap = map[string]string{

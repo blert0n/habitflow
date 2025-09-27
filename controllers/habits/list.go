@@ -213,6 +213,7 @@ func ListHabitsByRange(c *gin.Context) {
 			RRule:        h.Frequency.String,
 			ExcludeDates: excludedDates,
 			Color:        h.Color.String,
+			Frequency:    h.Frequency.String,
 		})
 	}
 
@@ -258,6 +259,7 @@ func ListHabitsByRange(c *gin.Context) {
 				Name:        h.Name,
 				Color:       h.Color,
 				IsCompleted: isCompleted,
+				Frequency:   h.Frequency,
 			})
 		}
 	}
