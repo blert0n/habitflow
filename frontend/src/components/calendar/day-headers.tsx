@@ -1,13 +1,13 @@
 import { Box, Flex, Text } from '@chakra-ui/react'
 import tinycolor from 'tinycolor2'
 import dayjs from 'dayjs'
-import React from 'react'
 import type { Habit } from '@/types/habits'
 import type { Dayjs } from 'dayjs'
 import { CheckMarkGradientIcon } from '@/assets/icons/check-mark-gradient'
 import { MinusGrayIcon } from '@/assets/icons/minus-gray'
 import { XMarkGradientIcon } from '@/assets/icons/x-mark-gradient'
 import { QuestionMarkGradientIcon } from '@/assets/icons/question-mark-gradient'
+import { WindIcon } from '@/assets/icons/wind-icon'
 
 type SelectedHabit = Habit & { selected: boolean }
 
@@ -75,6 +75,21 @@ export const DateHeaderWeekView = ({
           {date.get('date')}
         </Text>
       </Flex>
+
+      {visibleHabits?.length === 0 && (
+        <Flex
+          alignItems="center"
+          justifyContent="center"
+          p={2}
+          fontSize="sm"
+          borderRadius="md"
+          flex="1"
+          minH="64px"
+        >
+          <WindIcon size={40} />
+        </Flex>
+      )}
+
       {visibleHabits
         ?.filter((habit) => habit.selected)
         .map((habit) => {
@@ -82,7 +97,6 @@ export const DateHeaderWeekView = ({
             (scheduledHabit) => scheduledHabit.id === habit.id,
           )
           const isPastDay = date.isBefore(dayjs(), 'day')
-          const uniqueId = React.useId()
 
           return (
             <Flex
@@ -104,23 +118,26 @@ export const DateHeaderWeekView = ({
                 >
                   {matchedHabit.isCompleted && (
                     <CheckMarkGradientIcon
+                      size={40}
                       lightColor="#34d399"
                       darkColor="#059669"
-                      gradientId={`checkmark-${habit.id}-${uniqueId}`}
+                      gradientId={`checkmark-${habit.id}`}
                     />
                   )}
                   {!matchedHabit.isCompleted && !isPastDay && (
                     <QuestionMarkGradientIcon
+                      size={40}
                       lightColor="#60a5fa"
                       darkColor="#2563eb"
-                      gradientId={`question-${habit.id}-${uniqueId}`}
+                      gradientId={`question-${habit.id}`}
                     />
                   )}
                   {!matchedHabit.isCompleted && isPastDay && (
                     <XMarkGradientIcon
+                      size={40}
                       lightColor="#f87171"
                       darkColor="#dc2626"
-                      gradientId={`xmark-${habit.id}-${uniqueId}`}
+                      gradientId={`xmark-${habit.id}`}
                     />
                   )}
                 </Box>
@@ -132,7 +149,7 @@ export const DateHeaderWeekView = ({
                   alignItems="center"
                   justifyContent="center"
                 >
-                  <MinusGrayIcon />
+                  <MinusGrayIcon size={40} />
                 </Box>
               )}
             </Flex>
@@ -164,6 +181,19 @@ export const HabitListWeekView = ({
       >
         <Text fontSize="xs">Habits</Text>
       </Flex>
+      {habits.length === 0 && (
+        <Flex
+          alignItems="center"
+          justifyContent="center"
+          p={2}
+          fontSize="sm"
+          borderRadius="md"
+          flex="1"
+          minH="64px"
+        >
+          <WindIcon size={40} />
+        </Flex>
+      )}
       <Flex direction="column" gap={1} flex={1}>
         {habits
           .filter((habit) => habit.selected)
