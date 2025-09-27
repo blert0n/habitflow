@@ -1,32 +1,56 @@
 'use client'
 
-import { Flex, IconButton, Text } from '@chakra-ui/react'
+import { Button, Flex, IconButton, Text } from '@chakra-ui/react'
 import dayjs from 'dayjs'
 import { MonthPopover } from './month-popover'
 import { YearPopover } from './year-popover'
 import type { Dayjs } from 'dayjs'
+import type { View } from '@/types/calendar'
 import { LeftArrowIcon } from '@/assets/icons/back-arrow'
 import { RightArrowIcon } from '@/assets/icons/right-arrow'
 
 interface CalendarHeaderProps {
+  view?: View
   currentDate: Dayjs
   onPrevMonth: () => void
   onNextMonth: () => void
   onMonthChange: (month: number) => void
   onYearChange: (year: number) => void
+  onViewChange?: (view: View) => void
 }
 
 const CalendarHeader = ({
+  view: activeView,
   currentDate,
   onPrevMonth,
   onNextMonth,
   onMonthChange,
   onYearChange,
+  onViewChange,
 }: CalendarHeaderProps) => {
   const date = dayjs(currentDate)
 
-  return (
-    <Flex justify="space-between" align="center">
+  const renderDateHeader = () => {
+    if (activeView === 'Week') {
+      const startOfWeek = date.startOf('isoWeek')
+      const endOfWeek = date.endOf('isoWeek')
+
+      return (
+        <Text fontSize="md" fontWeight="medium">
+          {startOfWeek.format('MMM DD')} - {endOfWeek.format('MMM DD')}
+        </Text>
+      )
+    }
+
+    if (activeView === 'Day') {
+      return (
+        <Text fontSize="md" fontWeight="medium">
+          {date.format('DD MMMM')}
+        </Text>
+      )
+    }
+
+    return (
       <Flex gap={1}>
         <MonthPopover
           selectedMonth={currentDate.month()}
@@ -42,6 +66,12 @@ const CalendarHeader = ({
           </Text>
         </YearPopover>
       </Flex>
+    )
+  }
+
+  return (
+    <Flex justify="space-between" align="center">
+      {renderDateHeader()}
       <Flex gap={1}>
         <IconButton
           aria-label="Previous month"
@@ -59,6 +89,20 @@ const CalendarHeader = ({
         >
           <RightArrowIcon boxSize="16px" />
         </IconButton>
+        {activeView &&
+          ['Day', 'Week', 'Month'].map((view) => (
+            <Button
+              key={view}
+              size="xs"
+              borderRadius="lg"
+              variant={view === activeView ? 'primary' : 'outline'}
+              onClick={() => {
+                onViewChange?.(view as View)
+              }}
+            >
+              {view}
+            </Button>
+          ))}
       </Flex>
     </Flex>
   )

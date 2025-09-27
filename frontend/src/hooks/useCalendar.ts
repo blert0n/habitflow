@@ -7,7 +7,10 @@ interface HookInput {
   initialDate?: Dayjs | null | undefined
 }
 
+type View = 'Day' | 'Week' | 'Month'
+
 interface UseCalendarReturn {
+  view: View
   currentDate: Dayjs
   selectedDate: Dayjs | null
   calendarMatrix: Array<Array<Dayjs>>
@@ -16,9 +19,14 @@ interface UseCalendarReturn {
   handleMonthChange: (month: number) => void
   handleYearChange: (year: number) => void
   handleSelectedDateChange: (date: Dayjs) => void
+  handleViewChange: (view: View) => void
 }
 
 const useCalendar = ({ initialDate }: HookInput): UseCalendarReturn => {
+  const [view, setView] = useState<View>('Month')
+  const handleViewChange = (updatedView: View) => {
+    setView(updatedView)
+  }
   const [currentDate, setCurrentDate] = useState<Dayjs>(
     dayjs(initialDate ?? new Date()),
   )
@@ -26,15 +34,23 @@ const useCalendar = ({ initialDate }: HookInput): UseCalendarReturn => {
     initialDate ? dayjs(initialDate) : null,
   )
 
-  const calendarMatrix = getCalendarMatrix(currentDate)
+  const calendarMatrix = getCalendarMatrix(currentDate, view)
 
   const handlePrevMonth = useCallback(() => {
-    setCurrentDate((prev) => prev.subtract(1, 'month'))
-  }, [])
+    setCurrentDate((prev) => {
+      if (view === 'Day') return prev.subtract(1, 'day')
+      if (view === 'Week') return prev.subtract(1, 'week')
+      return prev.subtract(1, 'month')
+    })
+  }, [view])
 
   const handleNextMonth = useCallback(() => {
-    setCurrentDate((prev) => prev.add(1, 'month'))
-  }, [])
+    setCurrentDate((prev) => {
+      if (view === 'Day') return prev.add(1, 'day')
+      if (view === 'Week') return prev.add(1, 'week')
+      return prev.add(1, 'month')
+    })
+  }, [view])
 
   const handleMonthChange = useCallback((month: number) => {
     setCurrentDate((prev) => prev.month(month))
@@ -49,6 +65,7 @@ const useCalendar = ({ initialDate }: HookInput): UseCalendarReturn => {
   }, [])
 
   return {
+    view,
     currentDate,
     selectedDate,
     calendarMatrix,
@@ -57,6 +74,7 @@ const useCalendar = ({ initialDate }: HookInput): UseCalendarReturn => {
     handleMonthChange,
     handleYearChange,
     handleSelectedDateChange,
+    handleViewChange,
   }
 }
 

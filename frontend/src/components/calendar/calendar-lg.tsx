@@ -8,11 +8,16 @@ import { CalendarDayLg } from './calendar-day-lg'
 import { CalendarLegend } from './calendar-legend'
 import { CalendarHabits } from './calendar-habits'
 import { CalendarDayLgSkeleton } from './calendar-day-lg-skeleton'
+import {
+  DateHeaderMonthView,
+  DateHeaderWeekView,
+  HabitListWeekView,
+} from './day-headers'
 import type { Habit, HabitsByDate, HabitsMatrix } from '@/types/habits'
 import { HeaderWithText } from '@/components/ui/header-with-text'
 import { CalendarHeader } from '@/components/calendar/calendar-header'
 import { useCalendar } from '@/hooks/useCalendar'
-import { WEEK_DAYS } from '@/util/dates'
+import { ISO_WEEK_DAYS, NORMALIZED_FORMAT } from '@/util/dates'
 import { client } from '@/util/client'
 
 type SelectedHabit = Habit & { selected: boolean }
@@ -46,6 +51,7 @@ const CalendarLg = () => {
   })
 
   const {
+    view,
     currentDate,
     handleMonthChange,
     handleNextMonth,
@@ -54,6 +60,7 @@ const CalendarLg = () => {
     calendarMatrix,
     selectedDate,
     handleSelectedDateChange,
+    handleViewChange,
   } = useCalendar({})
 
   const allDays = calendarMatrix.flat()
@@ -103,10 +110,10 @@ const CalendarLg = () => {
       <Flex
         gap={4}
         height="100%"
-        direction={{ base: 'column-reverse', md: 'row' }}
+        direction={{ base: 'column-reverse', lg: 'row' }}
       >
         <Box
-          flex={{ base: 'none', midMd: 2 }}
+          flex={{ base: 'none', lg: 2 }}
           bg="white"
           borderRadius="lg"
           borderWidth="1px"
@@ -116,90 +123,125 @@ const CalendarLg = () => {
           flexDirection="column"
           height="100%"
           overflowX="auto"
+          minW={0}
         >
           <Box mb={3}>
             <CalendarHeader
+              view={view}
               currentDate={currentDate}
               onPrevMonth={handlePrevMonth}
               onNextMonth={handleNextMonth}
               onMonthChange={handleMonthChange}
               onYearChange={handleYearChange}
+              onViewChange={(updatedView) => {
+                handleViewChange(updatedView)
+              }}
             />
           </Box>
           <Flex justify="center" gap={1} mb={2}>
-            {WEEK_DAYS.map((day) => (
+            {view === 'Week' && (
               <Box
-                key={day}
-                padding={1}
-                w="100%"
+                flex={1}
+                bg="white"
+                display="grid"
+                gridTemplateColumns={{
+                  base: '80px repeat(7, 1fr)',
+                  sm: '100px repeat(7, 1fr)',
+                  md: '120px repeat(7, 1fr)',
+                  lg: '140px repeat(7, 1fr)',
+                }}
+                gridAutoRows="1fr"
+                gap={1}
+                gapY={3}
+                height="100%"
+                overflowX="auto"
+                py={4}
                 textAlign="center"
-                fontWeight="semibold"
-                color="gray.500"
-                borderBottom="2px solid transparent"
-                borderImage="linear-gradient(to right, #e4e4e7, transparent)"
-                borderImageSlice={1}
+                alignItems="center"
+                justifyItems="center"
+                minW="100%"
+                w="100%"
               >
-                {day}
-              </Box>
-            ))}
-          </Flex>
-          {/* <Separator marginY={3} /> */}
-          <Box
-            flex={1}
-            bg="white"
-            display="grid"
-            gridTemplateColumns="repeat(7, 1fr)"
-            gridAutoRows="1fr"
-            gap={1}
-            gapY={3}
-            height="100%"
-            overflowX="auto"
-            py={4}
-          >
-            {isLoadingMatrix
-              ? allDays.map((day) => (
-                  <CalendarDayLgSkeleton key={day.toISOString()} />
-                ))
-              : allDays.map((day) => (
-                  <CalendarDayLg
-                    key={day.toISOString()}
-                    day={day}
-                    currentDate={currentDate}
-                    selectedDate={selectedDate}
-                    habits={habitsMatrix?.[day.format('YYYY-MM-DD')] ?? []}
+                <HabitListWeekView habits={visibleHabits} />
+                {allDays.map((day, index) => (
+                  <DateHeaderWeekView
+                    key={`date-header-${index}`}
+                    date={day}
+                    habits={habitsMatrix?.[day.format(NORMALIZED_FORMAT)]}
                     visibleHabits={visibleHabits}
-                    onSelect={(date) => {
-                      handleSelectedDateChange(date)
-                      setHabitsDate(date)
-                      setPage(1)
-                    }}
                   />
                 ))}
-          </Box>
+              </Box>
+            )}
+            {view === 'Month' &&
+              ISO_WEEK_DAYS.map((day) => (
+                <DateHeaderMonthView key={day} day={day} />
+              ))}
+          </Flex>
+
+          {view === 'Month' && (
+            <Box
+              flex={1}
+              bg="white"
+              display="grid"
+              gridTemplateColumns="repeat(7, 1fr)"
+              gridAutoRows="1fr"
+              gap={1}
+              gapY={3}
+              height="100%"
+              overflowX="auto"
+              py={4}
+            >
+              {isLoadingMatrix
+                ? allDays.map((day) => (
+                    <CalendarDayLgSkeleton key={day.toISOString()} />
+                  ))
+                : allDays.map((day) => (
+                    <CalendarDayLg
+                      key={day.toISOString()}
+                      day={day}
+                      currentDate={currentDate}
+                      selectedDate={selectedDate}
+                      habits={habitsMatrix?.[day.format('YYYY-MM-DD')] ?? []}
+                      visibleHabits={visibleHabits}
+                      onSelect={(date) => {
+                        handleSelectedDateChange(date)
+                        setHabitsDate(date)
+                        setPage(1)
+                      }}
+                    />
+                  ))}
+            </Box>
+          )}
         </Box>
         <Flex
           flex={1}
-          gap={2}
+          gap={4}
           minWidth={0}
           width="full"
-          justifyContent="space-between"
-          direction={{ base: 'row', md: 'column' }}
-          mb={{ base: 4, md: 0 }}
+          direction={{ base: 'column', md: 'row', lg: 'column' }}
+          mb={{ base: 4, lg: 0 }}
+          maxW={{ base: '100%', lg: '320px' }}
+          alignItems="stretch"
         >
-          <CalendarHabits
-            date={habitsDate}
-            habits={habitsByDate?.data}
-            total={habitsByDate?.totalCount}
-            page={page}
-            onPageChange={(newPage) => {
-              setPage(newPage)
-            }}
-            isLoading={isLoadingByDate}
-          />
-          <CalendarLegend
-            habits={visibleHabits}
-            onHabitVisibilityChange={onHabitVisibilityChange}
-          />
+          <Box flex={1} display="flex">
+            <CalendarHabits
+              date={habitsDate}
+              habits={habitsByDate?.data}
+              total={habitsByDate?.totalCount}
+              page={page}
+              onPageChange={(newPage) => {
+                setPage(newPage)
+              }}
+              isLoading={isLoadingByDate}
+            />
+          </Box>
+          <Box flex={1} display="flex">
+            <CalendarLegend
+              habits={visibleHabits}
+              onHabitVisibilityChange={onHabitVisibilityChange}
+            />
+          </Box>
         </Flex>
       </Flex>
     </Flex>

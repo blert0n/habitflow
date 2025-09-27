@@ -5,6 +5,7 @@ import isBetween from 'dayjs/plugin/isBetween'
 import weekday from 'dayjs/plugin/weekday'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
+import isoWeek from 'dayjs/plugin/isoWeek'
 import utc from 'dayjs/plugin/utc'
 import { RRule } from 'rrule'
 import type { ByWeekday } from 'rrule'
@@ -17,6 +18,7 @@ dayjs.extend(weekday)
 dayjs.extend(localizedFormat)
 dayjs.extend(advancedFormat)
 dayjs.extend(utc)
+dayjs.extend(isoWeek)
 
 interface DayWithRRule {
   rule: ByWeekday
@@ -33,6 +35,7 @@ const MONTHS = Array.from({ length: 12 }, (_, i) =>
 const NORMALIZED_FORMAT = 'YYYY-MM-DD'
 
 const WEEK_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const ISO_WEEK_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const WEEK_DAYS_LONG = [
   'Sunday',
   'Monday',
@@ -53,9 +56,24 @@ export const weekdayMap: Array<DayWithRRule> = [
   { rule: RRule.SA, label: 'Saturday', index: 6 },
 ]
 
-const getCalendarMatrix = (currentMonth: Dayjs): Array<Array<Dayjs>> => {
-  const startDate = currentMonth.startOf('month').startOf('week')
-  const endDate = currentMonth.endOf('month').endOf('week')
+const getCalendarMatrix = (
+  currentMonth: Dayjs,
+  view?: 'Month' | 'Week' | 'Day',
+): Array<Array<Dayjs>> => {
+  if (view === 'Week') {
+    const startOfWeek = currentMonth.startOf('isoWeek')
+    const week: Array<Dayjs> = []
+
+    for (let i = 0; i < 7; i++) {
+      week.push(startOfWeek.add(i, 'day'))
+    }
+
+    return [week]
+  }
+
+  // Default behavior for Month view
+  const startDate = currentMonth.startOf('month').startOf('isoWeek')
+  const endDate = currentMonth.endOf('month').endOf('isoWeek')
 
   const calendar: Array<Array<Dayjs>> = []
   let week: Array<Dayjs> = []
@@ -95,6 +113,7 @@ export {
   MONTHS,
   WEEK_DAYS,
   WEEK_DAYS_LONG,
+  ISO_WEEK_DAYS,
   getCalendarMatrix,
   formatFriendlyDate,
   isDayInCurrentWeek,

@@ -186,7 +186,7 @@ const Header = ({ isLoggedIn = true }: P) => {
       </Card.Root>
 
       {/* Mobile Navigation */}
-      {isMobile && isLoggedIn && (
+      {shouldShowMobileNav && isLoggedIn && (
         <MobileNav
           isOpen={isMobileNavOpen}
           onClose={() => setIsMobileNavOpen(false)}
