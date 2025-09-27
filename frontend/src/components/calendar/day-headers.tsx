@@ -1,6 +1,7 @@
 import { Box, Flex, Text } from '@chakra-ui/react'
 import tinycolor from 'tinycolor2'
 import dayjs from 'dayjs'
+import React from 'react'
 import type { Habit } from '@/types/habits'
 import type { Dayjs } from 'dayjs'
 import { CheckMarkGradientIcon } from '@/assets/icons/check-mark-gradient'
@@ -81,6 +82,7 @@ export const DateHeaderWeekView = ({
             (scheduledHabit) => scheduledHabit.id === habit.id,
           )
           const isPastDay = date.isBefore(dayjs(), 'day')
+          const uniqueId = React.useId()
 
           return (
             <Flex
@@ -104,21 +106,21 @@ export const DateHeaderWeekView = ({
                     <CheckMarkGradientIcon
                       lightColor="#34d399"
                       darkColor="#059669"
-                      gradientId={`checkmark-${habit.id}`}
+                      gradientId={`checkmark-${habit.id}-${uniqueId}`}
                     />
                   )}
                   {!matchedHabit.isCompleted && !isPastDay && (
                     <QuestionMarkGradientIcon
                       lightColor="#60a5fa"
                       darkColor="#2563eb"
-                      gradientId={`question-${habit.id}`}
+                      gradientId={`question-${habit.id}-${uniqueId}`}
                     />
                   )}
                   {!matchedHabit.isCompleted && isPastDay && (
                     <XMarkGradientIcon
                       lightColor="#f87171"
                       darkColor="#dc2626"
-                      gradientId={`xmark-${habit.id}`}
+                      gradientId={`xmark-${habit.id}-${uniqueId}`}
                     />
                   )}
                 </Box>
