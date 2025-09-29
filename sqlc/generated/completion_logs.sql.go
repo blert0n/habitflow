@@ -118,6 +118,40 @@ func (q *Queries) IsCompleted(ctx context.Context, arg IsCompletedParams) (bool,
 	return is_completed, err
 }
 
+const markAsCompletedDemo = `-- name: MarkAsCompletedDemo :exec
+INSERT INTO habit_completions_log (
+    habit_id,
+    user_id,
+    date,
+    time
+)
+SELECT $1, $2, $3, $4
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM habit_completions_log
+    WHERE habit_id = $1
+      AND user_id = $2
+      AND date = $3
+)
+`
+
+type MarkAsCompletedDemoParams struct {
+	HabitID int32  `json:"habit_id"`
+	UserID  int32  `json:"user_id"`
+	Date    string `json:"date"`
+	Time    string `json:"time"`
+}
+
+func (q *Queries) MarkAsCompletedDemo(ctx context.Context, arg MarkAsCompletedDemoParams) error {
+	_, err := q.db.Exec(ctx, markAsCompletedDemo,
+		arg.HabitID,
+		arg.UserID,
+		arg.Date,
+		arg.Time,
+	)
+	return err
+}
+
 const markAsIncomplete = `-- name: MarkAsIncomplete :exec
 DELETE FROM habit_completions_log
 WHERE habit_id = $1

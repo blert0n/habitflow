@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/blert0n/habitflow/controllers/auth"
+	"github.com/blert0n/habitflow/crons"
 	"github.com/blert0n/habitflow/database"
 	"github.com/blert0n/habitflow/routes"
 	"github.com/gin-contrib/cors"
@@ -47,14 +48,8 @@ func main() {
 
 	routes.RegisterRoutes(api)
 
-	go func() {
-		ticker := time.NewTicker(14 * time.Minute)
-		defer ticker.Stop()
-
-		for range ticker.C {
-			log.Println("tick")
-		}
-	}()
+	cronScheduler := crons.InitCronJobs()
+	defer cronScheduler.Stop()
 
 	r.Use(static.Serve("/", static.LocalFile("./frontend/dist", true)))
 

@@ -211,6 +211,64 @@ func GetOccurrencesForMonth(rruleStr string, excluded []string, targetDate time.
 	return filterExcluded(r.Between(start, monthEnd, true), excluded)
 }
 
+func IsHabitScheduledForDate(rruleStr string, excluded []string, targetDate time.Time) bool {
+	if rruleStr == "" {
+		return false
+	}
+
+	if !strings.Contains(rruleStr, "\nRRULE") {
+		rruleStr = strings.Replace(rruleStr, "RRULE", "\nRRULE", 1)
+	}
+
+	r, err := rrule.StrToRRule(rruleStr)
+	if err != nil {
+		return false
+	}
+
+	if r.OrigOptions.Count > 0 {
+		allOccurrences := r.All()
+		for _, occ := range allOccurrences {
+			if occ.Format("2006-01-02") == targetDate.Format("2006-01-02") {
+				return !ContainsDateString(excluded, occ)
+			}
+		}
+		return false
+	}
+
+	location := targetDate.Location()
+	dayStart := time.Date(targetDate.Year(), targetDate.Month(), targetDate.Day(), 0, 0, 0, 0, location)
+	dayEnd := dayStart.Add(24*time.Hour - time.Nanosecond)
+
+	start := r.OrigOptions.Dtstart
+	until := r.OrigOptions.Until
+
+	if start.After(dayEnd) {
+		return false
+	}
+	if !until.IsZero() && until.Before(dayStart) {
+		return false
+	}
+
+	if start.After(dayStart) {
+		dayStart = start
+	}
+	if !until.IsZero() && until.Before(dayEnd) {
+		dayEnd = until
+	}
+
+	occurrences := r.Between(dayStart, dayEnd, true)
+
+	for _, occ := range occurrences {
+		if occ.Format("2006-01-02") == targetDate.Format("2006-01-02") {
+			if !ContainsDateString(excluded, occ) {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
 func GetOccurrencesUntilToday(rruleStr string, excluded []string, today time.Time) []time.Time {
 	if rruleStr == "" {
 		return nil
