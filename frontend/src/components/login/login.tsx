@@ -75,6 +75,11 @@ const Login = () => {
             onChange={(e) => {
               handleInputChange('email', e.target.value)
             }}
+            onKeyDown={async (e) => {
+              if (e.key === 'Enter' && credentials.email.trim() !== '' && credentials.password.trim() !== '' && !isSigningIn) {
+                await signIn(credentials.email, credentials.password)
+              }
+            }}
           />
         </Flex>
         <Flex direction="column" gap={1 / 2}>
@@ -103,6 +108,11 @@ const Login = () => {
               size="md"
               onChange={(e) => {
                 handleInputChange('password', e.target.value)
+              }}
+              onKeyDown={async (e) => {
+                if (e.key === 'Enter' && credentials.email.trim() !== '' && credentials.password.trim() !== '' && !isSigningIn) {
+                  await signIn(credentials.email, credentials.password)
+                }
               }}
             />
           </InputGroup>

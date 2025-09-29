@@ -7,7 +7,7 @@ import { CalendarDayLog } from './calendar-day-log'
 import type { Dayjs } from 'dayjs'
 import type { HabitLog } from '@/types/habits'
 import { useCalendar } from '@/hooks/useCalendar'
-import { NORMALIZED_FORMAT, WEEK_DAYS } from '@/util/dates'
+import { ISO_WEEK_DAYS, NORMALIZED_FORMAT } from '@/util/dates'
 
 dayjs.extend(isSameOrBefore)
 
@@ -68,7 +68,7 @@ const CalendarHabitLogs = ({
       >
         <Flex direction="column" gap={2} overflowY="hidden">
           <Flex justify="center" mb={6} gap={1}>
-            {WEEK_DAYS.map((day) => (
+            {ISO_WEEK_DAYS.map((day) => (
               <Box key={day} w={{ base: 'full', sm: 12 }}>
                 <Text
                   key={day}

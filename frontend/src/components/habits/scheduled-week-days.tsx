@@ -2,7 +2,7 @@ import { Flex, Text } from '@chakra-ui/react'
 import { normalizeDay } from './helpers'
 import type { AllowedDayString } from '@/types/habits'
 import { ALL_ALLOWED_DAYS } from '@/types/habits'
-import { WEEK_DAYS } from '@/util/dates'
+import { ISO_WEEK_DAYS } from '@/util/dates'
 
 interface ScheduledWeekDaysProps {
   activeColor?: string
@@ -36,7 +36,7 @@ const ScheduledWeekDays = ({
 
   return (
     <Flex gap={1} wrap="wrap">
-      {WEEK_DAYS.map((day, index) => {
+      {ISO_WEEK_DAYS.map((day, index) => {
         const isSelected =
           normalizedSelected.has(normalizeDay(day as AllowedDayString)) ||
           isDaily

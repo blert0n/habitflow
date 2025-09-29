@@ -4,7 +4,7 @@ import { CalendarDay } from './calendar-day'
 import { CalendarHeader } from './calendar-header'
 import type { Dayjs } from 'dayjs'
 import { useCalendar } from '@/hooks/useCalendar'
-import { WEEK_DAYS } from '@/util/dates'
+import { ISO_WEEK_DAYS } from '@/util/dates'
 
 interface CalendarSmProps {
   selectedDate?: Dayjs | null
@@ -45,7 +45,7 @@ const CalendarSm = ({ selectedDate, onDateChange }: CalendarSmProps) => {
       <Spacer marginTop={4} />
 
       <Flex justify="center" mb={4} gap={1}>
-        {WEEK_DAYS.map((day) => (
+        {ISO_WEEK_DAYS.map((day) => (
           <Box
             key={day}
             flex="1"
