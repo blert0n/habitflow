@@ -81,7 +81,7 @@ func dailyJob() {
 
 	for _, habitID := range todayHabitIDs {
 		if rand.Intn(2) == 0 {
-			err := database.Queries.MarkAsCompletedDemo(ctx, db.MarkAsCompletedDemoParams{
+			_, err := database.Queries.MarkHabitAsCompleted(ctx, db.MarkHabitAsCompletedParams{
 				HabitID: habitID,
 				UserID:  demoUser.ID,
 				Date:    todayStr,

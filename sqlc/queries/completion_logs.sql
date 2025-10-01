@@ -39,20 +39,5 @@ WHERE habit_id = $1
   AND user_id = $2
   ORDER BY date DESC;
 
--- name: MarkAsCompletedDemo :exec
-INSERT INTO habit_completions_log (
-    habit_id,
-    user_id,
-    date,
-    time
-)
-SELECT $1, $2, $3, $4
-WHERE NOT EXISTS (
-    SELECT 1
-    FROM habit_completions_log
-    WHERE habit_id = $1
-      AND user_id = $2
-      AND date = $3
-);
 
 
