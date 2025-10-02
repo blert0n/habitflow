@@ -54,6 +54,7 @@ export const weekdayMap: Array<DayWithRRule> = [
   { rule: RRule.TH, label: 'Thursday', index: 4 },
   { rule: RRule.FR, label: 'Friday', index: 5 },
   { rule: RRule.SA, label: 'Saturday', index: 6 },
+  { rule: RRule.SU, label: 'Sunday', index: 7 },
 ]
 
 const getCalendarMatrix = (

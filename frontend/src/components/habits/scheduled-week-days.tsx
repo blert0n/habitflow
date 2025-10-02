@@ -53,7 +53,7 @@ const ScheduledWeekDays = ({
             userSelect="none"
             onClick={() => {
               if (interactive && onDayClick) {
-                onDayClick(index, day as AllowedDayString)
+                onDayClick(index + 1, day as AllowedDayString)
               }
             }}
             _hover={
