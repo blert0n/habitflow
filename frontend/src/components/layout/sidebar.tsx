@@ -17,6 +17,7 @@ import { NotebookIcon } from '@/assets/icons/notebook'
 import { ListIcon } from '@/assets/icons/list'
 import { LeftArrowIcon } from '@/assets/icons/back-arrow'
 import { MenuIcon } from '@/assets/icons/menu'
+import { TrophyIcon } from '@/assets/icons/trophy'
 
 const isActive = (href: string, pathname: string) => {
   if (href === '/') return pathname === '/'
@@ -57,6 +58,14 @@ const sidebarLinks = [
     color: '#F5B900',
     gradient:
       'linear-gradient(135deg, rgba(245, 185, 0, 0.12), rgba(245, 185, 0, 0.06))',
+  },
+  {
+    href: '/badges',
+    icon: TrophyIcon,
+    label: 'Badges',
+    color: '#FEB303',
+    gradient:
+      'linear-gradient(135deg, rgba(254, 179, 3, 0.12), rgba(254, 179, 3, 0.06))',
   },
 ]
 const Sidebar = () => {

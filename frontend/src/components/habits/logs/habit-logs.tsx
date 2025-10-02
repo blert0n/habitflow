@@ -100,9 +100,11 @@ const HabitLogs = () => {
 
   const calendarDate = currentDate.format(NORMALIZED_FORMAT)
 
-  const { data: completionLogs, isLoading: isLoadingLogs } = useQuery<
-    Record<string, HabitLog>
-  >({
+  const {
+    data: completionLogs,
+    isLoading: isLoadingLogs,
+    refetch: refetchLogs,
+  } = useQuery<Record<string, HabitLog>>({
     queryKey: [`logs-${habitId}`, habitId, calendarDate],
     queryFn: () =>
       client(
@@ -306,6 +308,9 @@ const HabitLogs = () => {
           <CalendarHabitLogs
             onDateChange={handleCurrentDateChange}
             completionLogs={completionLogs}
+            refetchLogs={() => {
+              refetchLogs()
+            }}
           />
           <Separator mb={2} />
           <Stack

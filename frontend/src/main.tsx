@@ -26,6 +26,7 @@ import { Toaster } from './components/ui/toaster.tsx'
 import { AuthProvider } from './hooks/useAuth.tsx'
 import Demo from './pages/demo/index.tsx'
 import { HabitLogs } from './components/habits/logs/habit-logs.tsx'
+import Badges from './pages/badges/index.tsx'
 // import { Categories } from './components/habits/categories.tsx'
 
 const queryClient = new QueryClient()
@@ -96,6 +97,12 @@ const notesRoute = createRoute({
   path: '/notes',
   component: Notes,
 })
+
+const badgesRoute = createRoute({
+  getParentRoute: () => appLayoutRoute,
+  path: '/badges',
+  component: Badges,
+})
 const loginRoute = createRoute({
   getParentRoute: () => nonAuthenticatedRoute,
   path: '/sign-in',
@@ -124,6 +131,7 @@ const routeTree = rootRoute.addChildren([
     calendarRoute,
     habitsRoute.addChildren([habitDetailRoute]),
     notesRoute,
+    // badgesRoute,
   ]),
   nonAuthenticatedRoute.addChildren([
     loginRoute,

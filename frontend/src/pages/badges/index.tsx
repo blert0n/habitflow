@@ -1,0 +1,68 @@
+import { Trophy } from 'lucide-react'
+import { Box, Flex, Progress, Text } from '@chakra-ui/react'
+import { HeaderWithText } from '@/components/ui/header-with-text'
+import { AchievementsLayout } from '@/components/badges/achievements-layout'
+
+const Badges = () => {
+  return (
+    <Flex direction="column" paddingBottom="60px">
+      <Flex
+        direction={{ base: 'column', sm: 'row' }}
+        justify={{ base: 'start', sm: 'space-between' }}
+        alignItems={{ base: 'start', sm: 'center' }}
+        gap={{ base: 2, sm: 0 }}
+        w="full"
+        mb={6}
+      >
+        <HeaderWithText
+          title="Badges & Achievements"
+          text="Track your milestones and celebrate your progress"
+        />
+        <Flex
+          gap={3}
+          background="white"
+          p={4}
+          borderRadius="16px"
+          border="1px solid"
+          borderColor="gray.100"
+          boxShadow="sm"
+          alignItems="center"
+          minW="280px"
+        >
+          <Box
+            background="linear-gradient(to bottom right, #fbbf24, #f59e0b)"
+            borderRadius="12px"
+            padding={3}
+            boxShadow="md"
+          >
+            <Trophy strokeWidth={1.5} color="white" size={20} />
+          </Box>
+          <Flex direction="column" gap={2} flex={1}>
+            <Text fontSize="sm" color="gray.700" fontWeight="600">
+              8 of 25 badges earned
+            </Text>
+            <Progress.Root
+              variant="outline"
+              size="md"
+              shape="rounded"
+              value={32}
+              max={100}
+              colorPalette="orange"
+            >
+              <Progress.Track borderRadius="4xl" bg="gray.100">
+                <Progress.Range background="linear-gradient(to right, #fbbf24, #f59e0b)" />
+              </Progress.Track>
+            </Progress.Root>
+            <Text fontSize="xs" color="gray.500" fontWeight="medium">
+              32% complete
+            </Text>
+          </Flex>
+        </Flex>
+      </Flex>
+
+      <AchievementsLayout />
+    </Flex>
+  )
+}
+
+export default Badges

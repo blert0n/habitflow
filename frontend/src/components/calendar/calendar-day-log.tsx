@@ -7,6 +7,7 @@ interface P {
   day: Dayjs
   currentDate: Dayjs
   markStatus: 'completed' | 'missed' | 'not-scheduled' | 'yet'
+  onClick?: () => void
 }
 
 const backgroundColorMapper = {
@@ -22,7 +23,12 @@ const textColorMapper = {
   yet: 'white',
 }
 
-export const CalendarDayLog = ({ day, currentDate, markStatus }: P) => {
+export const CalendarDayLog = ({
+  day,
+  currentDate,
+  markStatus,
+  onClick,
+}: P) => {
   const isCurrentMonth = day.isSame(currentDate, 'month')
 
   return (
@@ -38,6 +44,10 @@ export const CalendarDayLog = ({ day, currentDate, markStatus }: P) => {
       borderRadius="2xl"
       opacity={isCurrentMonth ? 1 : 0}
       border="1px solid #e4e4e7"
+      _hover={{ cursor: 'pointer' }}
+      onClick={() => {
+        onClick?.()
+      }}
     >
       {day.format('D')}
     </Box>

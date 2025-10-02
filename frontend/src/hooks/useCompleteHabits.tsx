@@ -14,7 +14,7 @@ interface HookOutput {
   onCheckingIdChange: (id: number, date: dayjs.Dayjs) => void
 }
 
-export const useCompleteHabits = (): HookOutput => {
+export const useCompleteHabits = (refetchLogs?: () => void): HookOutput => {
   const queryClient = useQueryClient()
   const [checkingId, setCheckingId] = useState(0)
   const [pendingReset, setPendingReset] = useState(false)
@@ -31,6 +31,8 @@ export const useCompleteHabits = (): HookOutput => {
       queryClient.invalidateQueries({ queryKey: ['habits'] })
       queryClient.invalidateQueries({ queryKey: ['habitsMatrix'] })
       queryClient.invalidateQueries({ queryKey: ['stats'] })
+      queryClient.invalidateQueries({ queryKey: ['habitStreak'] })
+      refetchLogs?.()
     },
   })
 
@@ -45,6 +47,8 @@ export const useCompleteHabits = (): HookOutput => {
       queryClient.invalidateQueries({ queryKey: ['habits'] })
       queryClient.invalidateQueries({ queryKey: ['habitsMatrix'] })
       queryClient.invalidateQueries({ queryKey: ['stats'] })
+      queryClient.invalidateQueries({ queryKey: ['habitStreak'] })
+      refetchLogs?.()
     },
   })
 
