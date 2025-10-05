@@ -15,7 +15,6 @@ import { HabitSkeletonSm } from '@/components/habits/loading-habit-sm'
 import { AppEmptyState } from '@/components/ui/empty-state'
 import { Pagination } from '@/components/ui/pagination'
 import { useCompleteHabits } from '@/hooks/useCompleteHabits'
-import { formatFriendlyDate } from '@/util/dates'
 import { Note } from '@/components/notes/note'
 import { previewNoteContent } from '@/util/notes'
 import { AppSpinner } from '@/components/layout/app-spinner'
@@ -164,7 +163,7 @@ function App() {
                       title={note.title}
                       note={previewNote}
                       habit={note.habit_name}
-                      date={formatFriendlyDate(dayjs(note.created_at))}
+                      date={note.created_at}
                     />
                   )
                 })}

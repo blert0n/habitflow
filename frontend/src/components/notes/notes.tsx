@@ -9,7 +9,6 @@ import {
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import dayjs from 'dayjs'
 import { HeaderWithText } from '../ui/header-with-text'
 import { Pagination } from '../ui/pagination'
 import { AppEmptyState } from '../ui/empty-state'
@@ -23,7 +22,6 @@ import type {
   HabitOptions,
   PaginatedNotesResponse,
 } from '@/types/notes'
-import { formatFriendlyDate } from '@/util/dates'
 import { client } from '@/util/client'
 import { previewNoteContent } from '@/util/notes'
 import { useCreateNote } from '@/hooks/useCreateNote'
@@ -189,7 +187,7 @@ const Notes = () => {
                       key={note.id}
                       title={note.title}
                       note={previewNote}
-                      date={formatFriendlyDate(dayjs(note.created_at))}
+                      date={note.created_at}
                       onClick={() => {
                         onViewNote(note)
                       }}
