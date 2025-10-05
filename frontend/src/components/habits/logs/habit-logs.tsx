@@ -218,7 +218,7 @@ const HabitLogs = () => {
           gap={2}
           minWidth={0}
           width="full"
-          direction={{ base: 'row', md: 'column' }}
+          direction="column"
           mb={{ base: 4, md: 0 }}
           bg="white"
           borderRadius="lg"
