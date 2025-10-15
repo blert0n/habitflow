@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/blert0n/habitflow/ai"
 	"github.com/blert0n/habitflow/database"
 	db "github.com/blert0n/habitflow/sqlc/generated"
 	"github.com/blert0n/habitflow/utils"
@@ -15,20 +16,13 @@ import (
 )
 
 func generateRandomTime() string {
-	// Random hour between 6 (6 AM) and 23 (11 PM)
-	hour := rand.Intn(18) + 6 // 6 to 23
-
-	// Random minute between 0 and 59
+	hour := rand.Intn(18) + 6 // 6–23
 	minute := rand.Intn(60)
-
-	// Random second between 0 and 59
 	second := rand.Intn(60)
-
 	return fmt.Sprintf("%02d:%02d:%02d", hour, minute, second)
 }
 
 const DAILY = "0 0 * * *"
-const EVERY_MINUTE = "* * * * *"
 
 func InitCronJobs() *cron.Cron {
 	c := cron.New()
@@ -40,7 +34,6 @@ func InitCronJobs() *cron.Cron {
 
 	c.Start()
 	log.Println("Cron scheduler started - jobs scheduled successfully")
-
 	return c
 }
 
@@ -50,7 +43,6 @@ func dailyJob() {
 	ctx := context.Background()
 
 	demoUser, err := database.Queries.GetUserByEmail(ctx, "demo@habitflow.com")
-
 	if err != nil {
 		log.Println("Cron daily job - could not find demo user")
 		return
@@ -60,43 +52,71 @@ func dailyJob() {
 	todayStr := today.Format("2006-01-02")
 	log.Printf("Checking habits scheduled for: %s", todayStr)
 
-	demoUserHabits, err := database.Queries.ListHabits(ctx, pgtype.Int4{Int32: demoUser.ID, Valid: true})
-
-	if err != nil {
+	demoHabits, err := database.Queries.ListHabits(ctx, pgtype.Int4{Int32: demoUser.ID, Valid: true})
+	if err != nil || len(demoHabits) == 0 {
 		log.Println("Cron daily job - demo user has no habits")
 		return
 	}
 
-	var todayHabitIDs []int32
-
-	for _, habit := range demoUserHabits {
-		habitExludedDates := utils.NormalizeExcludedDates(habit.ExcludedDates)
-		isScheduled := utils.IsHabitScheduledForDate(habit.Frequency.String, habitExludedDates, today)
-		if isScheduled {
-			todayHabitIDs = append(todayHabitIDs, habit.ID)
-		}
-	}
-
 	completedCount := 0
+	for _, habit := range demoHabits {
+		if !isScheduledToday(habit, today) {
+			continue
+		}
 
-	for _, habitID := range todayHabitIDs {
 		if rand.Intn(2) == 0 {
-			_, err := database.Queries.MarkHabitAsCompleted(ctx, db.MarkHabitAsCompletedParams{
-				HabitID: habitID,
-				UserID:  demoUser.ID,
-				Date:    todayStr,
-				Time:    generateRandomTime(),
-			})
-
-			if err != nil {
-				log.Printf("❌ Failed to create completion log for habit ID %d: %v", habitID, err)
-			} else {
-				log.Printf("✅ Created completion log for habit ID %d", habitID)
-				completedCount++
+			if markHabitCompleted(ctx, demoUser.ID, habit.ID, todayStr) {
+				if createHabitNote(ctx, demoUser.ID, habit.ID, habit.Name) {
+					completedCount++
+				}
 			}
 		} else {
-			log.Printf("⏭️ Skipped habit ID %d", habitID)
+			log.Printf("⏭️ Skipped habit ID %d", habit.ID)
 		}
 	}
 
+	log.Printf("✅ Daily cron job finished, completed %d habits", completedCount)
+}
+
+func isScheduledToday(habit db.ListHabitsRow, today time.Time) bool {
+	excluded := utils.NormalizeExcludedDates(habit.ExcludedDates)
+	return utils.IsHabitScheduledForDate(habit.Frequency.String, excluded, today)
+}
+
+func markHabitCompleted(ctx context.Context, userID, habitID int32, date string) bool {
+	_, err := database.Queries.MarkHabitAsCompleted(ctx, db.MarkHabitAsCompletedParams{
+		HabitID: habitID,
+		UserID:  userID,
+		Date:    date,
+		Time:    generateRandomTime(),
+	})
+	if err != nil {
+		log.Printf("❌ Failed to create completion log for habit ID %d: %v", habitID, err)
+		return false
+	}
+
+	log.Printf("✅ Created completion log for habit ID %d", habitID)
+	return true
+}
+
+func createHabitNote(ctx context.Context, userID, habitID int32, habitName string) bool {
+	noteContent, err := ai.GenerateHabitNote(habitName)
+	if err != nil {
+		log.Printf("❌ Failed to generate note for habit ID %d: %v", habitID, err)
+		return false
+	}
+
+	formatted := fmt.Sprintf(`<p dir="ltr"><span style="white-space: pre-wrap;">%s</span></p>`, noteContent)
+	_, err = database.Queries.CreateNote(ctx, db.CreateNoteParams{
+		HabitID: habitID,
+		UserID:  pgtype.Int4{Int32: userID, Valid: true},
+		Title:   habitName,
+		Content: formatted,
+	})
+	if err != nil {
+		log.Printf("❌ Failed to create note for habit ID %d: %v", habitID, err)
+		return false
+	}
+
+	return true
 }
