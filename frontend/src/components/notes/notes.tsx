@@ -3,6 +3,8 @@ import {
   Button,
   Flex,
   IconButton,
+  ScrollArea,
+  Separator,
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react'
@@ -30,6 +32,7 @@ type Note = PaginatedNotesResponse['data'][0]
 
 const Notes = () => {
   const [page, setPage] = useState(1)
+  const [selectedNoteGroup, setNoteGroup] = useState(0)
   const [mode, setMode] = useState<'create' | 'edit' | 'view'>('view')
   const [hideNotes, setHideNotes] = useState(false)
   const isMobile = useBreakpointValue({ base: true, midMd: false })
@@ -38,8 +41,11 @@ const Notes = () => {
   const displayNotes = !isMobile || !hideNotes
 
   const { data, isLoading } = useQuery<PaginatedNotesResponse>({
-    queryKey: ['listNotes', page],
-    queryFn: () => client(`/notes/list?page=${page}`),
+    queryKey: ['listNotes', page, selectedNoteGroup],
+    queryFn: () =>
+      client(
+        `/notes/list?page=${page}&${selectedNoteGroup > 0 ? `habit_id=${selectedNoteGroup}` : ''}`,
+      ),
   })
 
   const { data: habitOptions } = useQuery<Array<HabitOptions>>({
@@ -113,6 +119,14 @@ const Notes = () => {
     deleteNoteMutation.mutate(viewNote.id)
   }
 
+  const noteGroups = [
+    {
+      id: 0,
+      name: 'All',
+    },
+    ...(habitOptions ?? []),
+  ]
+
   return (
     <Flex direction="column" paddingBottom="60px">
       <Flex
@@ -176,12 +190,53 @@ const Notes = () => {
               </IconButton>
             )}
           </Flex>
+          <Separator />
+          <ScrollArea.Root width="full" size="xs" height="fit-content">
+            <ScrollArea.Viewport>
+              <ScrollArea.Content pb="3">
+                <Flex gap={2} flexWrap="nowrap">
+                  {noteGroups.map((group) => (
+                    <Box
+                      color="gray.600"
+                      fontSize="sm"
+                      lineHeight="1.5"
+                      overflow="hidden"
+                      css={{
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical',
+                      }}
+                      bg={selectedNoteGroup === group.id ? 'gray.200' : ''}
+                      py={0.5}
+                      px={2}
+                      borderRadius="lg"
+                      _hover={{
+                        cursor: 'pointer',
+                        bg: 'gray.100',
+                      }}
+                      whiteSpace="nowrap"
+                      minW="max-content"
+                      flex="0 0 auto"
+                      onClick={() => {
+                        setNoteGroup(group.id)
+                      }}
+                    >
+                      {group.name}
+                    </Box>
+                  ))}
+                </Flex>
+              </ScrollArea.Content>
+            </ScrollArea.Viewport>
+            <ScrollArea.Scrollbar orientation="horizontal" />
+            <ScrollArea.Corner />
+          </ScrollArea.Root>
+
           {isLoading && <NoteSkeleton count={5} />}
           {!isLoading && (data?.data.length ?? 0) > 0 && (
             <>
               {displayNotes &&
                 data?.data.map((note) => {
-                  const previewNote = previewNoteContent(note.content)
+                  const previewNote = previewNoteContent(note.content, 200)
                   return (
                     <Note
                       key={note.id}

@@ -1,6 +1,7 @@
 'use client'
-import { Flex, Text } from '@chakra-ui/react'
+import { Box, Flex, Text } from '@chakra-ui/react'
 import dayjs from 'dayjs'
+import { Tags } from 'lucide-react'
 import { formatFriendlyDate } from '@/util/dates'
 
 interface NoteProps {
@@ -11,7 +12,7 @@ interface NoteProps {
   onClick?: () => void
 }
 
-const Note = ({ title, note, date, onClick }: NoteProps) => {
+const Note = ({ title, note, date, habit, onClick }: NoteProps) => {
   return (
     <Flex
       direction="column"
@@ -50,6 +51,7 @@ const Note = ({ title, note, date, onClick }: NoteProps) => {
         fontSize="xs"
         lineHeight="1.5"
         overflow="hidden"
+        maxHeight="36px"
         css={{
           display: '-webkit-box',
           WebkitLineClamp: 3,
@@ -58,18 +60,44 @@ const Note = ({ title, note, date, onClick }: NoteProps) => {
       >
         {note}
       </Text>
-      <Text
-        color="gray.800"
-        fontSize="10px"
-        overflow="hidden"
-        css={{
-          display: '-webkit-box',
-          WebkitLineClamp: 3,
-          WebkitBoxOrient: 'vertical',
-        }}
-      >
-        {formatFriendlyDate(dayjs(date))}
-      </Text>
+      <Flex justify="space-between" align="center">
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={1}
+          bg="white"
+          py={0.5}
+          px={1}
+          borderWidth="1px"
+          borderColor="gray.100"
+          borderRadius="md"
+          color="gray.800"
+          fontSize="10px"
+          whiteSpace="nowrap"
+          overflow="hidden"
+          css={{
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical',
+          }}
+        >
+          <Tags strokeWidth={1} size={14} />
+          {habit}
+        </Box>
+        <Text
+          color="gray.800"
+          fontSize="10px"
+          whiteSpace="nowrap"
+          overflow="hidden"
+          css={{
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical',
+          }}
+        >
+          {formatFriendlyDate(dayjs(date))}
+        </Text>
+      </Flex>
     </Flex>
   )
 }
