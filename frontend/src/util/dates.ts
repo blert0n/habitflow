@@ -24,6 +24,7 @@ interface DayWithRRule {
   rule: ByWeekday
   label: string
   index: number
+  order: number
 }
 
 export type WeekdayIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6
@@ -47,14 +48,13 @@ const WEEK_DAYS_LONG = [
 ]
 
 export const weekdayMap: Array<DayWithRRule> = [
-  { rule: RRule.SU, label: 'Sunday', index: 0 },
-  { rule: RRule.MO, label: 'Monday', index: 1 },
-  { rule: RRule.TU, label: 'Tuesday', index: 2 },
-  { rule: RRule.WE, label: 'Wednesday', index: 3 },
-  { rule: RRule.TH, label: 'Thursday', index: 4 },
-  { rule: RRule.FR, label: 'Friday', index: 5 },
-  { rule: RRule.SA, label: 'Saturday', index: 6 },
-  { rule: RRule.SU, label: 'Sunday', index: 7 },
+  { rule: RRule.SU, label: 'Sunday', index: 0, order: 7 },
+  { rule: RRule.MO, label: 'Monday', index: 1, order: 1 },
+  { rule: RRule.TU, label: 'Tuesday', index: 2, order: 2 },
+  { rule: RRule.WE, label: 'Wednesday', index: 3, order: 3 },
+  { rule: RRule.TH, label: 'Thursday', index: 4, order: 4 },
+  { rule: RRule.FR, label: 'Friday', index: 5, order: 5 },
+  { rule: RRule.SA, label: 'Saturday', index: 6, order: 6 },
 ]
 
 const getCalendarMatrix = (

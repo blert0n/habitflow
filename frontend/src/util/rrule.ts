@@ -55,7 +55,9 @@ export const buildRRule = ({
     ruleOptions.freq = RRule.DAILY
   } else {
     ruleOptions.freq = RRule.WEEKLY
-    ruleOptions.byweekday = days.map((d) => weekdayMap[d].rule)
+    ruleOptions.byweekday = days
+      .map((d) => weekdayMap.find((weekDay) => weekDay.index === d)!.rule)
+      .filter(Boolean)
   }
 
   if (endsOn === 'On' && until) {
@@ -109,25 +111,25 @@ export function getWeekdaysFromRRule(rruleString: string): Array<WeekdayIndex> {
   try {
     const rule = rrulestr(rruleString)
 
-    let weekdays: Array<number> = []
+    const weekdaysSet = new Set<number>()
 
     if (rule instanceof RRuleSet) {
       rule.rrules().forEach((r) => {
-        weekdays.push(
-          ...r.options.byweekday.map((wd: Weekday | number) => {
-            const day = typeof wd === 'number' ? wd : wd.weekday
-            return normalizeRRuleWeekday(day)
-          }),
-        )
+        r.options.byweekday.forEach((wd: Weekday | number) => {
+          const day = typeof wd === 'number' ? wd : wd.weekday
+          weekdaysSet.add(normalizeRRuleWeekday(day))
+        })
       })
     } else {
-      weekdays = rule.options.byweekday.map((wd: Weekday | number) => {
+      rule.options.byweekday.forEach((wd: Weekday | number) => {
         const day = typeof wd === 'number' ? wd : wd.weekday
-        return normalizeRRuleWeekday(day)
+        weekdaysSet.add(normalizeRRuleWeekday(day))
       })
     }
 
-    return weekdays as Array<WeekdayIndex>
+    console.log(weekdaysSet, 'weekdaysSet')
+
+    return Array.from(weekdaysSet) as Array<WeekdayIndex>
   } catch (error) {
     return []
   }

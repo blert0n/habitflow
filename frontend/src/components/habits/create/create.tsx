@@ -151,7 +151,8 @@ export const Create = ({ editing, onSubmit, onBack, loading = false }: P) => {
         category={selectedCategory}
         selectedDays={
           daysOfWeek.map(
-            (dayIndex) => weekdayMap[dayIndex].label,
+            (dayIndex) =>
+              weekdayMap.find((weekDay) => weekDay.index === dayIndex)?.label,
           ) as Array<AllowedDayString>
         }
         isDaily={frequency === 'daily'}

@@ -46,7 +46,9 @@ func ParseRRule(rruleString string) (isDaily bool, days []string, startDate *tim
 
 	for _, wd := range r.OrigOptions.Byweekday {
 		if longName, ok := dayMap[wd.String()]; ok {
-			days = append(days, longName)
+			if !slices.Contains(days, longName) {
+				days = append(days, longName)
+			}
 		}
 	}
 

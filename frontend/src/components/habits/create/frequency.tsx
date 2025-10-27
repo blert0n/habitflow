@@ -24,7 +24,8 @@ export const FrequencyFields = memo(
     const selectedDaysLabels = useMemo(
       () =>
         daysOfWeek.map(
-          (day) => weekdayMap[day].label,
+          (dayIndex) =>
+            weekdayMap.find((weekDay) => weekDay.index === dayIndex)?.label,
         ) as Array<AllowedDayString>,
       [daysOfWeek],
     )
