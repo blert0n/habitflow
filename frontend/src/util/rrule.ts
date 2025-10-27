@@ -127,8 +127,6 @@ export function getWeekdaysFromRRule(rruleString: string): Array<WeekdayIndex> {
       })
     }
 
-    console.log(weekdaysSet, 'weekdaysSet')
-
     return Array.from(weekdaysSet) as Array<WeekdayIndex>
   } catch (error) {
     return []
