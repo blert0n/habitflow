@@ -55,3 +55,31 @@ func CalculateStreak(occurrences []time.Time, completions []db.GetAllHabitComple
 	}
 	return streak
 }
+
+func CalculateBiggestStreak(occurrences []time.Time, completions []db.GetAllHabitCompletionsRow) int {
+	if len(occurrences) == 0 {
+		return 0
+	}
+
+	completed := make(map[string]bool)
+	for _, c := range completions {
+		completed[c.Date] = true
+	}
+
+	maxStreak := 0
+	currentStreak := 0
+
+	for _, occ := range occurrences {
+		key := occ.Format("2006-01-02")
+		if completed[key] {
+			currentStreak++
+			if currentStreak > maxStreak {
+				maxStreak = currentStreak
+			}
+		} else {
+			currentStreak = 0
+		}
+	}
+
+	return maxStreak
+}

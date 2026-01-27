@@ -1,11 +1,15 @@
 package auth
 
 import (
+	"context"
 	"net/http"
+	"time"
 
 	"github.com/blert0n/habitflow/database"
+	db "github.com/blert0n/habitflow/sqlc/generated"
 	"github.com/blert0n/habitflow/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 func SignIn(c *gin.Context) {
@@ -51,6 +55,8 @@ func SignIn(c *gin.Context) {
 
 	utils.SetCookieDefaultConfig(c, "auth_token", token, 3600*24, "/")
 
+	go initializeHabitStats(user.ID)
+
 	c.JSON(http.StatusOK, utils.APIResponse{
 		Success: true,
 		Message: "Logged in successfully",
@@ -59,4 +65,57 @@ func SignIn(c *gin.Context) {
 			"email":  user.Email,
 		},
 	})
+}
+
+func initializeHabitStats(userID int32) {
+	ctx := context.Background()
+
+	habitOptions, err := database.Queries.HabitOptions(ctx, pgtype.Int4{Int32: userID, Valid: true})
+	if err != nil {
+		return
+	}
+
+	for _, habitOption := range habitOptions {
+		_, err := database.Queries.GetHabitStats(ctx, db.GetHabitStatsParams{
+			UserID:  userID,
+			HabitID: habitOption.ID,
+		})
+
+		if err != nil {
+			habit, err := database.Queries.GetHabitByID(ctx, db.GetHabitByIDParams{
+				ID:     habitOption.ID,
+				Userid: pgtype.Int4{Int32: userID, Valid: true},
+			})
+			if err != nil {
+				continue
+			}
+
+			completionLogs, err := database.Queries.GetAllHabitCompletions(ctx, db.GetAllHabitCompletionsParams{
+				HabitID: habitOption.ID,
+				UserID:  userID,
+			})
+			if err != nil {
+				continue
+			}
+
+			excludedDates := utils.NormalizeExcludedDates(habit.ExcludedDates)
+			targetDate := time.Now().UTC().Add(time.Hour*23 + time.Minute*59 + time.Second*59)
+			occurrences := utils.GetOccurrencesUntilToday(utils.TextToString(habit.Frequency), excludedDates, targetDate)
+
+			biggestStreak := utils.CalculateBiggestStreak(occurrences, completionLogs)
+
+			_, _ = database.Queries.UpsertHabitStats(ctx, db.UpsertHabitStatsParams{
+				UserID:  userID,
+				HabitID: habitOption.ID,
+				MaxStreak: pgtype.Int4{
+					Int32: int32(biggestStreak),
+					Valid: true,
+				},
+				TotalCompletions: pgtype.Int4{
+					Int32: int32(len(completionLogs)),
+					Valid: true,
+				},
+			})
+		}
+	}
 }

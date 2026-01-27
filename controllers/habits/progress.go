@@ -294,13 +294,36 @@ func GetHabitStreak(c *gin.Context) {
 	occurrences := utils.GetOccurrencesUntilToday(utils.TextToString(habit.Frequency), excludedDates, targetDate)
 
 	streak := utils.CalculateStreak(occurrences, completionLogs, targetDate)
+	biggestStreak := utils.CalculateBiggestStreak(occurrences, completionLogs)
 
 	completionAvgRate := 0.0
 	if len(occurrences) > 0 {
 		completionAvgRate = float64(len(completionLogs)) / float64(len(occurrences))
 	}
 
-	c.JSON(http.StatusOK, gin.H{"streak": streak, "total_day_since_start": len(occurrences), "completion_avg_rate": completionAvgRate})
+	habitStats, statsErr := database.Queries.GetHabitStats(c, db.GetHabitStatsParams{
+		UserID:  parsedUserId,
+		HabitID: int32(parsedHabitId),
+	})
+
+	maxStreak := biggestStreak
+	totalCompletions := len(completionLogs)
+	if statsErr == nil {
+		if habitStats.MaxStreak.Valid {
+			maxStreak = int(habitStats.MaxStreak.Int32)
+		}
+		if habitStats.TotalCompletions.Valid {
+			totalCompletions = int(habitStats.TotalCompletions.Int32)
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"streak":                streak,
+		"biggest_streak":        maxStreak,
+		"total_completions":     totalCompletions,
+		"total_day_since_start": len(occurrences),
+		"completion_avg_rate":   completionAvgRate,
+	})
 
 }
 
@@ -314,4 +337,36 @@ func daysPassedThisWeek(date time.Time) int {
 	}
 
 	return weekday + 1
+}
+
+func GetAllHabitStatsAPI(c *gin.Context) {
+	userID, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Not authorized"})
+		return
+	}
+
+	uid := userID.(int32)
+
+	allStats, err := database.Queries.GetAllUserHabitStats(c, uid)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch habit stats"})
+		return
+	}
+
+	statsList := make([]gin.H, 0, len(allStats))
+	for _, stat := range allStats {
+		statsList = append(statsList, gin.H{
+			"habit_id":          stat.HabitID,
+			"max_streak":        stat.MaxStreak.Int32,
+			"total_completions": stat.TotalCompletions.Int32,
+			"created_at":        stat.CreatedAt,
+			"updated_at":        stat.UpdatedAt,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"stats": statsList,
+	})
 }

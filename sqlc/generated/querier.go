@@ -17,6 +17,7 @@ type Querier interface {
 	CreateHabitExcludedDate(ctx context.Context, arg CreateHabitExcludedDateParams) error
 	CreateNote(ctx context.Context, arg CreateNoteParams) (Notes, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (Users, error)
+	DecrementTotalCompletions(ctx context.Context, arg DecrementTotalCompletionsParams) (HabitStats, error)
 	DeleteCategory(ctx context.Context, id int32) error
 	DeleteHabit(ctx context.Context, arg DeleteHabitParams) error
 	DeleteHabitExcludedDate(ctx context.Context, arg DeleteHabitExcludedDateParams) error
@@ -24,12 +25,15 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id int32) error
 	EditNote(ctx context.Context, arg EditNoteParams) (Notes, error)
 	GetAllHabitCompletions(ctx context.Context, arg GetAllHabitCompletionsParams) ([]GetAllHabitCompletionsRow, error)
+	GetAllUserHabitStats(ctx context.Context, userID int32) ([]HabitStats, error)
 	GetCategoryByID(ctx context.Context, id int32) (Category, error)
 	GetCompletionsInRange(ctx context.Context, arg GetCompletionsInRangeParams) ([]GetCompletionsInRangeRow, error)
 	GetHabitByID(ctx context.Context, arg GetHabitByIDParams) (GetHabitByIDRow, error)
+	GetHabitStats(ctx context.Context, arg GetHabitStatsParams) (HabitStats, error)
 	GetUserByEmail(ctx context.Context, email string) (Users, error)
 	GetUserByID(ctx context.Context, id int32) (GetUserByIDRow, error)
 	HabitOptions(ctx context.Context, userid pgtype.Int4) ([]HabitOptionsRow, error)
+	IncrementTotalCompletions(ctx context.Context, arg IncrementTotalCompletionsParams) (HabitStats, error)
 	IsCompleted(ctx context.Context, arg IsCompletedParams) (bool, error)
 	ListCategories(ctx context.Context) ([]Category, error)
 	ListHabitExcludedDates(ctx context.Context, habitID int32) ([]pgtype.Date, error)
@@ -43,7 +47,9 @@ type Querier interface {
 	SeedUser(ctx context.Context, arg SeedUserParams) (Users, error)
 	UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Category, error)
 	UpdateHabit(ctx context.Context, arg UpdateHabitParams) (Habits, error)
+	UpdateMaxStreak(ctx context.Context, arg UpdateMaxStreakParams) (HabitStats, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (Users, error)
+	UpsertHabitStats(ctx context.Context, arg UpsertHabitStatsParams) (HabitStats, error)
 }
 
 var _ Querier = (*Queries)(nil)

@@ -16,16 +16,16 @@ export const BadgeCard = ({
   title,
   description,
   isCompleted = false,
-  isLocked = false,
+  // isLocked = false,
   iconColor = '#FF6B35',
   iconBackground = '#FF6B35',
 }: BadgeCardProps) => {
-  const cardBg = isLocked ? 'gray.50' : 'white'
-  const cardBorderColor = isLocked ? 'gray.200' : 'gray.100'
-  const titleColor = isLocked ? 'gray.400' : 'gray.800'
-  const descriptionColor = isLocked ? 'gray.400' : 'gray.500'
-  const finalIconBackground = isLocked ? 'gray.300' : iconBackground
-  const finalIconColor = isLocked ? 'gray.500' : iconColor
+  const cardBg = !isCompleted ? 'gray.50' : 'white'
+  const cardBorderColor = !isCompleted ? 'gray.200' : 'gray.100'
+  const titleColor = !isCompleted ? 'gray.400' : 'gray.800'
+  const descriptionColor = !isCompleted ? 'gray.400' : 'gray.500'
+  const finalIconBackground = !isCompleted ? 'gray.300' : iconBackground
+  const finalIconColor = !isCompleted ? 'gray.500' : iconColor
   return (
     <Card.Root
       width={{ base: '150px', sm: '180px', md: '220px' }}
@@ -81,11 +81,11 @@ export const BadgeCard = ({
           bg={finalIconBackground}
           color={finalIconColor}
           mb={2}
-          boxShadow={isLocked ? 'none' : '0 4px 12px rgba(0, 0, 0, 0.15)'}
+          boxShadow={isCompleted ? 'none' : '0 4px 12px rgba(0, 0, 0, 0.15)'}
           position="relative"
           p={{ base: 2, sm: 3, md: 4 }}
           _before={
-            isLocked
+            isCompleted
               ? {}
               : {
                   content: '""',
@@ -128,7 +128,7 @@ export const BadgeCard = ({
           textAlign="center"
           lineHeight="1.4"
           fontWeight="400"
-          opacity={isLocked ? 0.7 : 1}
+          opacity={isCompleted ? 0.7 : 1}
         >
           {description}
         </Text>

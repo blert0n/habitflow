@@ -16,6 +16,7 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	rg.GET("/habits/one", middleware.IsAuthenticated(), habits.ListOne)
 	rg.GET("/habits/one/monthly-logs", middleware.IsAuthenticated(), habits.GetHabitMonthlyLogs)
 	rg.GET("/habits/one/streak", middleware.IsAuthenticated(), habits.GetHabitStreak)
+	rg.GET("/habits/stats", middleware.IsAuthenticated(), habits.GetAllHabitStatsAPI)
 	rg.GET("/habits/options", middleware.IsAuthenticated(), habits.Options)
 	rg.GET("/habits/by-date", middleware.IsAuthenticated(), habits.ListHabitsByDate)
 	rg.GET("/habits/matrix", middleware.IsAuthenticated(), habits.ListHabitsByRange)

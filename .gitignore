@@ -3,3 +3,4 @@ tmp
 .vscode
 node_modules
 .env
+db_backup

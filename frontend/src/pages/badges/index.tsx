@@ -2,8 +2,11 @@ import { Trophy } from 'lucide-react'
 import { Box, Flex, Progress, Text } from '@chakra-ui/react'
 import { HeaderWithText } from '@/components/ui/header-with-text'
 import { AchievementsLayout } from '@/components/badges/achievements-layout'
+import { useBadgeStatuses } from '@/hooks/useBadgeStatuses'
 
 const Badges = () => {
+  const { progress } = useBadgeStatuses()
+
   return (
     <Flex direction="column" paddingBottom="60px">
       <Flex
@@ -39,13 +42,13 @@ const Badges = () => {
           </Box>
           <Flex direction="column" gap={2} flex={1}>
             <Text fontSize="sm" color="gray.700" fontWeight="600">
-              8 of 25 badges earned
+              {progress.earned} of {progress.total} badges earned
             </Text>
             <Progress.Root
               variant="outline"
               size="md"
               shape="rounded"
-              value={32}
+              value={(progress.earned / progress.total) * 100}
               max={100}
               colorPalette="orange"
             >
@@ -54,7 +57,7 @@ const Badges = () => {
               </Progress.Track>
             </Progress.Root>
             <Text fontSize="xs" color="gray.500" fontWeight="medium">
-              32% complete
+              {((progress.earned / progress.total) * 100).toFixed(2)}% complete
             </Text>
           </Flex>
         </Flex>

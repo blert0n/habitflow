@@ -391,7 +391,7 @@ const HabitLogs = () => {
             )}
             {!isLoadingNotes &&
               notes?.data.map((note) => {
-                const previewNote = previewNoteContent(note.content)
+                const previewNote = previewNoteContent(note.content,200)
                 return (
                   <Note
                     key={note.id}

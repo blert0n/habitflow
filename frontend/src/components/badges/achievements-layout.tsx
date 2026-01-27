@@ -1,12 +1,31 @@
 import { Award, Check, Flame } from 'lucide-react'
-import { Box, Flex } from '@chakra-ui/react'
+import { Box, Flex, Spinner, Text } from '@chakra-ui/react'
 import { BadgeCard } from '@/components/badges/badge-card'
 import { CategorySection } from '@/components/badges/category-section'
 import { streakAchievements } from '@/data/streak-achievements'
 import { completionAchievements } from '@/data/completion-achievements'
 import { gamificationAchievements } from '@/data/gamification-achievements'
+import { useBadgeStatuses } from '@/hooks/useBadgeStatuses'
 
 export const AchievementsLayout = () => {
+  const { badgeStatuses, isLoading, error } = useBadgeStatuses()
+
+  if (isLoading) {
+    return (
+      <Flex justify="center" align="center" minH="200px">
+        <Spinner size="lg" />
+      </Flex>
+    )
+  }
+
+  if (error) {
+    return (
+      <Flex justify="center" align="center" minH="200px">
+        <Text color="red.500">Failed to load achievements</Text>
+      </Flex>
+    )
+  }
+
   return (
     <Box>
       <Flex direction="column" width="full" alignItems="stretch">
@@ -17,18 +36,24 @@ export const AchievementsLayout = () => {
           iconColor="white"
           iconBackground="#FF6B35"
         >
-          {streakAchievements.map((achievement) => (
-            <BadgeCard
-              key={achievement.id}
-              icon={achievement.icon}
-              title={achievement.title}
-              description={achievement.description}
-              isCompleted={achievement.isCompleted}
-              isLocked={achievement.isLocked}
-              iconColor={achievement.iconColor}
-              iconBackground={achievement.iconBackground}
-            />
-          ))}
+          {streakAchievements.map((achievement) => {
+            const status = badgeStatuses[achievement.id] ?? {
+              isCompleted: false,
+              isLocked: true,
+            }
+            return (
+              <BadgeCard
+                key={achievement.id}
+                icon={achievement.icon}
+                title={achievement.title}
+                description={achievement.description}
+                isCompleted={status.isCompleted}
+                isLocked={status.isLocked}
+                iconColor={achievement.iconColor}
+                iconBackground={achievement.iconBackground}
+              />
+            )
+          })}
         </CategorySection>
 
         {/* Habit Completion Achievements */}
@@ -38,18 +63,24 @@ export const AchievementsLayout = () => {
           iconColor="white"
           iconBackground="#10B981"
         >
-          {completionAchievements.map((achievement) => (
-            <BadgeCard
-              key={achievement.id}
-              icon={achievement.icon}
-              title={achievement.title}
-              description={achievement.description}
-              isCompleted={achievement.isCompleted}
-              isLocked={achievement.isLocked}
-              iconColor={achievement.iconColor}
-              iconBackground={achievement.iconBackground}
-            />
-          ))}
+          {completionAchievements.map((achievement) => {
+            const status = badgeStatuses[achievement.id] ?? {
+              isCompleted: false,
+              isLocked: true,
+            }
+            return (
+              <BadgeCard
+                key={achievement.id}
+                icon={achievement.icon}
+                title={achievement.title}
+                description={achievement.description}
+                isCompleted={status.isCompleted}
+                isLocked={status.isLocked}
+                iconColor={achievement.iconColor}
+                iconBackground={achievement.iconBackground}
+              />
+            )
+          })}
         </CategorySection>
 
         {/* Gamification & Fun */}
@@ -59,18 +90,24 @@ export const AchievementsLayout = () => {
           iconColor="white"
           iconBackground="#EC4899"
         >
-          {gamificationAchievements.map((achievement) => (
-            <BadgeCard
-              key={achievement.id}
-              icon={achievement.icon}
-              title={achievement.title}
-              description={achievement.description}
-              isCompleted={achievement.isCompleted}
-              isLocked={achievement.isLocked}
-              iconColor={achievement.iconColor}
-              iconBackground={achievement.iconBackground}
-            />
-          ))}
+          {gamificationAchievements.map((achievement) => {
+            const status = badgeStatuses[achievement.id] ?? {
+              isCompleted: false,
+              isLocked: true,
+            }
+            return (
+              <BadgeCard
+                key={achievement.id}
+                icon={achievement.icon}
+                title={achievement.title}
+                description={achievement.description}
+                isCompleted={status.isCompleted}
+                isLocked={status.isLocked}
+                iconColor={achievement.iconColor}
+                iconBackground={achievement.iconBackground}
+              />
+            )
+          })}
         </CategorySection>
       </Flex>
     </Box>

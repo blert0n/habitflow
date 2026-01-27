@@ -27,6 +27,16 @@ type HabitExcludedDates struct {
 	ExcludedDate pgtype.Date `json:"excluded_date"`
 }
 
+type HabitStats struct {
+	ID               int32            `json:"id"`
+	UserID           int32            `json:"user_id"`
+	HabitID          int32            `json:"habit_id"`
+	MaxStreak        pgtype.Int4      `json:"max_streak"`
+	TotalCompletions pgtype.Int4      `json:"total_completions"`
+	CreatedAt        pgtype.Timestamp `json:"created_at"`
+	UpdatedAt        pgtype.Timestamp `json:"updated_at"`
+}
+
 type Habits struct {
 	ID          int32            `json:"id"`
 	Name        string           `json:"name"`
