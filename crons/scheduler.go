@@ -95,6 +95,37 @@ func markHabitCompleted(ctx context.Context, userID, habitID int32, date string)
 		return false
 	}
 
+	// Update habit stats
+	habit, err := database.Queries.GetHabitByID(ctx, db.GetHabitByIDParams{
+		ID:     habitID,
+		Userid: pgtype.Int4{Int32: userID, Valid: true},
+	})
+	if err == nil {
+		completionLogs, err := database.Queries.GetAllHabitCompletions(ctx, db.GetAllHabitCompletionsParams{
+			HabitID: habitID,
+			UserID:  userID,
+		})
+		if err == nil {
+			excludedDates := utils.NormalizeExcludedDates(habit.ExcludedDates)
+			targetDate := time.Now().UTC().Add(time.Hour*23 + time.Minute*59 + time.Second*59)
+			occurrences := utils.GetOccurrencesUntilToday(utils.TextToString(habit.Frequency), excludedDates, targetDate)
+			biggestStreak := utils.CalculateBiggestStreak(occurrences, completionLogs)
+
+			_, _ = database.Queries.UpsertHabitStats(ctx, db.UpsertHabitStatsParams{
+				UserID:  userID,
+				HabitID: habitID,
+				MaxStreak: pgtype.Int4{
+					Int32: int32(biggestStreak),
+					Valid: true,
+				},
+				TotalCompletions: pgtype.Int4{
+					Int32: int32(len(completionLogs)),
+					Valid: true,
+				},
+			})
+		}
+	}
+
 	log.Printf("✅ Created completion log for habit ID %d", habitID)
 	return true
 }

@@ -29,7 +29,7 @@ export const BadgeCard = ({
   return (
     <Card.Root
       width={{ base: '150px', sm: '180px', md: '220px' }}
-      height={{ base: '110px', sm: '150px', md: '180px' }}
+      height={{ base: '150px', sm: '150px', md: '180px' }}
       position="relative"
       cursor="pointer"
       transition="all 0.3s ease"

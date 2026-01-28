@@ -13,6 +13,7 @@ import { DiagramIcon } from '@/assets/icons/diagram'
 import { CalendarIcon } from '@/assets/icons/calendar'
 import { NotebookIcon } from '@/assets/icons/notebook'
 import { ListIcon } from '@/assets/icons/list'
+import { TrophyIcon } from '@/assets/icons/trophy'
 import { LogoutIcon } from '@/assets/icons/logout'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -58,6 +59,14 @@ const sidebarLinks = [
     color: '#F5B900',
     gradient:
       'linear-gradient(135deg, rgba(245, 185, 0, 0.12), rgba(245, 185, 0, 0.06))',
+  },
+  {
+    href: '/badges',
+    icon: TrophyIcon,
+    label: 'Badges',
+    color: '#FEB303',
+    gradient:
+      'linear-gradient(135deg, rgba(254, 179, 3, 0.12), rgba(254, 179, 3, 0.06))',
   },
 ]
 
