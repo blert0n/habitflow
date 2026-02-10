@@ -1,4 +1,4 @@
-import { Profile } from '@/components/profile/Profile'
+import { Profile } from '@/components/profile/profile'
 
 export default function Index() {
   return <Profile />
