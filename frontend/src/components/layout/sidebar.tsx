@@ -18,6 +18,7 @@ import { ListIcon } from '@/assets/icons/list'
 import { LeftArrowIcon } from '@/assets/icons/back-arrow'
 import { MenuIcon } from '@/assets/icons/menu'
 import { TrophyIcon } from '@/assets/icons/trophy'
+import { UserIcon } from '@/assets/icons/user'
 
 const isActive = (href: string, pathname: string) => {
   if (href === '/') return pathname === '/'
@@ -66,6 +67,14 @@ const sidebarLinks = [
     color: '#FEB303',
     gradient:
       'linear-gradient(135deg, rgba(254, 179, 3, 0.12), rgba(254, 179, 3, 0.06))',
+  },
+  {
+    href: '/profile',
+    icon: UserIcon,
+    label: 'Account',
+    color: '#4294FF',
+    gradient:
+      'linear-gradient(135deg, rgba(66, 148, 255, 0.12), rgba(66, 148, 255, 0.06))',
   },
 ]
 const Sidebar = () => {

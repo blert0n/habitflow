@@ -27,6 +27,7 @@ import { AuthProvider } from './hooks/useAuth.tsx'
 import Demo from './pages/demo/index.tsx'
 import { HabitLogs } from './components/habits/logs/habit-logs.tsx'
 import Badges from './pages/badges/index.tsx'
+import Profile from './pages/profile/index.tsx'
 // import { Categories } from './components/habits/categories.tsx'
 
 const queryClient = new QueryClient()
@@ -103,6 +104,11 @@ const badgesRoute = createRoute({
   path: '/badges',
   component: Badges,
 })
+const accountRoute = createRoute({
+  getParentRoute: () => appLayoutRoute,
+  path: '/profile',
+  component: Profile,
+})
 
 const loginRoute = createRoute({
   getParentRoute: () => nonAuthenticatedRoute,
@@ -133,6 +139,7 @@ const routeTree = rootRoute.addChildren([
     habitsRoute.addChildren([habitDetailRoute]),
     notesRoute,
     badgesRoute,
+    accountRoute,
   ]),
   nonAuthenticatedRoute.addChildren([
     loginRoute,

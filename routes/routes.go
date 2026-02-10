@@ -7,6 +7,8 @@ import (
 	"github.com/blert0n/habitflow/controllers/habits"
 	"github.com/blert0n/habitflow/controllers/logs"
 	"github.com/blert0n/habitflow/controllers/notes"
+	"github.com/blert0n/habitflow/controllers/profile"
+	"github.com/blert0n/habitflow/controllers/upload"
 	"github.com/blert0n/habitflow/middleware"
 	"github.com/gin-gonic/gin"
 )
@@ -31,6 +33,10 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	rg.POST("/notes/create", middleware.IsAuthenticated(), notes.Create)
 	rg.POST("/notes/edit", middleware.IsAuthenticated(), notes.Edit)
 	rg.POST("/notes/delete", middleware.IsAuthenticated(), notes.Delete)
+	rg.POST("/upload/avatar", middleware.IsAuthenticated(), upload.UploadAvatar)
+	rg.POST("/profile/update", middleware.IsAuthenticated(), middleware.IsDemoUser(), profile.UpdateProfile)
+	rg.POST("/profile/change-password", middleware.IsAuthenticated(), middleware.IsDemoUser(), profile.ChangePassword)
+	rg.POST("/profile/delete-account", middleware.IsAuthenticated(), middleware.IsDemoUser(), profile.DeleteAccount)
 	rg.POST("/auth/sign-in", auth.SignIn)
 	rg.POST("/auth/sign-up", auth.SignUp)
 	rg.GET("/auth/sign-out", auth.SignOut)

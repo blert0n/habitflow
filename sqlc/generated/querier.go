@@ -23,6 +23,10 @@ type Querier interface {
 	DeleteHabitExcludedDate(ctx context.Context, arg DeleteHabitExcludedDateParams) error
 	DeleteNote(ctx context.Context, arg DeleteNoteParams) error
 	DeleteUser(ctx context.Context, id int32) error
+	DeleteUserCompletions(ctx context.Context, userID int32) error
+	DeleteUserHabitStats(ctx context.Context, userID int32) error
+	DeleteUserHabits(ctx context.Context, userid pgtype.Int4) error
+	DeleteUserNotes(ctx context.Context, userID pgtype.Int4) error
 	EditNote(ctx context.Context, arg EditNoteParams) (Notes, error)
 	GetAllHabitCompletions(ctx context.Context, arg GetAllHabitCompletionsParams) ([]GetAllHabitCompletionsRow, error)
 	GetAllUserHabitStats(ctx context.Context, userID int32) ([]HabitStats, error)
@@ -49,6 +53,8 @@ type Querier interface {
 	UpdateHabit(ctx context.Context, arg UpdateHabitParams) (Habits, error)
 	UpdateMaxStreak(ctx context.Context, arg UpdateMaxStreakParams) (HabitStats, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (Users, error)
+	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error
+	UpdateUserProfile(ctx context.Context, arg UpdateUserProfileParams) error
 	UpsertHabitStats(ctx context.Context, arg UpsertHabitStatsParams) (HabitStats, error)
 }
 

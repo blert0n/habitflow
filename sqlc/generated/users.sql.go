@@ -57,6 +57,46 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	return err
 }
 
+const deleteUserCompletions = `-- name: DeleteUserCompletions :exec
+DELETE FROM habit_completions_log
+WHERE user_id = $1
+`
+
+func (q *Queries) DeleteUserCompletions(ctx context.Context, userID int32) error {
+	_, err := q.db.Exec(ctx, deleteUserCompletions, userID)
+	return err
+}
+
+const deleteUserHabitStats = `-- name: DeleteUserHabitStats :exec
+DELETE FROM habit_stats
+WHERE user_id = $1
+`
+
+func (q *Queries) DeleteUserHabitStats(ctx context.Context, userID int32) error {
+	_, err := q.db.Exec(ctx, deleteUserHabitStats, userID)
+	return err
+}
+
+const deleteUserHabits = `-- name: DeleteUserHabits :exec
+DELETE FROM habits
+WHERE userid = $1
+`
+
+func (q *Queries) DeleteUserHabits(ctx context.Context, userid pgtype.Int4) error {
+	_, err := q.db.Exec(ctx, deleteUserHabits, userid)
+	return err
+}
+
+const deleteUserNotes = `-- name: DeleteUserNotes :exec
+DELETE FROM notes
+WHERE user_id = $1
+`
+
+func (q *Queries) DeleteUserNotes(ctx context.Context, userID pgtype.Int4) error {
+	_, err := q.db.Exec(ctx, deleteUserNotes, userID)
+	return err
+}
+
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, username, email, password, createdat, updatedat, first_name, last_name FROM users
 WHERE email = $1
@@ -79,16 +119,18 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (Users, erro
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id,username,first_name,last_name,email FROM users
+SELECT id,username,first_name,last_name,email,password,createdat FROM users
 WHERE id = $1
 `
 
 type GetUserByIDRow struct {
-	ID        int32       `json:"id"`
-	Username  string      `json:"username"`
-	FirstName pgtype.Text `json:"first_name"`
-	LastName  pgtype.Text `json:"last_name"`
-	Email     string      `json:"email"`
+	ID        int32            `json:"id"`
+	Username  string           `json:"username"`
+	FirstName pgtype.Text      `json:"first_name"`
+	LastName  pgtype.Text      `json:"last_name"`
+	Email     string           `json:"email"`
+	Password  string           `json:"password"`
+	Createdat pgtype.Timestamp `json:"createdat"`
 }
 
 func (q *Queries) GetUserByID(ctx context.Context, id int32) (GetUserByIDRow, error) {
@@ -100,6 +142,8 @@ func (q *Queries) GetUserByID(ctx context.Context, id int32) (GetUserByIDRow, er
 		&i.FirstName,
 		&i.LastName,
 		&i.Email,
+		&i.Password,
+		&i.Createdat,
 	)
 	return i, err
 }
@@ -170,4 +214,47 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (Users, 
 		&i.LastName,
 	)
 	return i, err
+}
+
+const updateUserPassword = `-- name: UpdateUserPassword :exec
+UPDATE users
+SET password = $2,
+    updatedAt = CURRENT_TIMESTAMP
+WHERE id = $1
+`
+
+type UpdateUserPasswordParams struct {
+	ID       int32  `json:"id"`
+	Password string `json:"password"`
+}
+
+func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error {
+	_, err := q.db.Exec(ctx, updateUserPassword, arg.ID, arg.Password)
+	return err
+}
+
+const updateUserProfile = `-- name: UpdateUserProfile :exec
+UPDATE users
+SET first_name = $2,
+    last_name = $3,
+    email = $4,
+    updatedAt = CURRENT_TIMESTAMP
+WHERE id = $1
+`
+
+type UpdateUserProfileParams struct {
+	ID        int32       `json:"id"`
+	FirstName pgtype.Text `json:"first_name"`
+	LastName  pgtype.Text `json:"last_name"`
+	Email     string      `json:"email"`
+}
+
+func (q *Queries) UpdateUserProfile(ctx context.Context, arg UpdateUserProfileParams) error {
+	_, err := q.db.Exec(ctx, updateUserProfile,
+		arg.ID,
+		arg.FirstName,
+		arg.LastName,
+		arg.Email,
+	)
+	return err
 }

@@ -16,6 +16,7 @@ import { ListIcon } from '@/assets/icons/list'
 import { TrophyIcon } from '@/assets/icons/trophy'
 import { LogoutIcon } from '@/assets/icons/logout'
 import { useAuth } from '@/hooks/useAuth'
+import { UserIcon } from '@/assets/icons/user'
 
 interface MobileNavProps {
   isOpen: boolean
@@ -67,6 +68,14 @@ const sidebarLinks = [
     color: '#FEB303',
     gradient:
       'linear-gradient(135deg, rgba(254, 179, 3, 0.12), rgba(254, 179, 3, 0.06))',
+  },
+  {
+    href: '/profile',
+    icon: UserIcon,
+    label: 'Account',
+    color: '#4294FF',
+    gradient:
+      'linear-gradient(135deg, rgba(66, 148, 255, 0.12), rgba(66, 148, 255, 0.06))',
   },
 ]
 
