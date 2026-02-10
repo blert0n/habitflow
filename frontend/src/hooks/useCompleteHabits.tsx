@@ -6,6 +6,7 @@ import {
 import { useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import { client } from '@/util/client'
+import { useAuth } from '@/hooks/useAuth'
 
 interface HookOutput {
   isChecking: boolean
@@ -16,6 +17,7 @@ interface HookOutput {
 
 export const useCompleteHabits = (refetchLogs?: () => void): HookOutput => {
   const queryClient = useQueryClient()
+  const { updateHabitCompletion } = useAuth()
   const [checkingId, setCheckingId] = useState(0)
   const [pendingReset, setPendingReset] = useState(false)
   const isRefetching = useIsFetching({ queryKey: ['habits'] }) > 0
@@ -27,11 +29,12 @@ export const useCompleteHabits = (refetchLogs?: () => void): HookOutput => {
         body: JSON.stringify(vars),
       }),
     onSettled: () => setPendingReset(true),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['habits'] })
       queryClient.invalidateQueries({ queryKey: ['habitsMatrix'] })
       queryClient.invalidateQueries({ queryKey: ['stats'] })
       queryClient.invalidateQueries({ queryKey: ['habitStreak'] })
+      updateHabitCompletion(variables.id, true)
       refetchLogs?.()
     },
   })
@@ -43,11 +46,12 @@ export const useCompleteHabits = (refetchLogs?: () => void): HookOutput => {
         body: JSON.stringify(vars),
       }),
     onSettled: () => setPendingReset(true),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['habits'] })
       queryClient.invalidateQueries({ queryKey: ['habitsMatrix'] })
       queryClient.invalidateQueries({ queryKey: ['stats'] })
       queryClient.invalidateQueries({ queryKey: ['habitStreak'] })
+      updateHabitCompletion(variables.id, false)
       refetchLogs?.()
     },
   })

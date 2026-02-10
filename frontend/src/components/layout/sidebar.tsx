@@ -1,16 +1,16 @@
 import { useState } from 'react'
 import {
+  Box,
   IconButton,
   Link,
   Text,
   useBreakpointValue,
-  // Tag,
-  // Box,
 } from '@chakra-ui/react'
 import { Card } from '@chakra-ui/react/card'
 import { Flex } from '@chakra-ui/react/flex'
 import { useRouterState } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
+import { CheckCheckIcon, X } from 'lucide-react'
 import { DiagramIcon } from '@/assets/icons/diagram'
 import { CalendarIcon } from '@/assets/icons/calendar'
 import { NotebookIcon } from '@/assets/icons/notebook'
@@ -19,6 +19,7 @@ import { LeftArrowIcon } from '@/assets/icons/back-arrow'
 import { MenuIcon } from '@/assets/icons/menu'
 import { TrophyIcon } from '@/assets/icons/trophy'
 import { UserIcon } from '@/assets/icons/user'
+import { useAuth } from '@/hooks/useAuth'
 
 const isActive = (href: string, pathname: string) => {
   if (href === '/') return pathname === '/'
@@ -78,6 +79,7 @@ const sidebarLinks = [
   },
 ]
 const Sidebar = () => {
+  const { user } = useAuth()
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   })
@@ -85,7 +87,6 @@ const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true)
   const isMobile = useBreakpointValue({ base: true, midMd: false })
 
-  // Don't render sidebar on mobile
   if (isMobile) {
     return null
   }
@@ -160,57 +161,39 @@ const Sidebar = () => {
               </Flex>
             </Link>
           ))}
-          {/* {!isMobile && isOpen && (
-            <Flex alignSelf="start" direction="column" gap={3}>
+          {isOpen && (user?.habits?.length ?? 0) > 0 ? (
+            <Flex alignSelf="start" direction="column" gap={3} mt={2}>
               <Text fontSize={14} color="gray.500" fontWeight="semibold">
-                Today
+                TODAY'S TO DO
               </Text>
-              <Flex alignSelf="start" direction="column" gap={3} paddingX={2}>
+              {user?.habits?.map((habit) => (
                 <Flex
-                  gap={1}
-                  justify="start"
-                  alignItems="center"
-                  cursor="pointer"
+                  key={habit.id}
+                  alignSelf="start"
+                  direction="column"
+                  gap={3}
+                  paddingX={2}
                 >
-                  <Box w="8px" h="8px" bg="brand.success" rounded="full" />
-                  <Text fontSize={14} color="gray.500">
-                    Morning exercise
-                  </Text>
-                  <Tag.Root fontSize={14} colorPalette="green">
-                    <Tag.Label>7/7</Tag.Label>
-                  </Tag.Root>
+                  <Flex
+                    gap={1}
+                    justify="start"
+                    alignItems="center"
+                    cursor="pointer"
+                  >
+                    <Box w="10px" h="10px" bg={habit.color} rounded="full" />
+                    <Text fontSize={14} color="gray.500">
+                      {habit.name}
+                    </Text>
+                    {habit.isCompleted ? (
+                      <CheckCheckIcon size={14} color="#22C55E" />
+                    ) : (
+                      <X size={14} color="#94A3B8" />
+                    )}
+                  </Flex>
                 </Flex>
-                <Flex
-                  gap={1}
-                  justify="start"
-                  alignItems="center"
-                  cursor="pointer"
-                >
-                  <Box w="8px" h="8px" bg="blue" rounded="full" />
-                  <Text fontSize={14} color="gray.500">
-                    Read 30 mins
-                  </Text>
-                  <Tag.Root fontSize={14} colorPalette="blue">
-                    <Tag.Label>5/7</Tag.Label>
-                  </Tag.Root>
-                </Flex>
-                <Flex
-                  gap={1}
-                  justify="start"
-                  alignItems="center"
-                  cursor="pointer"
-                >
-                  <Box w="8px" h="8px" bg="red" rounded="full" />
-                  <Text fontSize={14} color="gray.500">
-                    Meditation
-                  </Text>
-                  <Tag.Root fontSize={14} colorPalette="red">
-                    <Tag.Label>3/7</Tag.Label>
-                  </Tag.Root>
-                </Flex>
-              </Flex>
+              ))}
             </Flex>
-          )} */}
+          ) : null}
         </Flex>
       </Card.Body>
     </MotionCard>

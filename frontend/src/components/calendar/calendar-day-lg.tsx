@@ -1,6 +1,8 @@
 'use client'
 
-import { Box, Flex, Text } from '@chakra-ui/react'
+import { useState } from 'react'
+import { Box, Flex, Portal, Text } from '@chakra-ui/react'
+import { AnimatePresence, motion } from 'framer-motion'
 import dayjs from 'dayjs'
 import tinycolor from 'tinycolor2'
 import type { Habit } from '@/types/habits'
@@ -23,6 +25,9 @@ export const CalendarDayLg = ({
   visibleHabits,
   onSelect,
 }: P) => {
+  const [showPopover, setShowPopover] = useState(false)
+  const [popoverPosition, setPopoverPosition] = useState({ x: 0, y: 0 })
+
   const isToday = day.isSame(dayjs(), 'day')
   const isCurrentDate = day.isSame(currentDate, 'month')
 
@@ -33,16 +38,17 @@ export const CalendarDayLg = ({
   const date = dayjs(day).format('D')
   const isTodayInCurrentMonth = isToday && isCurrentDate && !isSelected
 
-  const totalVisibleHabits =
-    habits?.filter(
-      (habit) => visibleHabits?.find((vh) => vh.id === habit.id)?.selected,
-    ).length ?? 0
-  const completedHabits =
-    habits?.filter(
-      (habit) =>
-        visibleHabits?.find((vh) => vh.id === habit.id)?.selected &&
-        habit.isCompleted,
-    ).length ?? 0
+  const visibleHabitsFiltered = (habits ?? []).filter(
+    (habit) => visibleHabits?.find((vh) => vh.id === habit.id)?.selected,
+  )
+
+  const totalVisibleHabits = visibleHabitsFiltered.length
+  const completedHabits = visibleHabitsFiltered.filter(
+    (habit) => habit.isCompleted,
+  ).length
+
+  const firstThreeHabits = visibleHabitsFiltered.slice(0, 3)
+  const remainingHabits = visibleHabitsFiltered.slice(3)
 
   return (
     <Flex
@@ -55,7 +61,7 @@ export const CalendarDayLg = ({
       border="1px solid"
       borderColor={isCurrentDate ? 'gray.200' : 'gray.200'}
       borderRadius={{ base: 'lg', sm: 'xl' }}
-      p={{ base: 0.5, sm: 2 }}
+      p={{ base: 0.5, sm: 1 }}
       boxShadow={isCurrentDate ? 'sm' : 'none'}
       cursor="pointer"
       transition="all 0.2s ease"
@@ -71,7 +77,7 @@ export const CalendarDayLg = ({
         opacity: isCurrentDate ? 1 : 0.9,
       }}
       direction="column"
-      gap={{ base: 1, sm: 2 }}
+      gap={0.5}
       onClick={() => {
         onSelect?.(day)
       }}
@@ -109,43 +115,211 @@ export const CalendarDayLg = ({
         >
           {date}
         </Text>
+
+        {remainingHabits.length > 0 && (
+          <Box position="relative">
+            <Text
+              fontSize={{ base: '8px', sm: '9px' }}
+              color="gray.500"
+              fontWeight="medium"
+              cursor="pointer"
+              px={1.5}
+              py={0.5}
+              bg="gray.50"
+              borderRadius="sm"
+              border="1px solid"
+              borderColor="gray.200"
+              transition="all 0.2s"
+              _hover={{ bg: 'gray.100', borderColor: 'gray.300' }}
+              onMouseEnter={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect()
+                setPopoverPosition({ x: rect.left, y: rect.bottom + 5 })
+                setShowPopover(true)
+              }}
+              onMouseLeave={() => setShowPopover(false)}
+            >
+              +{remainingHabits.length}
+            </Text>
+
+            <AnimatePresence>
+              {showPopover && (
+                <Portal>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -5 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -5 }}
+                    transition={{ duration: 0.15 }}
+                    style={{
+                      position: 'fixed',
+                      left: popoverPosition.x,
+                      top: popoverPosition.y,
+                      zIndex: 9999,
+                    }}
+                    onMouseEnter={() => setShowPopover(true)}
+                    onMouseLeave={() => setShowPopover(false)}
+                  >
+                    <Box
+                      maxW="200px"
+                      p={2}
+                      bg="white"
+                      borderRadius="md"
+                      boxShadow="lg"
+                      border="1px solid"
+                      borderColor="gray.200"
+                    >
+                      <Flex direction="column" gap={1}>
+                        {remainingHabits.map((habit) => {
+                          const primaryColor = habit.color
+                          const lightBg = tinycolor(primaryColor)
+                            .setAlpha(0.15)
+                            .toString()
+                          const incompleteBg = tinycolor(primaryColor)
+                            .setAlpha(0.05)
+                            .toString()
+                          const incompleteBorder = tinycolor(primaryColor)
+                            .setAlpha(0.3)
+                            .toString()
+
+                          return (
+                            <Flex
+                              key={`popover-${habit.id}`}
+                              align="center"
+                              gap={1}
+                              px={1.5}
+                              py={0.5}
+                              bg={habit.isCompleted ? lightBg : incompleteBg}
+                              borderRadius="sm"
+                              border="1px solid"
+                              borderColor={
+                                habit.isCompleted
+                                  ? primaryColor
+                                  : incompleteBorder
+                              }
+                            >
+                              <Box
+                                width="6px"
+                                height="6px"
+                                bg={primaryColor}
+                                borderRadius="full"
+                                flexShrink={0}
+                              />
+                              <Text
+                                fontSize="10px"
+                                fontWeight="medium"
+                                color={
+                                  habit.isCompleted ? 'gray.900' : 'gray.700'
+                                }
+                                flex={1}
+                                overflow="hidden"
+                                textOverflow="ellipsis"
+                                whiteSpace="nowrap"
+                              >
+                                {habit.name}
+                              </Text>
+                              {habit.isCompleted && (
+                                <Flex
+                                  align="center"
+                                  justify="center"
+                                  w="14px"
+                                  h="14px"
+                                  bg={primaryColor}
+                                  borderRadius="full"
+                                  flexShrink={0}
+                                >
+                                  <Text
+                                    fontSize="10px"
+                                    color="white"
+                                    fontWeight="bold"
+                                    lineHeight="1"
+                                  >
+                                    ✓
+                                  </Text>
+                                </Flex>
+                              )}
+                            </Flex>
+                          )
+                        })}
+                      </Flex>
+                    </Box>
+                  </motion.div>
+                </Portal>
+              )}
+            </AnimatePresence>
+          </Box>
+        )}
       </Flex>
 
-      {/* Habits Dots */}
-      <Box flex={1} display="flex" alignItems="center" p={{ base: 1, sm: 0 }}>
-        <Box
-          display="grid"
-          gridTemplateColumns={{
-            base: 'repeat(3, 10px)',
-            sm: 'repeat(4, 10px)',
-          }}
-          gap={{ base: '3px', sm: '3px' }}
-          width="100%"
-        >
-          {(habits ?? []).slice(0, 6).map((habit) => {
-            const visible = visibleHabits?.find(
-              (visibleHabit) => visibleHabit.id === habit.id,
-            )?.selected
-            if (!visible) return null
+      {/* Habits List */}
+      <Flex
+        flex={1}
+        direction="column"
+        gap={{ base: 0.5, sm: 0.5 }}
+        overflow="hidden"
+        p={0}
+      >
+        {firstThreeHabits.map((habit) => {
+          const primaryColor = habit.color
+          const lightBg = tinycolor(primaryColor).setAlpha(0.15).toString()
+          const incompleteBg = tinycolor(primaryColor).setAlpha(0.05).toString()
+          const incompleteBorder = tinycolor(primaryColor)
+            .setAlpha(0.3)
+            .toString()
 
-            const primaryColor = habit.color
-            const light = tinycolor(primaryColor).brighten(15).toString()
-            const dark = tinycolor(primaryColor).darken(10).toString()
-            const gradient = `linear-gradient(135deg, ${light}, ${dark})`
-
-            return (
+          return (
+            <Flex
+              key={`${currentDate.format('YYYY-MM-DD')}-${habit.id}`}
+              align="center"
+              gap={{ base: 0.5, sm: 1 }}
+              px={{ base: 1, sm: 1.5 }}
+              py={{ base: 0.5, sm: 0.5 }}
+              bg={habit.isCompleted ? lightBg : incompleteBg}
+              borderRadius="sm"
+              border="1px solid"
+              borderColor={habit.isCompleted ? primaryColor : incompleteBorder}
+              transition="all 0.2s"
+            >
               <Box
-                key={`${currentDate.format('YYYY-MM-DD')}-${habit.id}`}
-                width="100%"
-                aspectRatio="1"
+                width={{ base: '5px', sm: '6px' }}
+                height={{ base: '5px', sm: '6px' }}
+                bg={primaryColor}
                 borderRadius="full"
-                bgGradient={gradient}
-                boxShadow={{ base: 'xs', sm: 'sm' }}
+                flexShrink={0}
               />
-            )
-          })}
-        </Box>
-      </Box>
+              <Text
+                fontSize={{ base: '9px', sm: '10px' }}
+                fontWeight="medium"
+                color={habit.isCompleted ? 'gray.900' : 'gray.700'}
+                flex={1}
+                overflow="hidden"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
+              >
+                {habit.name}
+              </Text>
+              {habit.isCompleted && (
+                <Flex
+                  align="center"
+                  justify="center"
+                  w="14px"
+                  h="14px"
+                  bg={primaryColor}
+                  borderRadius="full"
+                  flexShrink={0}
+                >
+                  <Text
+                    fontSize="10px"
+                    color="white"
+                    fontWeight="bold"
+                    lineHeight="1"
+                  >
+                    ✓
+                  </Text>
+                </Flex>
+              )}
+            </Flex>
+          )
+        })}
+      </Flex>
 
       {/* Completion Indicator */}
       {totalVisibleHabits > 0 && (

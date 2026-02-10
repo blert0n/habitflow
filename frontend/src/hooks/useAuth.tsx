@@ -35,6 +35,7 @@ interface AuthContextType {
   }) => Promise<boolean>
   changePassword: (oldPassword: string, newPassword: string) => Promise<boolean>
   deleteAccount: () => Promise<boolean>
+  updateHabitCompletion: (habitId: number, isCompleted: boolean) => void
   isLoading: boolean
   isSigningUp: boolean
   isSigningIn: boolean
@@ -266,6 +267,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const updateHabitCompletion = (habitId: number, isCompleted: boolean) => {
+    setUser((prevUser) => {
+      if (!prevUser?.habits) return prevUser
+      return {
+        ...prevUser,
+        habits: prevUser.habits.map((habit) =>
+          habit.id === habitId ? { ...habit, isCompleted } : habit,
+        ),
+      }
+    })
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -279,6 +292,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updateProfile,
         changePassword,
         deleteAccount,
+        updateHabitCompletion,
         isLoading,
         isSigningUp,
         isSigningIn,
