@@ -25,9 +25,11 @@ export function useBadgeStatuses() {
     retry: false,
   })
 
-  const bestStreak = Math.max(
-    ...(habitStats?.stats ?? []).map((stat) => stat.max_streak),
-  )
+  const bestStreak =
+    (habitStats?.stats.length ?? 0) > 0
+      ? Math.max(...(habitStats?.stats ?? []).map((stat) => stat.max_streak))
+      : 0
+  console.log(bestStreak, 'bestStreak')
 
   const totalCompletions = (habitStats?.stats ?? []).reduce(
     (accumulator, current) => accumulator + current.total_completions,

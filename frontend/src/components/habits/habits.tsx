@@ -1,5 +1,5 @@
 import { Flex } from '@chakra-ui/react/flex'
-import { Button, HStack, SimpleGrid } from '@chakra-ui/react'
+import { SimpleGrid, Text } from '@chakra-ui/react'
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -141,19 +141,6 @@ const Habits = () => {
           title="All habits"
           text="Manage and track all of your habits"
         />
-        <Flex gap={4}>
-          <HStack>
-            <Button
-              bg="brand.primary"
-              size="xs"
-              onClick={() => {
-                setShowCreateView(true)
-              }}
-            >
-              <Plus /> New habit
-            </Button>
-          </HStack>
-        </Flex>
       </Flex>
       {!isLoadingHabits && !habits?.length && !isLoading && (
         <EmptyState
@@ -163,10 +150,63 @@ const Habits = () => {
         />
       )}
       <SimpleGrid
-        columns={{ base: 1, sm: 2, md: 3, lg: 4 }}
-        gap={2}
-        justifyContent="start"
+        columns={{ base: 1, sm: 2, md: 3, lg: 3, xl: 4 }}
+        gap={4}
+        maxW="1400px"
+        mx="auto"
+        w="100%"
       >
+        {/* Create new habit card */}
+        {!isLoadingHabits && !isLoading && (habits?.length ?? 0) > 0 && (
+          <Flex
+            w={{ midSmDown: 'full' }}
+            maxW={{ base: 'full', md: '300px' }}
+            borderRadius="2xl"
+            borderColor="gray.300"
+            borderWidth={1}
+            borderStyle="dashed"
+            padding={4}
+            bgColor="white"
+            direction="column"
+            gap={2}
+            className="app-box-shadow"
+            justifyContent="center"
+            alignItems="center"
+            minH="120px"
+            cursor="pointer"
+            transition="all 0.2s"
+            _hover={{
+              borderColor: 'brand.primary',
+              bg: 'gray.50',
+              transform: 'translateY(-2px)',
+            }}
+            onClick={() => {
+              setShowCreateView(true)
+            }}
+          >
+            <Flex
+              w="48px"
+              h="48px"
+              borderRadius="full"
+              bg="gray.100"
+              align="center"
+              justify="center"
+              transition="all 0.2s"
+              _groupHover={{ bg: 'brand.primary' }}
+            >
+              <Plus size={24} color="#3B82F6" />
+            </Flex>
+            <Flex direction="column" align="center" gap={0}>
+              <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                New Habit
+              </Text>
+              <Text fontSize="xs" color="gray.500">
+                Click to create
+              </Text>
+            </Flex>
+          </Flex>
+        )}
+
         {(isLoadingHabits || isLoading) &&
           Array.from({ length: 6 }).map((_, index) => (
             <LoadingHabit key={index} />
